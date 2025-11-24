@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
         * {
             transition: all 0.3s ease;
@@ -152,33 +153,180 @@
                 font-size: 1.25rem;
             }
         }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #EF4444;
+            color: white;
+            font-size: 0.625rem;
+            font-weight: bold;
+            padding: 2px 4px;
+            border-radius: 9999px;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid #3B82F6;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Pin screen */
+        .pin-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pin-container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .pin-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin: 20px 0;
+            letter-spacing: 8px;
+        }
+        
+        .pin-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+        }
+        
+        /* Responsive header text */
+        .header-text {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+        }
+        
+        /* Header navigation */
+        .header-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .header-nav-item {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+        
+        .header-nav-item:hover {
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Pin Screen -->
+    <div id="pinScreen" class="pin-screen">
+        <div class="pin-container">
+            <h2 class="text-2xl font-bold mb-4">Masukkan PIN</h2>
+            <input type="password" id="pinInput" class="pin-input" maxlength="6" placeholder="••••••">
+            <p class="text-sm text-gray-500 mt-2">Sistem Laporan K3RS RSUD Talaud</p>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 py-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold">RSUD Talaud</h1>
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="mb-4 md:mb-0 text-center md:text-left">
+                    <h1 class="header-text font-bold">RSUD Talaud</h1>
                     <p class="text-sm opacity-90">Sistem Laporan K3RS</p>
                 </div>
-                <div class="flex items-center space-x-4">
+                
+                <!-- Navigation in Header -->
+                <div class="header-nav mb-4 md:mb-0">
+                    <a href="#" class="header-nav-item bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded" onclick="showReport('dashboard')">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </a>
+                    <a href="#" class="header-nav-item bg-purple-600 hover:bg-purple-700 px-3 py-1 rounded" onclick="showReport('risiko')">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </a>
+                    <a href="#" class="header-nav-item bg-red-600 hover:bg-red-700 px-3 py-1 rounded" onclick="showReport('kebakaran')">
+                        <i class="fas fa-fire"></i>
+                    </a>
+                    <a href="#" class="header-nav-item bg-indigo-600 hover:bg-indigo-700 px-3 py-1 rounded" onclick="showReport('bencana')">
+                        <i class="fas fa-cloud-showers-heavy"></i>
+                    </a>
+                    <a href="#" class="header-nav-item bg-green-600 hover:bg-green-700 px-3 py-1 rounded" onclick="showReport('keamanan')">
+                        <i class="fas fa-shield-alt"></i>
+                    </a>
+                    <a href="#" class="header-nav-item bg-yellow-600 hover:bg-yellow-700 px-3 py-1 rounded" onclick="showReport('b3')">
+                        <i class="fas fa-flask"></i>
+                    </a>
+                    <a href="#" class="header-nav-item bg-pink-600 hover:bg-pink-700 px-3 py-1 rounded" onclick="showReport('fasilitas')">
+                        <i class="fas fa-building"></i>
+                    </a>
+                </div>
+                
+                <div class="flex items-center space-x-2">
                     <div class="flex items-center space-x-2">
                         <button class="year-btn px-3 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30" onclick="setYear(2024)">2024</button>
                         <button class="year-btn px-3 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30" onclick="setYear(2025)">2025</button>
                     </div>
                     <span class="text-sm opacity-90">Tahun: <span id="currentYear">2024</span></span>
-                    <button class="bg-white bg-opacity-20 px-4 py-2 rounded-lg hover:bg-opacity-30">
+                    <button class="bg-white bg-opacity-20 px-4 py-2 rounded-lg hover:bg-opacity-30 relative">
                         <i class="fas fa-user-md mr-2"></i>Tim K3RS
+                        <span class="notification-badge">3</span>
                     </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Navigation -->
-    <nav class="bg-white shadow-md sticky top-16 z-40">
+    <!-- Navigation (for desktop) -->
+    <nav class="bg-white shadow-md sticky top-16 z-40 md:hidden">
         <div class="container mx-auto px-4">
             <ul class="flex space-x-6 py-3 overflow-x-auto">
                 <li><a href="#" class="nav-item active text-gray-700 hover:text-blue-600 font-medium nav-text" onclick="showReport('dashboard')">
@@ -213,7 +361,7 @@
             <h2 class="text-2xl font-bold text-gray-800 mb-8">Dashboard K3RS RSUD Talaud</h2>
             
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="card-hover bg-white rounded-xl shadow-md p-6">
                     <div class="flex items-center justify-between mb-4">
                         <div class="bg-blue-100 p-3 rounded-lg">
@@ -309,7 +457,18 @@
 
         <!-- Laporan Manajemen Risiko -->
         <div id="risiko" class="report-content hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-8">Laporan Manajemen Risiko</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Laporan Manajemen Risiko</h2>
+                <div class="flex items-center space-x-2">
+                    <div class="relative">
+                        <input type="text" id="riskSearch" placeholder="Cari ruangan..." class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                </div>
+            </div>
             
             <!-- Monthly Tabs -->
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">
@@ -337,7 +496,18 @@
 
         <!-- Laporan Manajemen Kebakaran -->
         <div id="kebakaran" class="report-content hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-8">Laporan Manajemen Kebakaran</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Laporan Manajemen Kebakaran</h2>
+                <div class="flex items-center space-x-2">
+                    <div class="relative">
+                        <input type="text" id="fireSearch" placeholder="Cari ruangan..." class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                </div>
+            </div>
             
             <!-- Monthly Tabs -->
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">
@@ -365,7 +535,18 @@
 
         <!-- Laporan Manajemen Bencana -->
         <div id="bencana" class="report-content hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-8">Laporan Manajemen Bencana</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Laporan Manajemen Bencana</h2>
+                <div class="flex items-center space-x-2">
+                    <div class="relative">
+                        <input type="text" id="disasterSearch" placeholder="Cari ruangan..." class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                </div>
+            </div>
             
             <!-- Monthly Tabs -->
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">
@@ -393,7 +574,18 @@
 
         <!-- Laporan Manajemen Keamanan -->
         <div id="keamanan" class="report-content hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-8">Laporan Manajemen Keamanan</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Laporan Manajemen Keamanan</h2>
+                <div class="flex items-center space-x-2">
+                    <div class="relative">
+                        <input type="text" id="securitySearch" placeholder="Cari ruangan..." class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                </div>
+            </div>
             
             <!-- Monthly Tabs -->
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">
@@ -421,7 +613,18 @@
 
         <!-- Laporan Manajemen B3 -->
         <div id="b3" class="report-content hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-8">Laporan Manajemen B3</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Laporan Manajemen B3</h2>
+                <div class="flex items-center space-x-2">
+                    <div class="relative">
+                        <input type="text" id="b3Search" placeholder="Cari ruangan..." class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                </div>
+            </div>
             
             <!-- Monthly Tabs -->
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">
@@ -449,7 +652,18 @@
 
         <!-- Laporan Manajemen Fasilitas -->
         <div id="fasilitas" class="report-content hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-8">Laporan Manajemen Fasilitas</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Laporan Manajemen Fasilitas</h2>
+                <div class="flex items-center space-x-2">
+                    <div class="relative">
+                        <input type="text" id="facilitySearch" placeholder="Cari ruangan..." class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                </div>
+            </div>
             
             <!-- Monthly Tabs -->
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">
@@ -504,6 +718,30 @@
     </footer>
 
     <script>
+        // PIN verification
+        const correctPin = "291196";
+        const pinScreen = document.getElementById('pinScreen');
+        const pinInput = document.getElementById('pinInput');
+        
+        pinInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPin();
+            }
+        });
+        
+        function checkPin() {
+            if (pinInput.value === correctPin) {
+                pinScreen.style.display = 'none';
+                initializeApp();
+            } else {
+                pinInput.value = '';
+                pinInput.classList.add('border-red-500');
+                setTimeout(() => {
+                    pinInput.classList.remove('border-red-500');
+                }, 1000);
+            }
+        }
+        
         // Data untuk ruangan-ruangan
         const rooms = [
             'ANGGREK', 'APOTEK/FARMASI', 'BINATU', 'CRYSANT', 'DAHLIA', 
@@ -673,10 +911,47 @@
         }
 
         // Download PNG
-        function downloadPNG() {
-            // This is a placeholder for the actual download functionality
-            // In a real implementation, you would use a library like html2canvas
-            alert('Fitur download PNG akan segera tersedia');
+        async function downloadPNG() {
+            const modalContent = document.getElementById('modalContent');
+            const modalTitle = document.getElementById('modalTitle');
+            
+            // Create a temporary container to capture the full modal
+            const tempContainer = document.createElement('div');
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.left = '-9999px';
+            tempContainer.style.width = '800px';
+            tempContainer.style.padding = '20px';
+            tempContainer.style.backgroundColor = 'white';
+            tempContainer.style.fontFamily = 'Arial, sans-serif';
+            
+            // Clone the modal content
+            const titleClone = modalTitle.cloneNode(true);
+            const contentClone = modalContent.cloneNode(true);
+            
+            tempContainer.appendChild(titleClone);
+            tempContainer.appendChild(contentClone);
+            document.body.appendChild(tempContainer);
+            
+            try {
+                // Capture the image
+                const canvas = await html2canvas(tempContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true
+                });
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.download = `laporan-${new Date().toISOString().slice(0, 10)}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (error) {
+                console.error('Error capturing image:', error);
+                alert('Terjadi kesalahan saat mengunduh gambar');
+            } finally {
+                // Clean up
+                document.body.removeChild(tempContainer);
+            }
         }
 
         // Get month name
@@ -1099,10 +1374,96 @@
             return levels[Math.floor(Math.random() * levels.length)];
         }
 
-        // Initialize dashboard on load
-        window.addEventListener('load', () => {
-            initTrendChart();
+        // Search functionality
+        document.getElementById('riskSearch')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('#risikoGrid .room-card');
+            
+            cards.forEach(card => {
+                const roomName = card.querySelector('h4').textContent.toLowerCase();
+                if (roomName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         });
+
+        document.getElementById('fireSearch')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('#kebakaranGrid .room-card');
+            
+            cards.forEach(card => {
+                const roomName = card.querySelector('h4').textContent.toLowerCase();
+                if (roomName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('disasterSearch')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('#bencanaGrid .room-card');
+            
+            cards.forEach(card => {
+                const roomName = card.querySelector('h4').textContent.toLowerCase();
+                if (roomName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('securitySearch')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('#keamananGrid .room-card');
+            
+            cards.forEach(card => {
+                const roomName = card.querySelector('h4').textContent.toLowerCase();
+                if (roomName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('b3Search')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('#b3Grid .room-card');
+            
+            cards.forEach(card => {
+                const roomName = card.querySelector('h4').textContent.toLowerCase();
+                if (roomName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('facilitySearch')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('#fasilitasGrid .room-card');
+            
+            cards.forEach(card => {
+                const roomName = card.querySelector('h4').textContent.toLowerCase();
+                if (roomName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Initialize app after PIN verification
+        function initializeApp() {
+            // Initialize dashboard
+            initTrendChart();
+        }
     </script>
 </body>
 </html>
