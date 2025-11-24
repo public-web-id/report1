@@ -7,8 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * {
             transition: all 0.3s ease;
@@ -107,29 +105,51 @@
         .risk-matrix {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(5, 1fr);
             gap: 2px;
-            height: 300px;
+            margin: 20px 0;
         }
         
         .risk-cell {
+            aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 4px;
-            font-size: 12px;
+            font-size: 0.75rem;
             font-weight: bold;
             color: white;
-            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
+        
+        .risk-cell:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+        
+        .risk-low { background-color: #10B981; }
+        .risk-medium { background-color: #F59E0B; }
+        .risk-high { background-color: #EF4444; }
         
         .footer-gradient {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
+        /* Responsive adjustments */
         @media (max-width: 768px) {
             .nav-text {
                 font-size: 0.875rem;
+            }
+            .nav-item i {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .nav-text {
+                display: none;
+            }
+            .nav-item i {
+                font-size: 1.25rem;
             }
         }
     </style>
@@ -143,14 +163,14 @@
                     <h1 class="text-2xl font-bold">RSUD Talaud</h1>
                     <p class="text-sm opacity-90">Sistem Laporan K3RS</p>
                 </div>
-                <div class="flex items-center space-x-6">
+                <div class="flex items-center space-x-4">
                     <div class="flex items-center space-x-2">
-                        <button id="year2024" class="px-3 py-1 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 text-sm" onclick="setYear(2024)">2024</button>
-                        <button id="year2025" class="px-3 py-1 rounded-lg bg-white bg-opacity-20 hover:bg-opacity-30 text-sm" onclick="setYear(2025)">2025</button>
+                        <button class="year-btn px-3 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30" onclick="setYear(2024)">2024</button>
+                        <button class="year-btn px-3 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30" onclick="setYear(2025)">2025</button>
                     </div>
                     <span class="text-sm opacity-90">Tahun: <span id="currentYear">2024</span></span>
                     <button class="bg-white bg-opacity-20 px-4 py-2 rounded-lg hover:bg-opacity-30">
-                        <i class="fas fa-user mr-2"></i>Tim K3RS
+                        <i class="fas fa-user-md mr-2"></i>Tim K3RS
                     </button>
                 </div>
             </div>
@@ -160,7 +180,7 @@
     <!-- Navigation -->
     <nav class="bg-white shadow-md sticky top-16 z-40">
         <div class="container mx-auto px-4">
-            <ul class="flex space-x-6 py-4 overflow-x-auto">
+            <ul class="flex space-x-6 py-3 overflow-x-auto">
                 <li><a href="#" class="nav-item active text-gray-700 hover:text-blue-600 font-medium nav-text" onclick="showReport('dashboard')">
                     <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
                 </a></li>
@@ -461,12 +481,9 @@
         <div class="bg-white rounded-xl shadow-2xl p-8 max-w-4xl max-h-[90vh] overflow-y-auto m-4">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-gray-800" id="modalTitle">Detail Laporan</h3>
-                <div class="flex space-x-2">
-                    <button onclick="previewPDF()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                        <i class="fas fa-file-pdf mr-2"></i>Preview PDF
-                    </button>
-                    <button onclick="printPDF()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-                        <i class="fas fa-print mr-2"></i>Print PDF
+                <div class="flex items-center space-x-2">
+                    <button onclick="downloadPNG()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-download mr-2"></i>Download PNG
                     </button>
                     <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-2xl"></i>
@@ -480,7 +497,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="footer-gradient text-white py-6 mt-12">
+    <footer class="footer-gradient text-white py-6 mt-auto">
         <div class="container mx-auto px-4 text-center">
             <p>&copy; 2024 RSUD Talaud. Sistem Laporan K3RS</p>
         </div>
@@ -501,7 +518,7 @@
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        // Current year state
+        // Current year
         let currentYear = 2024;
 
         // Set year function
@@ -509,13 +526,33 @@
             currentYear = year;
             document.getElementById('currentYear').textContent = year;
             
-            // Update button styles
-            document.getElementById('year2024').classList.toggle('bg-opacity-40', year !== 2024);
-            document.getElementById('year2025').classList.toggle('bg-opacity-40', year !== 2025);
-            
-            // Reset dashboard
-            if (document.getElementById('dashboard').classList.contains('hidden') === false) {
-                initTrendChart();
+            // Update data based on year
+            if (year === 2025) {
+                // Use 2024 data for 2025
+                updateDataFor2025();
+            } else {
+                // Reset to 2024 data
+                updateDataFor2024();
+            }
+        }
+
+        // Update data for 2025 (using 2024 data)
+        function updateDataFor2025() {
+            // Update chart data for 2025
+            if (window.trendChart) {
+                window.trendChart.data.datasets[0].data = [85, 86, 87, 88, 89, 90, 91, 92, 93, 92, 91, 94];
+                window.trendChart.data.datasets[1].data = [80, 82, 84, 85, 87, 88, 89, 90, 91, 92, 93, 95];
+                window.trendChart.update();
+            }
+        }
+
+        // Update data for 2024
+        function updateDataFor2024() {
+            // Update chart data for 2024
+            if (window.trendChart) {
+                window.trendChart.data.datasets[0].data = [82, 84, 85, 83, 86, 87, 88, 87, 89, 88, 87, 89];
+                window.trendChart.data.datasets[1].data = [75, 77, 78, 80, 82, 83, 84, 85, 86, 87, 88, 90];
+                window.trendChart.update();
             }
         }
 
@@ -550,27 +587,19 @@
         // Initialize trend chart with short columns
         function initTrendChart() {
             const ctx = document.getElementById('trendChart').getContext('2d');
-            const yearData = currentYear === 2024 ? {
-                compliance: [82, 84, 85, 83, 86, 87, 88, 87, 89, 88, 87, 89],
-                risk: [75, 77, 78, 80, 82, 83, 84, 85, 86, 87, 88, 90]
-            } : {
-                compliance: [85, 86, 87, 86, 88, 89, 90, 89, 91, 90, 89, 91],
-                risk: [78, 80, 82, 83, 85, 86, 87, 88, 89, 90, 91, 92]
-            };
-
-            new Chart(ctx, {
+            window.trendChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
                     datasets: [{
                         label: 'Kepatuhan K3RS (%)',
-                        data: yearData.compliance,
+                        data: [82, 84, 85, 83, 86, 87, 88, 87, 89, 88, 87, 89],
                         backgroundColor: 'rgba(59, 130, 246, 0.8)',
                         borderColor: 'rgb(59, 130, 246)',
                         borderWidth: 1
                     }, {
                         label: 'Risiko Teridentifikasi (%)',
-                        data: yearData.risk,
+                        data: [75, 77, 78, 80, 82, 83, 84, 85, 86, 87, 88, 90],
                         backgroundColor: 'rgba(239, 68, 68, 0.8)',
                         borderColor: 'rgb(239, 68, 68)',
                         borderWidth: 1
@@ -643,6 +672,13 @@
             modal.classList.remove('active');
         }
 
+        // Download PNG
+        function downloadPNG() {
+            // This is a placeholder for the actual download functionality
+            // In a real implementation, you would use a library like html2canvas
+            alert('Fitur download PNG akan segera tersedia');
+        }
+
         // Get month name
         function getMonthName(month) {
             const months = {
@@ -662,6 +698,72 @@
             return months[month] || month;
         }
 
+        // Generate risk matrix
+        function generateRiskMatrix(room, month) {
+            const risks = [
+                { name: 'Kerusakan Alat Medis', likelihood: 4, impact: 5, risk: 20 },
+                { name: 'Infeksi Nosokomial', likelihood: 3, impact: 4, risk: 12 },
+                { name: 'Kecelakaan Kerja', likelihood: 2, impact: 3, risk: 6 },
+                { name: 'Kerusakan Infrastruktur', likelihood: 3, impact: 4, risk: 12 },
+                { name: 'Kehilangan Data', likelihood: 2, impact: 5, risk: 10 }
+            ];
+
+            let matrixHtml = `
+                <div class="mb-6">
+                    <h4 class="text-lg font-semibold mb-3">Matriks Risiko - ${room}</h4>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full border-collapse border border-gray-300">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="border border-gray-300 px-4 py-2 text-left">Risiko</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-center">Kemungkinan</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-center">Dampak</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-center">Skor Risiko</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-center">Mitigasi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            risks.forEach(risk => {
+                const riskColor = risk.risk >= 15 ? 'risk-high' : risk.risk >= 10 ? 'risk-medium' : 'risk-low';
+                const mitigasi = getMitigation(risk.name);
+                
+                matrixHtml += `
+                    <tr>
+                        <td class="border border-gray-300 px-4 py-2">${risk.name}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-center">${risk.likelihood}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-center">${risk.impact}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-center">
+                            <span class="px-2 py-1 rounded ${riskColor}">${risk.risk}</span>
+                        </td>
+                        <td class="border border-gray-300 px-4 py-2 text-sm">${mitigasi}</td>
+                    </tr>
+                `;
+            });
+
+            matrixHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            return matrixHtml;
+        }
+
+        // Get mitigation based on risk name
+        function getMitigation(riskName) {
+            const mitigations = {
+                'Kerusakan Alat Medis': 'Perawatan rutin, kalibrasi berkala, training penggunaan',
+                'Infeksi Nosokomial': 'Protokol sterilisasi, monitoring rutin, edukasi staff',
+                'Kecelakaan Kerja': 'Pelatihan K3, inspeksi lingkungan, SOP jelas',
+                'Kerusakan Infrastruktur': 'Inspeksi berkala, perbaikan cepat, rencana backup',
+                'Kehilangan Data': 'Backup otomatis, enkripsi data, akses terbatas'
+            };
+            return mitigations[riskName] || 'Perlu ditindaklanjuti';
+        }
+
         // Generate detailed reports
         function generateKebakaranDetail(room, month) {
             return `
@@ -670,6 +772,8 @@
                         <h4 class="font-semibold text-red-900 mb-2">Status Kebakaran</h4>
                         <p class="text-sm text-red-800">Pada bulan ${getMonthName(month)}, ruangan ${room} tidak memiliki AP 2kg, AP 9kg, AP kering, atau alarm kebakaran. Hanya jalur evakuasi yang tersedia.</p>
                     </div>
+                    
+                    ${generateRiskMatrix(room, month)}
                     
                     <div class="space-y-4">
                         <h4 class="font-semibold text-gray-800">Pemeriksaan Kebakaran</h4>
@@ -706,42 +810,6 @@
                             <li>• Pertahankan jalur evakuasi selalu bebas dari hambatan</li>
                         </ul>
                     </div>
-                    
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-blue-900 mb-2">Matriks Risiko</h4>
-                        <div class="risk-matrix">
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                        </div>
-                        <div class="mt-4 text-sm text-gray-600">
-                            <p>Skor Risiko: 8/10 (Tinggi)</p>
-                            <p>Dampak: Kritis</p>
-                            <p>Mitigasi: Pasang alat pemadam api dan alarm kebakaran segera</p>
-                        </div>
-                    </div>
                 </div>
             `;
         }
@@ -754,10 +822,7 @@
                         <p class="text-sm text-blue-800">Pada bulan ${getMonthName(month)}, ruangan ${room} memiliki ${generateRandomData(1, 5)} risiko aktif yang perlu ditangani.</p>
                     </div>
                     
-                    <div class="space-y-4">
-                        <h4 class="font-semibold text-gray-800">Daftar Risiko</h4>
-                        ${generateRiskList(room, month)}
-                    </div>
+                    ${generateRiskMatrix(room, month)}
                     
                     <div class="bg-gray-50 p-4 rounded-lg">
                         <h4 class="font-semibold text-gray-800 mb-2">Rekomendasi</h4>
@@ -767,73 +832,8 @@
                             <li>• Lakukan pelatihan khusus untuk staff</li>
                         </ul>
                     </div>
-                    
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-blue-900 mb-2">Matriks Risiko</h4>
-                        <div class="risk-matrix">
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                        </div>
-                        <div class="mt-4 text-sm text-gray-600">
-                            <p>Skor Risiko: 7/10 (Tinggi)</p>
-                            <p>Dampak: Kritis</p>
-                            <p>Mitigasi: Implementasi sistem pemantauan real-time</p>
-                        </div>
-                    </div>
                 </div>
             `;
-        }
-
-        function generateRiskList(room, month) {
-            const risks = [
-                { name: 'Kerusakan Alat Medis', level: 'Tinggi', impact: 'Kritis' },
-                { name: 'Infeksi Nosokomial', level: 'Sedang', impact: 'Moderat' },
-                { name: 'Kecelakaan Kerja', level: 'Rendah', impact: 'Minor' }
-            ];
-            
-            return risks.map(risk => `
-                <div class="border rounded-lg p-3 hover:shadow-md">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h5 class="font-medium">${risk.name}</h5>
-                            <p class="text-sm text-gray-600">Dampak: ${risk.impact}</p>
-                        </div>
-                        <span class="px-2 py-1 rounded text-xs ${getRiskColor(risk.level)}">${risk.level}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function getRiskColor(level) {
-            switch(level) {
-                case 'Tinggi': return 'bg-red-100 text-red-800';
-                case 'Sedang': return 'bg-yellow-100 text-yellow-800';
-                case 'Rendah': return 'bg-green-100 text-green-800';
-                default: return 'bg-gray-100 text-gray-800';
-            }
         }
 
         function generateBencanaDetail(room, month) {
@@ -843,6 +843,8 @@
                         <h4 class="font-semibold text-purple-900 mb-2">Kesiapan Bencana</h4>
                         <p class="text-sm text-purple-800">Ruangan ${room} siap menghadapi bencana alam dengan tingkat kesiapan ${generateRandomData(60, 95)}%</p>
                     </div>
+                    
+                    ${generateRiskMatrix(room, month)}
                     
                     <div class="space-y-4">
                         <h4 class="font-semibold text-gray-800">Persediaan Darurat</h4>
@@ -869,42 +871,6 @@
                         <h4 class="font-semibold text-gray-800 mb-2">Prosedur Evakuasi</h4>
                         <p class="text-sm text-gray-600">Jalur evakuasi telah ditandai dengan jelas. Tim tanggap darurat telah dilatih.</p>
                     </div>
-                    
-                    <div class="bg-purple-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-purple-900 mb-2">Matriks Risiko</h4>
-                        <div class="risk-matrix">
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                        </div>
-                        <div class="mt-4 text-sm text-gray-600">
-                            <p>Skor Risiko: 6/10 (Sedang)</p>
-                            <p>Dampak: Moderat</p>
-                            <p>Mitigasi: Tambahkan P3K dan persediaan darurat</p>
-                        </div>
-                    </div>
                 </div>
             `;
         }
@@ -916,6 +882,8 @@
                         <h4 class="font-semibold text-green-900 mb-2">Status Keamanan</h4>
                         <p class="text-sm text-green-800">Keamanan ruangan ${room} dalam kondisi ${generateRandomData(80, 100)}% baik</p>
                     </div>
+                    
+                    ${generateRiskMatrix(room, month)}
                     
                     <div class="space-y-4">
                         <h4 class="font-semibold text-gray-800">Sistem Keamanan</h4>
@@ -939,42 +907,6 @@
                         <h4 class="font-semibold text-gray-800 mb-2">Patroli</h4>
                         <p class="text-sm text-gray-600">Patroli rutin dilakukan setiap hari</p>
                     </div>
-                    
-                    <div class="bg-green-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-green-900 mb-2">Matriks Risiko</h4>
-                        <div class="risk-matrix">
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                        </div>
-                        <div class="mt-4 text-sm text-gray-600">
-                            <p>Skor Risiko: 5/10 (Sedang)</p>
-                            <p>Dampak: Moderat</p>
-                            <p>Mitigasi: Pasang CCTV dan alarm keamanan</p>
-                        </div>
-                    </div>
                 </div>
             `;
         }
@@ -986,6 +918,8 @@
                         <h4 class="font-semibold text-yellow-900 mb-2">Status B3</h4>
                         <p class="text-sm text-yellow-800">Pengelolaan B3 di ruangan ${room} sesuai standar ${generateRandomData(70, 100)}%</p>
                     </div>
+                    
+                    ${generateRiskMatrix(room, month)}
                     
                     <div class="space-y-4">
                         <h4 class="font-semibold text-gray-800">Inventaris B3</h4>
@@ -1002,49 +936,8 @@
                     </div>
                     
                     <div class="bg-gray-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-2">Prosedur Penyimpanan</h4>
-                        <p class="text-sm text-gray-600">Semua B3 disimpan di lemari khusus dengan akses terbatas.</p>
-                    </div>
-                    
-                    <div class="bg-yellow-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-yellow-900 mb-2">Hasil Temuan</h4>
-                        <p class="text-sm text-yellow-800">Semua staf medis sudah membedakan jenis limbah medis dan non medis dengan baik. Pengelolaan limbah telah dilaksanakan sesuai standar operasional yang berlaku.</p>
-                    </div>
-                    
-                    <div class="bg-yellow-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-yellow-900 mb-2">Matriks Risiko</h4>
-                        <div class="risk-matrix">
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                        </div>
-                        <div class="mt-4 text-sm text-gray-600">
-                            <p>Skor Risiko: 4/10 (Sedang)</p>
-                            <p>Dampak: Moderat</p>
-                            <p>Mitigasi: Pertahankan pelatihan rutin tentang pengelolaan limbah</p>
-                        </div>
+                        <h4 class="font-semibold text-gray-800 mb-2">Hasil Temuan</h4>
+                        <p class="text-sm text-gray-600">Semua staf medis sudah membedakan jenis limbah medis dan non medis dengan baik. Proses pengelolaan limbah telah sesuai standar.</p>
                     </div>
                 </div>
             `;
@@ -1055,28 +948,30 @@
                 <div class="space-y-6">
                     <div class="bg-indigo-50 p-4 rounded-lg">
                         <h4 class="font-semibold text-indigo-900 mb-2">Status Fasilitas</h4>
-                        <p class="text-sm text-indigo-800">Kondisi fasilitas di ${room} normal dan berfungsi dengan baik.</p>
+                        <p class="text-sm text-indigo-800">Kondisi fasilitas di ${room} normal dan berfungsi dengan baik</p>
                     </div>
                     
+                    ${generateRiskMatrix(room, month)}
+                    
                     <div class="space-y-4">
-                        <h4 class="font-semibold text-gray-800">Pemeliharaan Terakhir</h4>
+                        <h4 class="font-semibold text-gray-800">Pemeriksaan Fasilitas</h4>
                         <div class="space-y-3">
                             <div class="border rounded-lg p-3">
                                 <div class="flex justify-between items-center">
                                     <span>AC</span>
-                                    <span class="text-sm text-gray-600">${generateRandomDate()}</span>
+                                    <span class="text-sm text-green-600">Normal</span>
                                 </div>
                             </div>
                             <div class="border rounded-lg p-3">
                                 <div class="flex justify-between items-center">
                                     <span>Listrik</span>
-                                    <span class="text-sm text-gray-600">${generateRandomDate()}</span>
+                                    <span class="text-sm text-green-600">Normal</span>
                                 </div>
                             </div>
                             <div class="border rounded-lg p-3">
                                 <div class="flex justify-between items-center">
                                     <span>Pipa Air</span>
-                                    <span class="text-sm text-gray-600">${generateRandomDate()}</span>
+                                    <span class="text-sm text-green-600">Normal</span>
                                 </div>
                             </div>
                         </div>
@@ -1086,94 +981,20 @@
                         <h4 class="font-semibold text-gray-800 mb-2">Rencana Pemeliharaan</h4>
                         <p class="text-sm text-gray-600">Pemeliharaan berikutnya pada ${getMonthName(month)} ${generateRandomData(15, 30)}</p>
                     </div>
-                    
-                    <div class="bg-indigo-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-indigo-900 mb-2">Matriks Risiko</h4>
-                        <div class="risk-matrix">
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-green-400">Rendah</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-yellow-400">Sedang</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                            <div class="risk-cell bg-red-400">Tinggi</div>
-                        </div>
-                        <div class="mt-4 text-sm text-gray-600">
-                            <p>Skor Risiko: 3/10 (Rendah)</p>
-                            <p>Dampak: Minor</p>
-                            <p>Mitigasi: Tetap jadwalkan pemeliharaan rutin</p>
-                        </div>
-                    </div>
                 </div>
             `;
-        }
-
-        function generateRandomDate() {
-            const dates = ['1 Nov', '5 Nov', '10 Nov', '15 Nov', '20 Nov', '25 Nov'];
-            return dates[Math.floor(Math.random() * dates.length)];
-        }
-
-        // Preview PDF function
-        function previewPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Add title
-            doc.setFontSize(20);
-            doc.text('Laporan K3RS RSUD Talaud', 105, 20, { align: 'center' });
-            
-            // Add month and year
-            doc.setFontSize(16);
-            doc.text(`${getMonthName(document.getElementById('modalTitle').textContent.split(' - ')[2])} ${currentYear}`, 105, 30, { align: 'center' });
-            
-            // Add room name
-            doc.setFontSize(14);
-            doc.text(`Ruangan: ${document.getElementById('modalTitle').textContent.split(' - ')[1]}`, 20, 50);
-            
-            // Add content
-            const modalContent = document.getElementById('modalContent');
-            const content = modalContent.innerText;
-            
-            doc.setFontSize(12);
-            const splitContent = doc.splitTextToSize(content, 170);
-            doc.text(splitContent, 20, 70);
-            
-            // Save the PDF
-            doc.save(`laporan_${document.getElementById('modalTitle').textContent.split(' - ')[1]}_${getMonthName(document.getElementById('modalTitle').textContent.split(' - ')[2])}_${currentYear}.pdf`);
-        }
-
-        // Print PDF function
-        function printPDF() {
-            window.print();
         }
 
         // Show monthly reports for each category
         function showMonthlyKebakaran(month) {
             updateMonthTabs('kebakaran', month);
             const grid = document.getElementById('kebakaranGrid');
+            
             grid.innerHTML = rooms.map(room => `
                 <div class="room-card bg-white border rounded-lg p-4 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Kebakaran')">
                     <h4 class="font-semibold text-gray-800 mb-2">${room}</h4>
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">0 AP2kg</span>
+                        <span class="text-sm text-gray-600">Tidak ada AP</span>
                         <span class="text-xs bg-red-100 text-red-800">Perbaatan</span>
                     </div>
                 </div>
@@ -1261,6 +1082,15 @@
             if (activeTab) {
                 activeTab.classList.remove('bg-gray-200', 'text-gray-700');
                 activeTab.classList.add('bg-blue-600', 'text-white');
+            }
+        }
+
+        function getRiskColor(level) {
+            switch(level) {
+                case 'Tinggi': return 'bg-red-100 text-red-800';
+                case 'Sedang': return 'bg-yellow-100 text-yellow-800';
+                case 'Rendah': return 'bg-green-100 text-green-800';
+                default: return 'bg-gray-100 text-gray-800';
             }
         }
 
