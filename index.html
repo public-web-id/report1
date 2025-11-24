@@ -207,8 +207,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 9999;
             display: flex;
             justify-content: center;
@@ -216,225 +216,183 @@
         }
         
         .pin-container {
-            background-color: white;
-            padding: 30px;
+            background: white;
+            padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             text-align: center;
         }
         
-        .pin-input {
-            font-size: 24px;
-            letter-spacing: 10px;
-            text-align: center;
-            border: 2px solid #3B82F6;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 20px 0;
-            width: 200px;
-        }
-        
-        .pin-button {
-            background-color: #3B82F6;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        
-        .pin-button:hover {
-            background-color: #2563EB;
-        }
-        
-        /* Responsive header text */
-        .responsive-header {
-            transition: font-size 0.3s ease;
-        }
-        
-        @media (max-width: 1024px) {
-            .responsive-header {
-                font-size: 1.5rem;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .responsive-header {
-                font-size: 1.25rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .responsive-header {
-                font-size: 1rem;
-            }
+        /* Small modal content */
+        .small-modal-content {
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
-    <!-- Blur Overlay -->
+    <!-- Blur Overlay with Pin -->
     <div id="blurOverlay" class="blur-overlay">
         <div class="pin-container">
-            <h2 class="text-2xl font-bold mb-4">Masukkan PIN untuk Akses</h2>
-            <input type="password" id="pinInput" class="pin-input" maxlength="6" placeholder="PIN">
-            <br>
-            <button id="verifyPin" class="pin-button">Verifikasi</button>
-            <p id="pinError" class="text-red-500 mt-2 hidden">PIN salah. Silakan coba lagi.</p>
+            <h2 class="text-xl font-bold mb-4">Masukkan PIN untuk Akses</h2>
+            <input type="password" id="pinInput" class="border rounded-lg px-4 py-2 mb-4 w-full" maxlength="6">
+            <button onclick="checkPin()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                Verifikasi
+            </button>
         </div>
     </div>
 
     <!-- Header -->
     <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex flex-col md:flex-row items-center justify-between">
-                <div class="text-center md:text-left mb-4 md:mb-0">
-                    <h1 class="responsive-header text-2xl md:text-3xl font-bold">RSUD Talaud</h1>
-                    <p class="text-sm opacity-90">Sistem Laporan K3RS</p>
+        <div class="container mx-auto px-4 py-2">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div class="mb-2 md:mb-0">
+                    <h1 class="text-lg md:text-xl font-bold">RSUD Talaud</h1>
+                    <p class="text-xs md:text-sm opacity-90">Sistem Laporan K3RS</p>
                 </div>
                 
-                <div class="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
-                    <div class="text-center md:text-right">
-                        <span class="text-sm opacity-90">Tahun: <span id="currentYear">2024</span></span>
-                        <div class="text-xs opacity-80" id="currentTime">00:00:00</div>
+                <div class="flex flex-wrap items-center justify-between w-full md:w-auto">
+                    <div class="flex items-center space-x-2 mb-2 md:mb-0">
+                        <span class="text-xs md:text-sm">Tahun: <span id="currentYear">2024</span></span>
+                        <button class="year-btn px-2 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30 text-xs" onclick="setYear(2024)">2024</button>
+                        <button class="year-btn px-2 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30 text-xs" onclick="setYear(2025)">2025</button>
                     </div>
                     
                     <div class="flex items-center space-x-2">
-                        <button class="year-btn px-3 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30" onclick="setYear(2024)">2024</button>
-                        <button class="year-btn px-3 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30" onclick="setYear(2025)">2025</button>
+                        <span id="clock" class="text-xs md:text-sm font-mono"></span>
+                        <button class="bg-white bg-opacity-20 px-3 py-1 rounded-lg hover:bg-opacity-30 text-xs md:text-sm relative">
+                            <i class="fas fa-user-md mr-1"></i>Tim K3RS/MFK
+                            <span class="notification-badge">3</span>
+                        </button>
                     </div>
-                    
-                    <button class="bg-white bg-opacity-20 px-4 py-2 rounded-lg hover:bg-opacity-30 relative">
-                        <i class="fas fa-user-md mr-2"></i>Tim K3RS/MFK
-                        <span class="notification-badge">3</span>
-                    </button>
                 </div>
             </div>
             
-            <!-- Navigation in header -->
-            <div class="mt-4 overflow-x-auto">
-                <ul class="flex space-x-2 md:space-x-6 py-2">
-                    <li><a href="#" class="nav-item active text-white hover:text-blue-200 font-medium nav-text" onclick="showReport('dashboard')">
-                        <i class="fas fa-tachometer-alt mr-2"></i><span class="text-blue-300">Dashboard</span>
+            <!-- Navigation in Header -->
+            <nav class="mt-2">
+                <ul class="flex flex-wrap gap-2 md:gap-4">
+                    <li><a href="#" class="nav-item active text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('dashboard')">
+                        <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
                     </a></li>
-                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium nav-text" onclick="showReport('risiko')">
-                        <i class="fas fa-exclamation-triangle mr-2"></i><span class="text-yellow-300">Manajemen Risiko</span>
+                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('risiko')">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>Manajemen Risiko
                     </a></li>
-                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium nav-text" onclick="showReport('kebakaran')">
-                        <i class="fas fa-fire mr-2"></i><span class="text-red-300">Manajemen Kebakaran</span>
+                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('kebakaran')">
+                        <i class="fas fa-fire mr-1"></i>Manajemen Kebakaran
                     </a></li>
-                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium nav-text" onclick="showReport('bencana')">
-                        <i class="fas fa-cloud-showers-heavy mr-2"></i><span class="text-purple-300">Manajemen Bencana</span>
+                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('bencana')">
+                        <i class="fas fa-cloud-showers-heavy mr-1"></i>Manajemen Bencana
                     </a></li>
-                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium nav-text" onclick="showReport('keamanan')">
-                        <i class="fas fa-shield-alt mr-2"></i><span class="text-green-300">Manajemen Keamanan</span>
+                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('keamanan')">
+                        <i class="fas fa-shield-alt mr-1"></i>Manajemen Keamanan
                     </a></li>
-                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium nav-text" onclick="showReport('b3')">
-                        <i class="fas fa-flask mr-2"></i><span class="text-orange-300">Manajemen B3</span>
+                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('b3')">
+                        <i class="fas fa-flask mr-1"></i>Manajemen B3
                     </a></li>
-                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium nav-text" onclick="showReport('fasilitas')">
-                        <i class="fas fa-building mr-2"></i><span class="text-indigo-300">Manajemen Fasilitas</span>
+                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('fasilitas')">
+                        <i class="fas fa-building mr-1"></i>Manajemen Fasilitas
                     </a></li>
                 </ul>
-            </div>
+            </nav>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8 flex-grow">
+    <main class="container mx-auto px-4 py-6 flex-grow">
         <!-- Dashboard -->
         <div id="dashboard" class="report-content fade-in">
-            <h2 class="text-2xl font-bold text-gray-800 mb-8">Dashboard K3RS RSUD Talaud</h2>
+            <h2 class="text-xl font-bold text-gray-800 mb-6">Dashboard K3RS RSUD Talaud</h2>
             
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="card-hover bg-white rounded-xl shadow-md p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="bg-blue-100 p-3 rounded-lg">
-                            <i class="fas fa-exclamation-triangle text-blue-600 text-2xl"></i>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="card-hover bg-white rounded-xl shadow-md p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="bg-blue-100 p-2 rounded-lg">
+                            <i class="fas fa-exclamation-triangle text-blue-600 text-xl"></i>
                         </div>
-                        <span class="text-sm text-gray-500">Total Risiko</span>
+                        <span class="text-xs text-gray-500">Total Risiko</span>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800">156</h3>
-                    <p class="text-sm text-gray-600 mt-2">24 ruangan</p>
+                    <h3 class="text-xl font-bold text-gray-800">156</h3>
+                    <p class="text-xs text-gray-600 mt-1">24 ruangan</p>
                 </div>
                 
-                <div class="card-hover bg-white rounded-xl shadow-md p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="bg-red-100 p-3 rounded-lg">
-                            <i class="fas fa-fire text-red-600 text-2xl"></i>
+                <div class="card-hover bg-white rounded-xl shadow-md p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="bg-red-100 p-2 rounded-lg">
+                            <i class="fas fa-fire text-red-600 text-xl"></i>
                         </div>
-                        <span class="text-sm text-gray-500">Kebakaran</span>
+                        <span class="text-xs text-gray-500">Kebakaran</span>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800">24</h3>
-                    <p class="text-sm text-gray-600 mt-2">Insiden terdeteksi</p>
+                    <h3 class="text-xl font-bold text-gray-800">24</h3>
+                    <p class="text-xs text-gray-600 mt-1">Insiden terdeteksi</p>
                 </div>
                 
-                <div class="card-hover bg-white rounded-xl shadow-md p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="bg-green-100 p-3 rounded-lg">
-                            <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                <div class="card-hover bg-white rounded-xl shadow-md p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="bg-green-100 p-2 rounded-lg">
+                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
                         </div>
-                        <span class="text-sm text-gray-500">Kepatuhan</span>
+                        <span class="text-xs text-gray-500">Kepatuhan</span>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800">87%</h3>
-                    <p class="text-sm text-gray-600 mt-2">Rata-rata</p>
+                    <h3 class="text-xl font-bold text-gray-800">87%</h3>
+                    <p class="text-xs text-gray-600 mt-1">Rata-rata</p>
                 </div>
                 
-                <div class="card-hover bg-white rounded-xl shadow-md p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="bg-purple-100 p-3 rounded-lg">
-                            <i class="fas fa-tools text-purple-600 text-2xl"></i>
+                <div class="card-hover bg-white rounded-xl shadow-md p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="bg-purple-100 p-2 rounded-lg">
+                            <i class="fas fa-tools text-purple-600 text-xl"></i>
                         </div>
-                        <span class="text-sm text-gray-500">Pemeliharaan</span>
+                        <span class="text-xs text-gray-500">Pemeliharaan</span>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800">89%</h3>
-                    <p class="text-sm text-gray-600 mt-2">Fasilitas baik</p>
+                    <h3 class="text-xl font-bold text-gray-800">89%</h3>
+                    <p class="text-xs text-gray-600 mt-1">Fasilitas baik</p>
                 </div>
             </div>
 
             <!-- Monthly Trend Chart - Short Columns -->
-            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">Tren K3RS Bulanan</h3>
+            <div class="bg-white rounded-xl shadow-md p-4 mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">Tren K3RS Bulanan</h3>
                 <div class="chart-container">
                     <canvas id="trendChart"></canvas>
                 </div>
             </div>
 
             <!-- Quick Links -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl shadow-md p-6">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Ruangan dengan Risiko Tertinggi</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                            <span class="font-medium">IGD</span>
-                            <span class="text-sm text-red-600">18 risiko</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white rounded-xl shadow-md p-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Ruangan dengan Risiko Tertinggi</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-2 bg-red-50 rounded-lg">
+                            <span class="font-medium text-sm">IGD</span>
+                            <span class="text-xs text-red-600">18 risiko</span>
                         </div>
-                        <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
-                            <span class="font-medium">ICU</span>
-                            <span class="text-sm text-orange-600">15 risiko</span>
+                        <div class="flex items-center justify-between p-2 bg-orange-50 rounded-lg">
+                            <span class="font-medium text-sm">ICU</span>
+                            <span class="text-xs text-orange-600">15 risiko</span>
                         </div>
-                        <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-                            <span class="font-medium">LABORATORIUM</span>
-                            <span class="text-sm text-yellow-600">12 risiko</span>
+                        <div class="flex items-center justify-between p-2 bg-yellow-50 rounded-lg">
+                            <span class="font-medium text-sm">LABORATORIUM</span>
+                            <span class="text-xs text-yellow-600">12 risiko</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-md p-6">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Kategori K3RS Terbaik</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                            <span class="font-medium">Keamanan</span>
-                            <span class="text-sm text-green-600">94% kepatuhan</span>
+                <div class="bg-white rounded-xl shadow-md p-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Kategori K3RS Terbaik</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-2 bg-green-50 rounded-lg">
+                            <span class="font-medium text-sm">Keamanan</span>
+                            <span class="text-xs text-green-600">94% kepatuhan</span>
                         </div>
-                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                            <span class="font-medium">Kebakaran</span>
-                            <span class="text-sm text-green-600">91% kepatuhan</span>
+                        <div class="flex items-center justify-between p-2 bg-green-50 rounded-lg">
+                            <span class="font-medium text-sm">Kebakaran</span>
+                            <span class="text-xs text-green-600">91% kepatuhan</span>
                         </div>
-                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                            <span class="font-medium">Fasilitas</span>
-                            <span class="text-sm text-blue-600">89% kepatuhan</span>
+                        <div class="flex items-center justify-between p-2 bg-blue-50 rounded-lg">
+                            <span class="font-medium text-sm">Fasilitas</span>
+                            <span class="text-xs text-blue-600">89% kepatuhan</span>
                         </div>
                     </div>
                 </div>
@@ -443,27 +401,38 @@
 
         <!-- Laporan Manajemen Risiko -->
         <div id="risiko" class="report-content hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-8">Laporan Manajemen Risiko</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen Risiko</h2>
+                <div class="flex items-center space-x-2 w-full md:w-auto">
+                    <div class="relative w-full md:w-auto">
+                        <input type="text" id="riskSearch" placeholder="Cari ruangan..." class="w-full px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <i class="fas fa-search absolute right-3 top-2 text-gray-400 text-xs"></i>
+                    </div>
+                    <button class="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 text-sm">
+                        <i class="fas fa-filter mr-1"></i>Filter
+                    </button>
+                </div>
+            </div>
             
             <!-- Monthly Tabs -->
-            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                <div class="flex flex-wrap gap-2 mb-6">
-                    <button class="month-tab px-4 py-2 rounded-lg bg-blue-600 text-white" onclick="showMonthlyRisiko('jan')">Jan</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyRisiko('feb')">Feb</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyRisiko('mar')">Mar</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyRisiko('apr')">Apr</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyRisiko('mei')">Mei</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyRisiko('jun')">Jun</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyRisiko('jul')">Jul</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyRisiko('agu')">Agu</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyRisiko('sep')">Sep</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyRisiko('okt')">Okt</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyRisiko('nov')">Nov</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyRisiko('des')">Des</button>
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <div class="flex flex-wrap gap-1 mb-3">
+                    <button class="month-tab px-3 py-1 rounded-lg bg-blue-600 text-white text-xs" onclick="showMonthlyRisiko('jan')">Jan</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyRisiko('feb')">Feb</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyRisiko('mar')">Mar</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyRisiko('apr')">Apr</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyRisiko('mei')">Mei</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyRisiko('jun')">Jun</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyRisiko('jul')">Jul</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyRisiko('agu')">Agu</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyRisiko('sep')">Sep</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyRisiko('okt')">Okt</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyRisiko('nov')">Nov</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyRisiko('des')">Des</button>
                 </div>
 
                 <!-- Room Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="risikoGrid">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="risikoGrid">
                     <!-- Ruangan akan diisi oleh JavaScript -->
                 </div>
             </div>
@@ -471,27 +440,38 @@
 
         <!-- Laporan Manajemen Kebakaran -->
         <div id="kebakaran" class="report-content hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-8">Laporan Manajemen Kebakaran</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen Kebakaran</h2>
+                <div class="flex items-center space-x-2 w-full md:w-auto">
+                    <div class="relative w-full md:w-auto">
+                        <input type="text" id="fireSearch" placeholder="Cari ruangan..." class="w-full px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <i class="fas fa-search absolute right-3 top-2 text-gray-400 text-xs"></i>
+                    </div>
+                    <button class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 text-sm">
+                        <i class="fas fa-filter mr-1"></i>Filter
+                    </button>
+                </div>
+            </div>
             
             <!-- Monthly Tabs -->
-            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                <div class="flex flex-wrap gap-2 mb-6">
-                    <button class="month-tab px-4 py-2 rounded-lg bg-red-600 text-white" onclick="showMonthlyKebakaran('jan')">Jan</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKebakaran('feb')">Feb</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKebakaran('mar')">Mar</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKebakaran('apr')">Apr</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKebakaran('mei')">Mei</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKebakaran('jun')">Jun</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKebakaran('jul')">Jul</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKebakaran('agu')">Agu</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKebakaran('sep')">Sep</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKebakaran('okt')">Okt</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKebakaran('nov')">Nov</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKebakaran('des')">Des</button>
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <div class="flex flex-wrap gap-1 mb-3">
+                    <button class="month-tab px-3 py-1 rounded-lg bg-red-600 text-white text-xs" onclick="showMonthlyKebakaran('jan')">Jan</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('feb')">Feb</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('mar')">Mar</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('apr')">Apr</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('mei')">Mei</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('jun')">Jun</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('jul')">Jul</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('agu')">Agu</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('sep')">Sep</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('okt')">Okt</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('nov')">Nov</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('des')">Des</button>
                 </div>
 
                 <!-- Room Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="kebakaranGrid">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="kebakaranGrid">
                     <!-- Ruangan akan diisi oleh JavaScript -->
                 </div>
             </div>
@@ -499,27 +479,38 @@
 
         <!-- Laporan Manajemen Bencana -->
         <div id="bencana" class="report-content hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-8">Laporan Manajemen Bencana</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen Bencana</h2>
+                <div class="flex items-center space-x-2 w-full md:w-auto">
+                    <div class="relative w-full md:w-auto">
+                        <input type="text" id="disasterSearch" placeholder="Cari ruangan..." class="w-full px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <i class="fas fa-search absolute right-3 top-2 text-gray-400 text-xs"></i>
+                    </div>
+                    <button class="bg-purple-600 text-white px-3 py-1 rounded-lg hover:bg-purple-700 text-sm">
+                        <i class="fas fa-filter mr-1"></i>Filter
+                    </button>
+                </div>
+            </div>
             
             <!-- Monthly Tabs -->
-            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                <div class="flex flex-wrap gap-2 mb-6">
-                    <button class="month-tab px-4 py-2 rounded-lg bg-purple-600 text-white" onclick="showMonthlyBencana('jan')">Jan</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyBencana('feb')">Feb</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyBencana('mar')">Mar</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyBencana('apr')">Apr</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyBencana('mei')">Mei</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyBencana('jun')">Jun</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyBencana('jul')">Jul</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyBencana('agu')">Agu</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyBencana('sep')">Sep</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyBencana('okt')">Okt</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyBencana('nov')">Nov</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyBencana('des')">Des</button>
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <div class="flex flex-wrap gap-1 mb-3">
+                    <button class="month-tab px-3 py-1 rounded-lg bg-purple-600 text-white text-xs" onclick="showMonthlyBencana('jan')">Jan</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('feb')">Feb</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('mar')">Mar</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('apr')">Apr</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('mei')">Mei</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('jun')">Jun</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('jul')">Jul</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('agu')">Agu</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('sep')">Sep</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('okt')">Okt</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('nov')">Nov</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('des')">Des</button>
                 </div>
 
                 <!-- Room Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="bencanaGrid">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="bencanaGrid">
                     <!-- Ruangan akan diisi oleh JavaScript -->
                 </div>
             </div>
@@ -527,27 +518,38 @@
 
         <!-- Laporan Manajemen Keamanan -->
         <div id="keamanan" class="report-content hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-8">Laporan Manajemen Keamanan</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen Keamanan</h2>
+                <div class="flex items-center space-x-2 w-full md:w-auto">
+                    <div class="relative w-full md:w-auto">
+                        <input type="text" id="securitySearch" placeholder="Cari ruangan..." class="w-full px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <i class="fas fa-search absolute right-3 top-2 text-gray-400 text-xs"></i>
+                    </div>
+                    <button class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 text-sm">
+                        <i class="fas fa-filter mr-1"></i>Filter
+                    </button>
+                </div>
+            </div>
             
             <!-- Monthly Tabs -->
-            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                <div class="flex flex-wrap gap-2 mb-6">
-                    <button class="month-tab px-4 py-2 rounded-lg bg-green-600 text-white" onclick="showMonthlyKeamanan('jan')">Jan</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKeamanan('feb')">Feb</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKeamanan('mar')">Mar</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKeamanan('apr')">Apr</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKeamanan('mei')">Mei</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKeamanan('jun')">Jun</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKeamanan('jul')">Jul</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKeamanan('agu')">Agu</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKeamanan('sep')">Sep</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKeamanan('okt')">Okt</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKeamanan('nov')">Nov</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyKeamanan('des')">Des</button>
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <div class="flex flex-wrap gap-1 mb-3">
+                    <button class="month-tab px-3 py-1 rounded-lg bg-green-600 text-white text-xs" onclick="showMonthlyKeamanan('jan')">Jan</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('feb')">Feb</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('mar')">Mar</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('apr')">Apr</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('mei')">Mei</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('jun')">Jun</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('jul')">Jul</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('agu')">Agu</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('sep')">Sep</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('okt')">Okt</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('nov')">Nov</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('des')">Des</button>
                 </div>
 
                 <!-- Room Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="keamananGrid">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="keamananGrid">
                     <!-- Ruangan akan diisi oleh JavaScript -->
                 </div>
             </div>
@@ -555,27 +557,38 @@
 
         <!-- Laporan Manajemen B3 -->
         <div id="b3" class="report-content hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-8">Laporan Manajemen B3</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen B3</h2>
+                <div class="flex items-center space-x-2 w-full md:w-auto">
+                    <div class="relative w-full md:w-auto">
+                        <input type="text" id="b3Search" placeholder="Cari ruangan..." class="w-full px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <i class="fas fa-search absolute right-3 top-2 text-gray-400 text-xs"></i>
+                    </div>
+                    <button class="bg-yellow-600 text-white px-3 py-1 rounded-lg hover:bg-yellow-700 text-sm">
+                        <i class="fas fa-filter mr-1"></i>Filter
+                    </button>
+                </div>
+            </div>
             
             <!-- Monthly Tabs -->
-            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                <div class="flex flex-wrap gap-2 mb-6">
-                    <button class="month-tab px-4 py-2 rounded-lg bg-yellow-600 text-white" onclick="showMonthlyB3('jan')">Jan</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyB3('feb')">Feb</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyB3('mar')">Mar</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyB3('apr')">Apr</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyB3('mei')">Mei</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyB3('jun')">Jun</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyB3('jul')">Jul</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyB3('agu')">Agu</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyB3('sep')">Sep</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyB3('okt')">Okt</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyB3('nov')">Nov</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyB3('des')">Des</button>
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <div class="flex flex-wrap gap-1 mb-3">
+                    <button class="month-tab px-3 py-1 rounded-lg bg-yellow-600 text-white text-xs" onclick="showMonthlyB3('jan')">Jan</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('feb')">Feb</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('mar')">Mar</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('apr')">Apr</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('mei')">Mei</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('jun')">Jun</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('jul')">Jul</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('agu')">Agu</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('sep')">Sep</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('okt')">Okt</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('nov')">Nov</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('des')">Des</button>
                 </div>
 
                 <!-- Room Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="b3Grid">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="b3Grid">
                     <!-- Ruangan akan diisi oleh JavaScript -->
                 </div>
             </div>
@@ -583,27 +596,38 @@
 
         <!-- Laporan Manajemen Fasilitas -->
         <div id="fasilitas" class="report-content hidden">
-            <h2 class="text-2xl font-bold text-gray-800 mb-8">Laporan Manajemen Fasilitas</h2>
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen Fasilitas</h2>
+                <div class="flex items-center space-x-2 w-full md:w-auto">
+                    <div class="relative w-full md:w-auto">
+                        <input type="text" id="facilitySearch" placeholder="Cari ruangan..." class="w-full px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <i class="fas fa-search absolute right-3 top-2 text-gray-400 text-xs"></i>
+                    </div>
+                    <button class="bg-indigo-600 text-white px-3 py-1 rounded-lg hover:bg-indigo-700 text-sm">
+                        <i class="fas fa-filter mr-1"></i>Filter
+                    </button>
+                </div>
+            </div>
             
             <!-- Monthly Tabs -->
-            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                <div class="flex flex-wrap gap-2 mb-6">
-                    <button class="month-tab px-4 py-2 rounded-lg bg-indigo-600 text-white" onclick="showMonthlyFasilitas('jan')">Jan</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyFasilitas('feb')">Feb</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyFasilitas('mar')">Mar</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyFasilitas('apr')">Apr</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyFasilitas('mei')">Mei</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyFasilitas('jun')">Jun</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyFasilitas('jul')">Jul</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyFasilitas('agu')">Agu</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyFasilitas('sep')">Sep</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyFasilitas('okt')">Okt</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyFasilitas('nov')">Nov</button>
-                    <button class="month-tab px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300" onclick="showMonthlyFasilitas('des')">Des</button>
+            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
+                <div class="flex flex-wrap gap-1 mb-3">
+                    <button class="month-tab px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs" onclick="showMonthlyFasilitas('jan')">Jan</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('feb')">Feb</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('mar')">Mar</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('apr')">Apr</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('mei')">Mei</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('jun')">Jun</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('jul')">Jul</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('agu')">Agu</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('sep')">Sep</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('okt')">Okt</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('nov')">Nov</button>
+                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('des')">Des</button>
                 </div>
 
                 <!-- Room Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="fasilitasGrid">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="fasilitasGrid">
                     <!-- Ruangan akan diisi oleh JavaScript -->
                 </div>
             </div>
@@ -612,11 +636,11 @@
 
     <!-- Detail Modal -->
     <div id="detailModal" class="detail-modal">
-        <div class="bg-white rounded-xl shadow-2xl p-8 max-w-4xl max-h-[90vh] overflow-y-auto m-4">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold text-gray-800" id="modalTitle">Detail Laporan</h3>
+        <div class="bg-white rounded-xl shadow-2xl p-4 small-modal-content">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-bold text-gray-800" id="modalTitle">Detail Laporan</h3>
                 <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-2xl"></i>
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
             <div id="modalContent">
@@ -626,14 +650,33 @@
     </div>
 
     <!-- Footer -->
-    <footer class="footer-gradient text-white py-6 mt-auto">
+    <footer class="footer-gradient text-white py-4 mt-auto">
         <div class="container mx-auto px-4 text-center">
-            <p>&copy; 2024 RSUD Talaud. Sistem Laporan K3RS</p>
-            <p class="text-xs mt-1 opacity-80">Dikembangkan oleh Jhosua V. Malendes, S.K.M</p>
+            <p class="text-xs">Di kembangkan oleh Jhosua V. Malendes, S.K.M</p>
         </div>
     </footer>
 
     <script>
+        // PIN verification
+        function checkPin() {
+            const pinInput = document.getElementById('pinInput');
+            const blurOverlay = document.getElementById('blurOverlay');
+            
+            if (pinInput.value === '291196') {
+                blurOverlay.style.display = 'none';
+            } else {
+                pinInput.value = '';
+                pinInput.placeholder = 'PIN salah, coba lagi';
+            }
+        }
+        
+        // Allow Enter key to submit PIN
+        document.getElementById('pinInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPin();
+            }
+        });
+
         // Data untuk ruangan-ruangan
         const rooms = [
             'ANGGREK', 'APOTEK/FARMASI', 'BINATU', 'CRYSANT', 'DAHLIA', 
@@ -832,17 +875,17 @@
             ];
 
             let matrixHtml = `
-                <div class="mb-6">
-                    <h4 class="text-lg font-semibold mb-3">Matriks Risiko - ${room}</h4>
+                <div class="mb-4">
+                    <h4 class="text-md font-semibold mb-2">Matriks Risiko - ${room}</h4>
                     <div class="overflow-x-auto">
-                        <table class="min-w-full border-collapse border border-gray-300">
+                        <table class="min-w-full border-collapse border border-gray-300 text-xs">
                             <thead>
                                 <tr class="bg-gray-100">
-                                    <th class="border border-gray-300 px-4 py-2 text-left">Risiko</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-center">Kemungkinan</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-center">Dampak</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-center">Skor Risiko</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-center">Mitigasi</th>
+                                    <th class="border border-gray-300 px-2 py-1 text-left">Risiko</th>
+                                    <th class="border border-gray-300 px-2 py-1 text-center">Kemungkinan</th>
+                                    <th class="border border-gray-300 px-2 py-1 text-center">Dampak</th>
+                                    <th class="border border-gray-300 px-2 py-1 text-center">Skor Risiko</th>
+                                    <th class="border border-gray-300 px-2 py-1 text-center">Mitigasi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -854,13 +897,13 @@
                 
                 matrixHtml += `
                     <tr>
-                        <td class="border border-gray-300 px-4 py-2">${risk.name}</td>
-                        <td class="border border-gray-300 px-4 py-2 text-center">${risk.likelihood}</td>
-                        <td class="border border-gray-300 px-4 py-2 text-center">${risk.impact}</td>
-                        <td class="border border-gray-300 px-4 py-2 text-center">
-                            <span class="px-2 py-1 rounded ${riskColor}">${risk.risk}</span>
+                        <td class="border border-gray-300 px-2 py-1 text-xs">${risk.name}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-center text-xs">${risk.likelihood}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-center text-xs">${risk.impact}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-center text-xs">
+                            <span class="px-1 py-0.5 rounded ${riskColor} text-xs">${risk.risk}</span>
                         </td>
-                        <td class="border border-gray-300 px-4 py-2 text-sm">${mitigasi}</td>
+                        <td class="border border-gray-300 px-2 py-1 text-xs">${mitigasi}</td>
                     </tr>
                 `;
             });
@@ -890,43 +933,43 @@
         // Generate detailed reports
         function generateKebakaranDetail(room, month) {
             return `
-                <div class="space-y-6">
-                    <div class="bg-red-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-red-900 mb-2">Status Kebakaran</h4>
-                        <p class="text-sm text-red-800">Pada bulan ${getMonthName(month)}, ruangan ${room} tidak memiliki AP 2kg, AP 9kg, AP kering, atau alarm kebakaran. Hanya jalur evakuasi yang tersedia.</p>
+                <div class="space-y-4">
+                    <div class="bg-red-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-red-900 mb-1 text-sm">Status Kebakaran</h4>
+                        <p class="text-xs text-red-800">Pada bulan ${getMonthName(month)}, ruangan ${room} tidak memiliki AP 2kg, AP 9kg, AP kering, atau alarm kebakaran. Hanya jalur evakuasi yang tersedia.</p>
                     </div>
                     
                     ${generateRiskMatrix(room, month)}
                     
-                    <div class="space-y-4">
-                        <h4 class="font-semibold text-gray-800">Pemeriksaan Kebakaran</h4>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="border rounded-lg p-3">
-                                <h5 class="font-medium mb-1">AP 2 kg</h5>
-                                <p class="text-sm text-gray-600">0 unit</p>
+                    <div class="space-y-3">
+                        <h4 class="font-semibold text-gray-800 text-sm">Pemeriksaan Kebakaran</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="border rounded-lg p-2">
+                                <h5 class="font-medium mb-1 text-xs">AP 2 kg</h5>
+                                <p class="text-xs text-gray-600">0 unit</p>
                             </div>
-                            <div class="border rounded-lg p-3">
-                                <h5 class="font-medium mb-1">AP 9 kg</h5>
-                                <p class="text-sm text-gray-600">0 unit</p>
+                            <div class="border rounded-lg p-2">
+                                <h5 class="font-medium mb-1 text-xs">AP 9 kg</h5>
+                                <p class="text-xs text-gray-600">0 unit</p>
                             </div>
-                            <div class="border rounded-lg p-3">
-                                <h5 class="font-medium mb-1">AP Kering</h5>
-                                <p class="text-sm text-gray-600">0 unit</p>
+                            <div class="border rounded-lg p-2">
+                                <h5 class="font-medium mb-1 text-xs">AP Kering</h5>
+                                <p class="text-xs text-gray-600">0 unit</p>
                             </div>
-                            <div class="border rounded-lg p-3">
-                                <h5 class="font-medium mb-1">Alarm Kebakaran</h5>
-                                <p class="text-sm text-gray-600">0 unit</p>
+                            <div class="border rounded-lg p-2">
+                                <h5 class="font-medium mb-1 text-xs">Alarm Kebakaran</h5>
+                                <p class="text-xs text-gray-600">0 unit</p>
                             </div>
-                            <div class="border rounded-lg p-3 col-span-2">
-                                <h5 class="font-medium mb-1">Jalur Evakuasi</h5>
-                                <p class="text-sm text-gray-600">1 titik</p>
+                            <div class="border rounded-lg p-2 col-span-2">
+                                <h5 class="font-medium mb-1 text-xs">Jalur Evakuasi</h5>
+                                <p class="text-xs text-gray-600">1 titik</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-2">Rekomendasi</h4>
-                        <ul class="text-sm text-gray-600 space-y-1">
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
+                        <ul class="text-xs text-gray-600 space-y-1">
                             <li>• Segera pasang minimal 1 unit AP 2kg</li>
                             <li>• Pertimbangkan untuk menambahkan AP 9kg</li>
                             <li>• Pasang alarm kebakaran untuk keamanan maksimal</li>
@@ -939,17 +982,17 @@
 
         function generateRisikoDetail(room, month) {
             return `
-                <div class="space-y-6">
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-blue-900 mb-2">Ringkasan Risiko</h4>
-                        <p class="text-sm text-blue-800">Pada bulan ${getMonthName(month)}, ruangan ${room} memiliki ${generateRandomData(1, 5)} risiko aktif yang perlu ditangani.</p>
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-blue-900 mb-1 text-sm">Ringkasan Risiko</h4>
+                        <p class="text-xs text-blue-800">Pada bulan ${getMonthName(month)}, ruangan ${room} memiliki ${generateRandomData(1, 5)} risiko aktif yang perlu ditangani.</p>
                     </div>
                     
                     ${generateRiskMatrix(room, month)}
                     
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-2">Rekomendasi</h4>
-                        <ul class="text-sm text-gray-600 space-y-1">
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
+                        <ul class="text-xs text-gray-600 space-y-1">
                             <li>• Lakukan inspeksi rutin pada ${getMonthName(month + 1)}</li>
                             <li>• Perbarui SOP sesuai standar terbaru</li>
                             <li>• Lakukan pelatihan khusus untuk staff</li>
@@ -961,38 +1004,38 @@
 
         function generateBencanaDetail(room, month) {
             return `
-                <div class="space-y-6">
-                    <div class="bg-purple-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-purple-900 mb-2">Kesiapan Bencana</h4>
-                        <p class="text-sm text-purple-800">Ruangan ${room} siap menghadapi bencana alam dengan tingkat kesiapan ${generateRandomData(60, 95)}%</p>
+                <div class="space-y-4">
+                    <div class="bg-purple-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-purple-900 mb-1 text-sm">Kesiapan Bencana</h4>
+                        <p class="text-xs text-purple-800">Ruangan ${room} siap menghadapi bencana alam dengan tingkat kesiapan ${generateRandomData(60, 95)}%</p>
                     </div>
                     
                     ${generateRiskMatrix(room, month)}
                     
-                    <div class="space-y-4">
-                        <h4 class="font-semibold text-gray-800">Persediaan Darurat</h4>
-                        <div class="grid grid-cols-3 gap-4">
-                            <div class="border rounded-lg p-3 text-center">
-                                <i class="fas fa-first-aid text-2xl text-red-600 mb-2"></i>
-                                <h5 class="font-medium">P3K</h5>
-                                <p class="text-sm text-gray-600">Tidak tersedia</p>
+                    <div class="space-y-3">
+                        <h4 class="font-semibold text-gray-800 text-sm">Persediaan Darurat</h4>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="border rounded-lg p-2 text-center">
+                                <i class="fas fa-first-aid text-xl text-red-600 mb-1"></i>
+                                <h5 class="font-medium text-xs">P3K</h5>
+                                <p class="text-xs text-gray-600">Tidak tersedia</p>
                             </div>
-                            <div class="border rounded-lg p-3 text-center">
-                                <i class="fas fa-tshirt text-2xl text-blue-600 mb-2"></i>
-                                <h5 class="font-medium">Pakaian</h5>
-                                <p class="text-sm text-gray-600">Selalu tersedia</p>
+                            <div class="border rounded-lg p-2 text-center">
+                                <i class="fas fa-tshirt text-xl text-blue-600 mb-1"></i>
+                                <h5 class="font-medium text-xs">Pakaian</h5>
+                                <p class="text-xs text-gray-600">Selalu tersedia</p>
                             </div>
-                            <div class="border rounded-lg p-3 text-center">
-                                <i class="fas fa-utensils text-2xl text-green-600 mb-2"></i>
-                                <h5 class="font-medium">Makanan</h5>
-                                <p class="text-sm text-gray-600">Selalu tersedia</p>
+                            <div class="border rounded-lg p-2 text-center">
+                                <i class="fas fa-utensils text-xl text-green-600 mb-1"></i>
+                                <h5 class="font-medium text-xs">Makanan</h5>
+                                <p class="text-xs text-gray-600">Selalu tersedia</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-2">Prosedur Evakuasi</h4>
-                        <p class="text-sm text-gray-600">Jalur evakuasi telah ditandai dengan jelas. Tim tanggap darurat telah dilatih.</p>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Prosedur Evakuasi</h4>
+                        <p class="text-xs text-gray-600">Jalur evakuasi telah ditandai dengan jelas. Tim tanggap darurat telah dilatih.</p>
                     </div>
                 </div>
             `;
@@ -1000,35 +1043,35 @@
 
         function generateKeamananDetail(room, month) {
             return `
-                <div class="space-y-6">
-                    <div class="bg-green-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-green-900 mb-2">Status Keamanan</h4>
-                        <p class="text-sm text-green-800">Keamanan ruangan ${room} dalam kondisi ${generateRandomData(80, 100)}% baik</p>
+                <div class="space-y-4">
+                    <div class="bg-green-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-green-900 mb-1 text-sm">Status Keamanan</h4>
+                        <p class="text-xs text-green-800">Keamanan ruangan ${room} dalam kondisi ${generateRandomData(80, 100)}% baik</p>
                     </div>
                     
                     ${generateRiskMatrix(room, month)}
                     
-                    <div class="space-y-4">
-                        <h4 class="font-semibold text-gray-800">Sistem Keamanan</h4>
-                        <div class="space-y-3">
-                            <div class="flex justify-between items-center p-3 border rounded-lg">
-                                <span>CCTV</span>
-                                <span class="text-sm text-red-600">Tidak tersedia</span>
+                    <div class="space-y-3">
+                        <h4 class="font-semibold text-gray-800 text-sm">Sistem Keamanan</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center p-2 border rounded-lg">
+                                <span class="text-sm">CCTV</span>
+                                <span class="text-xs text-red-600">Tidak tersedia</span>
                             </div>
-                            <div class="flex justify-between items-center p-3 border rounded-lg">
-                                <span>Access Control</span>
-                                <span class="text-sm text-green-600">Normal</span>
+                            <div class="flex justify-between items-center p-2 border rounded-lg">
+                                <span class="text-sm">Access Control</span>
+                                <span class="text-xs text-green-600">Normal</span>
                             </div>
-                            <div class="flex justify-between items-center p-3 border rounded-lg">
-                                <span>Alarm Keamanan</span>
-                                <span class="text-sm text-red-600">Tidak tersedia</span>
+                            <div class="flex justify-between items-center p-2 border rounded-lg">
+                                <span class="text-sm">Alarm Keamanan</span>
+                                <span class="text-xs text-red-600">Tidak tersedia</span>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-2">Patroli</h4>
-                        <p class="text-sm text-gray-600">Patroli rutin dilakukan setiap hari</p>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Patroli</h4>
+                        <p class="text-xs text-gray-600">Patroli rutin dilakukan setiap hari</p>
                     </div>
                 </div>
             `;
@@ -1036,31 +1079,31 @@
 
         function generateB3Detail(room, month) {
             return `
-                <div class="space-y-6">
-                    <div class="bg-yellow-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-yellow-900 mb-2">Status B3</h4>
-                        <p class="text-sm text-yellow-800">Pengelolaan B3 di ruangan ${room} sesuai standar ${generateRandomData(70, 100)}%</p>
+                <div class="space-y-4">
+                    <div class="bg-yellow-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-yellow-900 mb-1 text-sm">Status B3</h4>
+                        <p class="text-xs text-yellow-800">Pengelolaan B3 di ruangan ${room} sesuai standar ${generateRandomData(70, 100)}%</p>
                     </div>
                     
                     ${generateRiskMatrix(room, month)}
                     
-                    <div class="space-y-4">
-                        <h4 class="font-semibold text-gray-800">Inventaris B3</h4>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="border rounded-lg p-3">
-                                <h5 class="font-medium mb-1">Kimia Beracun</h5>
-                                <p class="text-sm text-gray-600">${generateRandomData(1, 10)} jenis</p>
+                    <div class="space-y-3">
+                        <h4 class="font-semibold text-gray-800 text-sm">Inventaris B3</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="border rounded-lg p-2">
+                                <h5 class="font-medium mb-1 text-xs">Kimia Beracun</h5>
+                                <p class="text-xs text-gray-600">${generateRandomData(1, 10)} jenis</p>
                             </div>
-                            <div class="border rounded-lg p-3">
-                                <h5 class="font-medium mb-1">Radiokatif</h5>
-                                <p class="text-sm text-gray-600">${generateRandomData(0, 3)} jenis</p>
+                            <div class="border rounded-lg p-2">
+                                <h5 class="font-medium mb-1 text-xs">Radiokatif</h5>
+                                <p class="text-xs text-gray-600">${generateRandomData(0, 3)} jenis</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-2">Hasil Temuan</h4>
-                        <p class="text-sm text-gray-600">Semua staf medis sudah membedakan jenis limbah medis dan non medis dengan baik. Proses pengelolaan limbah telah sesuai standar.</p>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Hasil Temuan</h4>
+                        <p class="text-xs text-gray-600">Semua staf medis sudah membedakan jenis limbah medis dan non medis dengan baik. Proses pengelolaan limbah telah sesuai standar.</p>
                     </div>
                 </div>
             `;
@@ -1068,41 +1111,35 @@
 
         function generateFasilitasDetail(room, month) {
             return `
-                <div class="space-y-6">
-                    <div class="bg-indigo-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-indigo-900 mb-2">Status Fasilitas</h4>
-                        <p class="text-sm text-indigo-800">Kondisi fasilitas di ${room} normal dan berfungsi dengan baik</p>
+                <div class="space-y-4">
+                    <div class="bg-indigo-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-indigo-900 mb-1 text-sm">Status Fasilitas</h4>
+                        <p class="text-xs text-indigo-800">Kondisi fasilitas di ${room} normal dan berfungsi dengan baik</p>
                     </div>
                     
                     ${generateRiskMatrix(room, month)}
                     
-                    <div class="space-y-4">
-                        <h4 class="font-semibold text-gray-800">Pemeriksaan Fasilitas</h4>
-                        <div class="space-y-3">
-                            <div class="border rounded-lg p-3">
-                                <div class="flex justify-between items-center">
-                                    <span>AC</span>
-                                    <span class="text-sm text-green-600">Normal</span>
-                                </div>
+                    <div class="space-y-3">
+                        <h4 class="font-semibold text-gray-800 text-sm">Pemeriksaan Fasilitas</h4>
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center p-2 border rounded-lg">
+                                <span class="text-sm">AC</span>
+                                <span class="text-xs text-green-600">Normal</span>
                             </div>
-                            <div class="border rounded-lg p-3">
-                                <div class="flex justify-between items-center">
-                                    <span>Listrik</span>
-                                    <span class="text-sm text-green-600">Normal</span>
-                                </div>
+                            <div class="flex justify-between items-center p-2 border rounded-lg">
+                                <span class="text-sm">Listrik</span>
+                                <span class="text-xs text-green-600">Normal</span>
                             </div>
-                            <div class="border rounded-lg p-3">
-                                <div class="flex justify-between items-center">
-                                    <span>Pipa Air</span>
-                                    <span class="text-sm text-green-600">Normal</span>
-                                </div>
+                            <div class="flex justify-between items-center p-2 border rounded-lg">
+                                <span class="text-sm">Pipa Air</span>
+                                <span class="text-xs text-green-600">Normal</span>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-gray-50 p-4 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-2">Rencana Pemeliharaan</h4>
-                        <p class="text-sm text-gray-600">Pemeliharaan berikutnya pada ${getMonthName(month)} ${generateRandomData(15, 30)}</p>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rencana Pemeliharaan</h4>
+                        <p class="text-xs text-gray-600">Pemeliharaan berikutnya pada ${getMonthName(month)} ${generateRandomData(15, 30)}</p>
                     </div>
                 </div>
             `;
@@ -1114,10 +1151,10 @@
             const grid = document.getElementById('kebakaranGrid');
             
             grid.innerHTML = rooms.map(room => `
-                <div class="room-card bg-white border rounded-lg p-4 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Kebakaran')">
-                    <h4 class="font-semibold text-gray-800 mb-2">${room}</h4>
+                <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Kebakaran')">
+                    <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">Tidak ada AP</span>
+                        <span class="text-xs text-gray-600">Tidak ada AP</span>
                         <span class="text-xs bg-red-100 text-red-800">Perbaatan</span>
                     </div>
                 </div>
@@ -1128,10 +1165,10 @@
             updateMonthTabs('risiko', month);
             const grid = document.getElementById('risikoGrid');
             grid.innerHTML = rooms.map(room => `
-                <div class="room-card bg-white border rounded-lg p-4 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Risiko')">
-                    <h4 class="font-semibold text-gray-800 mb-2">${room}</h4>
+                <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Risiko')">
+                    <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">${generateRandomData(1, 5)} risiko</span>
+                        <span class="text-xs text-gray-600">${generateRandomData(1, 5)} risiko</span>
                         <span class="text-xs ${getRiskColor(getRandomRiskLevel())}">${getRandomRiskLevel()}</span>
                     </div>
                 </div>
@@ -1142,10 +1179,10 @@
             updateMonthTabs('bencana', month);
             const grid = document.getElementById('bencanaGrid');
             grid.innerHTML = rooms.map(room => `
-                <div class="room-card bg-white border rounded-lg p-4 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Bencana')">
-                    <h4 class="font-semibold text-gray-800 mb-2">${room}</h4>
+                <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Bencana')">
+                    <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">${generateRandomData(60, 95)}%</span>
+                        <span class="text-xs text-gray-600">${generateRandomData(60, 95)}%</span>
                         <span class="text-xs bg-purple-100 text-purple-800">Siap</span>
                     </div>
                 </div>
@@ -1156,10 +1193,10 @@
             updateMonthTabs('keamanan', month);
             const grid = document.getElementById('keamananGrid');
             grid.innerHTML = rooms.map(room => `
-                <div class="room-card bg-white border rounded-lg p-4 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Keamanan')">
-                    <h4 class="font-semibold text-gray-800 mb-2">${room}</h4>
+                <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Keamanan')">
+                    <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">${generateRandomData(80, 100)}%</span>
+                        <span class="text-xs text-gray-600">${generateRandomData(80, 100)}%</span>
                         <span class="text-xs bg-green-100 text-green-800">Normal</span>
                     </div>
                 </div>
@@ -1170,10 +1207,10 @@
             updateMonthTabs('b3', month);
             const grid = document.getElementById('b3Grid');
             grid.innerHTML = rooms.map(room => `
-                <div class="room-card bg-white border rounded-lg p-4 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'B3')">
-                    <h4 class="font-semibold text-gray-800 mb-2">${room}</h4>
+                <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'B3')">
+                    <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">${generateRandomData(70, 100)}%</span>
+                        <span class="text-xs text-gray-600">${generateRandomData(70, 100)}%</span>
                         <span class="text-xs bg-yellow-100 text-yellow-800">B3</span>
                     </div>
                 </div>
@@ -1184,10 +1221,10 @@
             updateMonthTabs('fasilitas', month);
             const grid = document.getElementById('fasilitasGrid');
             grid.innerHTML = rooms.map(room => `
-                <div class="room-card bg-white border rounded-lg p-4 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Fasilitas')">
-                    <h4 class="font-semibold text-gray-800 mb-2">${room}</h4>
+                <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Fasilitas')">
+                    <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-600">Normal</span>
+                        <span class="text-xs text-gray-600">Normal</span>
                         <span class="text-xs bg-green-100 text-green-800">Baik</span>
                     </div>
                 </div>
@@ -1222,35 +1259,23 @@
             return levels[Math.floor(Math.random() * levels.length)];
         }
 
-        // PIN verification
-        document.getElementById('verifyPin').addEventListener('click', function() {
-            const pinInput = document.getElementById('pinInput');
-            const pinError = document.getElementById('pinError');
-            const blurOverlay = document.getElementById('blurOverlay');
-            
-            if (pinInput.value === '291196') {
-                blurOverlay.style.display = 'none';
-            } else {
-                pinError.classList.remove('hidden');
-                pinInput.value = '';
-            }
-        });
-
-        // Update time
-        function updateTime() {
+        // Update clock
+        function updateClock() {
             const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
             
-            document.getElementById('currentTime').textContent = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
         }
 
-        // Initialize dashboard and time on load
+        // Initialize clock and update every second
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Initialize dashboard on load
         window.addEventListener('load', () => {
             initTrendChart();
-            updateTime();
-            setInterval(updateTime, 1000);
         });
     </script>
 </body>
