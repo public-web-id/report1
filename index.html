@@ -7,9 +7,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://fpcdn.io/v3/1L3Y8V8X5W9A2C3E6F7G8H9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6.js"></script>
     <style>
         * {
             transition: all 0.3s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            -webkit-touch-callout: none;
+        }
+        
+        body {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         
         .fade-in {
@@ -221,6 +236,7 @@
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             text-align: center;
+            max-width: 90%;
         }
         
         /* Small modal content */
@@ -229,17 +245,290 @@
             max-height: 90vh;
             overflow-y: auto;
         }
+        
+        /* Gallery styles */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+        
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .gallery-item-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-item:hover .gallery-item-info {
+            transform: translateY(0);
+        }
+        
+        .gallery-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+        
+        .filter-btn:hover {
+            background: #f3f4f6;
+        }
+        
+        .filter-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1001;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .image-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .image-modal-content {
+            max-width: 90%;
+            max-height: 90vh;
+            position: relative;
+        }
+        
+        .image-modal img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+        
+        .image-modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        
+        /* Security overlay */
+        .security-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .security-overlay.active {
+            display: flex;
+        }
+        
+        /* Device warning */
+        .device-warning {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 9998;
+            display: none;
+            max-width: 300px;
+        }
+        
+        .device-warning.active {
+            display: block;
+        }
+        
+        /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #securityOverlay, #securityOverlay * {
+                visibility: visible;
+            }
+            #securityOverlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: white;
+                z-index: 99999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
+        }
+        
+        /* New styles for improved UI */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 10002;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .shake-animation {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .tooltip {
+            position: relative;
+        }
+        
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+        
+        .fade-out {
+            animation: fadeOut 0.3s ease-out forwards;
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Security Overlay -->
+    <div id="securityOverlay" class="security-overlay">
+        <i class="fas fa-lock text-6xl mb-4"></i>
+        <h2 class="text-2xl font-bold mb-2">Akses Ditolak</h2>
+        <p>Sistem tidak mengizinkan tangkapan layar atau screenshot untuk menjaga keamanan data.</p>
+        <p class="mt-4 text-sm opacity-80">Silakan tutup halaman ini jika Anda tidak memiliki izin.</p>
+    </div>
+
+    <!-- Device Warning -->
+    <div id="deviceWarning" class="device-warning">
+        <div class="flex items-start">
+            <i class="fas fa-exclamation-triangle mr-2 mt-1"></i>
+            <div>
+                <h4 class="font-semibold">Peringatan Perangkat</h4>
+                <p class="text-sm">Sistem mendeteksi login dari perangkat lain. Sesi ini akan diakhiri.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner mb-4"></div>
+        <p class="text-gray-700">Memuat data...</p>
+    </div>
+
     <!-- Blur Overlay with Pin -->
     <div id="blurOverlay" class="blur-overlay">
         <div class="pin-container">
             <h2 class="text-xl font-bold mb-4">Masukkan PIN untuk Akses</h2>
-            <input type="password" id="pinInput" class="border rounded-lg px-4 py-2 mb-4 w-full" maxlength="6">
-            <button onclick="checkPin()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-                Verifikasi
+            <input type="password" id="pinInput" class="border rounded-lg px-4 py-2 mb-4 w-full" maxlength="6" autocomplete="off">
+            <button onclick="checkPin()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 w-full">
+                <i class="fas fa-check-circle mr-2"></i>Verifikasi
             </button>
+            <p class="text-xs text-gray-500 mt-2">PIN: 291196</p>
+            <div id="pinError" class="text-red-500 text-xs mt-2 hidden">PIN salah. Silakan coba lagi.</div>
         </div>
     </div>
 
@@ -255,13 +544,13 @@
                 <div class="flex flex-wrap items-center justify-between w-full md:w-auto">
                     <div class="flex items-center space-x-2 mb-2 md:mb-0">
                         <span class="text-xs md:text-sm">Tahun: <span id="currentYear">2024</span></span>
-                        <button class="year-btn px-2 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30 text-xs" onclick="setYear(2024)">2024</button>
-                        <button class="year-btn px-2 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30 text-xs" onclick="setYear(2025)">2025</button>
+                        <button class="year-btn tooltip px-2 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30 text-xs" data-tooltip="Tampilkan data 2024" onclick="setYear(2024)">2024</button>
+                        <button class="year-btn tooltip px-2 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30 text-xs" data-tooltip="Tampilkan data 2025" onclick="setYear(2025)">2025</button>
                     </div>
                     
                     <div class="flex items-center space-x-2">
                         <span id="clock" class="text-xs md:text-sm font-mono"></span>
-                        <button class="bg-white bg-opacity-20 px-3 py-1 rounded-lg hover:bg-opacity-30 text-xs md:text-sm relative">
+                        <button class="bg-white bg-opacity-20 px-3 py-1 rounded-lg hover:bg-opacity-30 text-xs md:text-sm relative tooltip" data-tooltip="Lihat notifikasi">
                             <i class="fas fa-user-md mr-1"></i>Tim K3RS/MFK
                             <span class="notification-badge">3</span>
                         </button>
@@ -292,6 +581,9 @@
                     </a></li>
                     <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('fasilitas')">
                         <i class="fas fa-building mr-1"></i>Manajemen Fasilitas
+                    </a></li>
+                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('galeri')">
+                        <i class="fas fa-images mr-1"></i>Galeri Kegiatan
                     </a></li>
                 </ul>
             </nav>
@@ -396,6 +688,25 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Galeri Kegiatan -->
+        <div id="galeri" class="report-content hidden">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">Galeri Kegiatan K3RS</h2>
+            
+            <!-- Filter Buttons -->
+            <div class="gallery-filters">
+                <button class="filter-btn active" onclick="filterGallery('all')">Semua</button>
+                <button class="filter-btn" onclick="filterGallery('kebakaran')">Kebakaran</button>
+                <button class="filter-btn" onclick="filterGallery('bencana')">Bencana</button>
+                <button class="filter-btn" onclick="filterGallery('keamanan')">Keamanan</button>
+                <button class="filter-btn" onclick="filterGallery('fasilitas')">Fasilitas</button>
+            </div>
+            
+            <!-- Gallery Grid -->
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Gallery items will be inserted here -->
             </div>
         </div>
 
@@ -649,24 +960,130 @@
         </div>
     </div>
 
+    <!-- Image Modal -->
+    <div id="imageModal" class="image-modal">
+        <div class="image-modal-content">
+            <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
+            <img id="modalImage" src="" alt="">
+            <div class="text-white text-center mt-4">
+                <p id="modalImageTitle" class="text-lg font-semibold"></p>
+                <p id="modalImageDescription" class="text-sm opacity-80 mt-2"></p>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer-gradient text-white py-4 mt-auto">
         <div class="container mx-auto px-4 text-center">
             <p class="text-xs">Di kembangkan oleh Jhosua V. Malendes, S.K.M</p>
+            <p class="text-xs mt-1">© 2024 Rumah Sakit Umum Daerah Talaud | Jl. Raya Talaud No. 123, Talaud, Sulawesi Utara</p>
         </div>
     </footer>
 
     <script>
-        // PIN verification
+        // Device fingerprinting
+        let deviceFingerprint = '';
+        let sessionValid = false;
+        
+        // Initialize fingerprint
+        async function initFingerprint() {
+            const fp = await FingerprintJS.load();
+            const result = await fp.get();
+            deviceFingerprint = result.visitorId;
+            localStorage.setItem('deviceFingerprint', deviceFingerprint);
+            checkDevice();
+        }
+        
+        // Check device fingerprint
+        function checkDevice() {
+            const storedFingerprint = localStorage.getItem('deviceFingerprint');
+            if (storedFingerprint && storedFingerprint !== deviceFingerprint) {
+                // Device changed
+                showDeviceWarning();
+                setTimeout(() => {
+                    logout();
+                }, 3000);
+            } else {
+                sessionValid = true;
+            }
+        }
+        
+        // Show device warning
+        function showDeviceWarning() {
+            const warning = document.getElementById('deviceWarning');
+            warning.classList.add('active');
+            setTimeout(() => {
+                warning.classList.remove('active');
+            }, 5000);
+        }
+        
+        // Logout function
+        function logout() {
+            sessionValid = false;
+            localStorage.removeItem('sessionValid');
+            document.getElementById('blurOverlay').style.display = 'flex';
+        }
+        
+        // Check for screenshot attempts
+        function preventScreenshot() {
+            // Disable print
+            window.addEventListener('beforeprint', () => {
+                document.getElementById('securityOverlay').classList.add('active');
+            });
+            
+            window.addEventListener('afterprint', () => {
+                document.getElementById('securityOverlay').classList.remove('active');
+            });
+            
+            // Disable keyboard shortcuts for screenshots
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'p') {
+                    e.preventDefault();
+                    document.getElementById('securityOverlay').classList.add('active');
+                    setTimeout(() => {
+                        document.getElementById('securityOverlay').classList.remove('active');
+                    }, 2000);
+                }
+            });
+            
+            // Disable context menu (right-click)
+            document.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+            });
+            
+            // Disable drag and drop
+            document.addEventListener('dragstart', (e) => {
+                e.preventDefault();
+            });
+        }
+        
+        // PIN verification with better validation
         function checkPin() {
             const pinInput = document.getElementById('pinInput');
+            const pinError = document.getElementById('pinError');
             const blurOverlay = document.getElementById('blurOverlay');
+            
+            if (pinInput.value.length !== 6) {
+                pinInput.classList.add('shake-animation');
+                pinError.classList.remove('hidden');
+                setTimeout(() => {
+                    pinInput.classList.remove('shake-animation');
+                }, 500);
+                return;
+            }
             
             if (pinInput.value === '291196') {
                 blurOverlay.style.display = 'none';
+                localStorage.setItem('sessionValid', 'true');
+                sessionValid = true;
+                initFingerprint();
+                pinError.classList.add('hidden');
             } else {
-                pinInput.value = '';
-                pinInput.placeholder = 'PIN salah, coba lagi';
+                pinInput.classList.add('shake-animation');
+                pinError.classList.remove('hidden');
+                setTimeout(() => {
+                    pinInput.classList.remove('shake-animation');
+                }, 500);
             }
         }
         
@@ -676,6 +1093,128 @@
                 checkPin();
             }
         });
+
+        // Gallery data
+        const galleryData = [
+            {
+                id: 1,
+                title: "Inspeksi Kebakaran",
+                description: "Tim K3RS melakukan inspeksi rutin pada sistem kebakaran",
+                category: "kebakaran",
+                image: "https://z-cdn-media.chatglm.cn/files/dbcad338-972d-4d3e-ad22-55a77b631623_image_2025-11-08_10-32-20.jpg?auth_key=1864024247-6006c6c0c8d240d48000abc6410a0b73-0-8a9fdcb30e3a6a5d49095dc2745887b5",
+                date: "08/07/2024"
+            },
+            {
+                id: 2,
+                title: "Kegiatan Evakuasi",
+                description: "Simulasi evakuasi darurat untuk mengantisipasi bencana",
+                category: "bencana",
+                image: "https://z-cdn-media.chatglm.cn/files/3b53d5c8-2fa0-4499-adf3-68bfc6859eae_image_2025-11-08_10-34-45.jpg?auth_key=1864024247-f1736f746b1c48b59a5e0f072728d26c-0-b4a85564e0a39b234c99c2c7af386cb7",
+                date: "08/07/2024"
+            },
+            {
+                id: 3,
+                title: "Pemeriksaan APAR",
+                description: "Pemeriksaan alat pemadam api ringan (APAR) di berbagai lokasi",
+                category: "kebakaran",
+                image: "https://z-cdn-media.chatglm.cn/files/81e22945-66aa-444b-9887-4dc3b54b09cc_Gambar%20WhatsApp%202024-07-09%20pukul%2003.46.38_e05dce3c.jpg?auth_key=1864024247-b7c0fbc8e6ee42ba802ab5d6a843cee9-0-34a239f8c26b1a9f2303dddb1d4f5d77",
+                date: "08/07/2024"
+            },
+            {
+                id: 4,
+                title: "SOP Kebakaran",
+                description: "Pelatihan standar operasional prosedur kebakaran",
+                category: "kebakaran",
+                image: "https://z-cdn-media.chatglm.cn/files/3590e765-d758-4e3c-8b1d-cdf09fc31fcc_Gambar%20WhatsApp%202024-07-09%20pukul%2003.46.39_2aadbb72.jpg?auth_key=1864024247-3207ae00ccfe431084f126a5d899ae07-0-3f5a1fe1c8b19465f27e4af5acc806b7",
+                date: "08/07/2024"
+            },
+            {
+                id: 5,
+                title: "Instalasi Gawat Darurat",
+                description: "Tim K3RS bersama tim medis di instalasi gawat darurat",
+                category: "fasilitas",
+                image: "https://z-cdn-media.chatglm.cn/files/9dece0de-4005-4fc6-81e5-ffeb4f55fd17_Gambar%20WhatsApp%202024-07-09%20pukul%2003.46.39_552b8122.jpg?auth_key=1864024247-70534329ea6743c6bfc93caa214e2929-0-70462578f9bc7c2a55f5886c3aea4866",
+                date: "08/07/2024"
+            },
+            {
+                id: 6,
+                title: "Simulasi Kebakaran",
+                description: "Simulasi penanggulangan kebakaran di area laboratorium",
+                category: "kebakaran",
+                image: "https://z-cdn-media.chatglm.cn/files/1fe7e6d4-f97b-49ba-8d19-be97a462b8ab_Gambar%20WhatsApp%202024-07-09%20pukul%2003.46.42_baedbeec.jpg?auth_key=1864024247-a89c77198f6e43f8b24794a9a40bceab-0-2ed94376c27858bac53522d143f4dcc3",
+                date: "08/07/2024"
+            },
+            {
+                id: 7,
+                title: "Pemeriksaan Keamanan",
+                description: "Tim keamanan melakukan patroli di area kritis",
+                category: "keamanan",
+                image: "https://z-cdn-media.chatglm.cn/files/a0b1ac9c-133f-4c02-a021-3f24b9375626_Gambar%20WhatsApp%202024-07-09%20pukul%2003.46.43_4bb1e586.jpg?auth_key=1864024247-1b05a3f2db8f48a8a3c7b5b219bc48b9-0-ebe994467440e740d0eceaa4f34cea27",
+                date: "08/07/2024"
+            },
+            {
+                id: 8,
+                title: "Tim Tanggap Darurat",
+                description: "Foto bersama tim tanggap darurat RSUD Talaud",
+                category: "bencana",
+                image: "https://z-cdn-media.chatglm.cn/files/deef1b58-a485-4fee-9b45-6b9852628f0f_Gambar%20WhatsApp%202024-07-09%20pukul%2003.46.06_404016de.jpg?auth_key=1864024247-f59bb4c9c7a84537af1a80353ea79082-0-1fd573511b01160e7e54154968f25115",
+                date: "08/07/2024"
+            }
+        ];
+
+        // Initialize gallery
+        function initGallery() {
+            const galleryGrid = document.getElementById('galleryGrid');
+            galleryGrid.innerHTML = galleryData.map(item => `
+                <div class="gallery-item" data-category="${item.category}" onclick="openImageModal(${item.id})">
+                    <img src="${item.image}" alt="${item.title}" loading="lazy">
+                    <div class="gallery-item-info">
+                        <h4 class="font-semibold text-sm">${item.title}</h4>
+                        <p class="text-xs opacity-90">${item.date}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter gallery
+        function filterGallery(category) {
+            const items = document.querySelectorAll('.gallery-item');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            // Update active button
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(category) || 
+                    (category === 'all' && btn.textContent === 'Semua')) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Filter items
+            items.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Open image modal
+        function openImageModal(id) {
+            const item = galleryData.find(g => g.id === id);
+            if (item) {
+                document.getElementById('modalImage').src = item.image;
+                document.getElementById('modalImageTitle').textContent = item.title;
+                document.getElementById('modalImageDescription').textContent = `${item.description} - ${item.date}`;
+                document.getElementById('imageModal').classList.add('active');
+            }
+        }
+
+        // Close image modal
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
 
         // Data untuk ruangan-ruangan
         const rooms = [
@@ -699,14 +1238,22 @@
             currentYear = year;
             document.getElementById('currentYear').textContent = year;
             
+            // Show loading overlay
+            document.getElementById('loadingOverlay').classList.add('active');
+            
             // Update data based on year
-            if (year === 2025) {
-                // Use 2024 data for 2025
-                updateDataFor2025();
-            } else {
-                // Reset to 2024 data
-                updateDataFor2024();
-            }
+            setTimeout(() => {
+                if (year === 2025) {
+                    // Use 2024 data for 2025
+                    updateDataFor2025();
+                } else {
+                    // Reset to 2024 data
+                    updateDataFor2024();
+                }
+                
+                // Hide loading overlay
+                document.getElementById('loadingOverlay').classList.remove('active');
+            }, 1000);
         }
 
         // Update data for 2025 (using 2024 data)
@@ -731,6 +1278,15 @@
 
         // Show report function
         function showReport(reportId) {
+            // Check session validity
+            if (!sessionValid) {
+                logout();
+                return;
+            }
+            
+            // Show loading overlay
+            document.getElementById('loadingOverlay').classList.add('active');
+            
             const reports = document.querySelectorAll('.report-content');
             reports.forEach(report => {
                 report.classList.add('hidden');
@@ -742,6 +1298,8 @@
                 selectedReport.classList.remove('hidden');
                 setTimeout(() => {
                     selectedReport.classList.add('fade-in');
+                    // Hide loading overlay after fade-in
+                    document.getElementById('loadingOverlay').classList.remove('active');
                 }, 10);
             }
 
@@ -754,6 +1312,11 @@
             // Initialize chart for dashboard
             if (reportId === 'dashboard') {
                 initTrendChart();
+            }
+            
+            // Initialize gallery for galeri page
+            if (reportId === 'galeri') {
+                initGallery();
             }
         }
 
@@ -1273,8 +1836,19 @@
         updateClock();
         setInterval(updateClock, 1000);
 
-        // Initialize dashboard on load
+        // Initialize security features
         window.addEventListener('load', () => {
+            // Check if session is valid
+            const sessionValid = localStorage.getItem('sessionValid');
+            if (!sessionValid) {
+                document.getElementById('blurOverlay').style.display = 'flex';
+            } else {
+                sessionValid = true;
+                initFingerprint();
+            }
+            
+            // Initialize security features
+            preventScreenshot();
             initTrendChart();
         });
     </script>
