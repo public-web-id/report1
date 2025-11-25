@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan K3RS/MFK</title>
+    <title>Sistem Monitoring K3RS/MFK</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -232,11 +232,12 @@
         
         .pin-container {
             background: white;
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             text-align: center;
             max-width: 90%;
+            width: 320px;
         }
         
         /* Small modal content */
@@ -495,16 +496,16 @@
         /* PIN input styles */
         .pin-input-container {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         
         .pin-input {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             text-align: center;
-            font-size: 24px;
+            font-size: 20px;
             border: 2px solid #e5e7eb;
             border-radius: 8px;
             transition: all 0.3s ease;
@@ -572,6 +573,27 @@
         .dropdown-item:last-child {
             border-bottom: none;
         }
+        
+        /* Candlestick chart styles */
+        .candlestick-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        /* Responsive header */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 10px;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
@@ -603,7 +625,7 @@
     <!-- Blur Overlay with PIN -->
     <div id="blurOverlay" class="blur-overlay">
         <div class="pin-container">
-            <h2 class="text-xl font-bold mb-4">Masukkan PIN untuk Akses</h2>
+            <h2 class="text-lg font-bold mb-3">Masukkan PIN</h2>
             <div class="pin-input-container">
                 <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 0)">
                 <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 1)">
@@ -622,15 +644,15 @@
     <!-- Header -->
     <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 py-2">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center header-content">
                 <div class="mb-2 md:mb-0">
                     <h1 class="text-lg md:text-xl font-bold cursor-pointer" onclick="showReport('dashboard')">
-                        Laporan K3RS/MFK
+                        Sistem Monitoring K3RS/MFK
                     </h1>
-                    <p class="text-xs md:text-sm opacity-90">Sistem Monitoring K3RS/MFK</p>
+                    <p class="text-xs md:text-sm opacity-90">Rumah Sakit Umum Daerah Talaud</p>
                 </div>
                 
-                <div class="flex items-center space-x-2 w-full md:w-auto">
+                <div class="flex items-center space-x-2 w-full md:w-auto header-right">
                     <div class="time-display">
                         <span id="clock">00:00:00</span>
                     </div>
@@ -735,11 +757,11 @@
                 </div>
             </div>
 
-            <!-- Monthly Trend Chart -->
+            <!-- Candlestick Chart -->
             <div class="bg-white rounded-xl shadow-md p-4 mb-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-3">Tren K3RS Bulanan</h3>
-                <div class="chart-container">
-                    <canvas id="trendChart"></canvas>
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">Tren K3RS Bulanan (Candlestick)</h3>
+                <div class="candlestick-container">
+                    <canvas id="candlestickChart"></canvas>
                 </div>
             </div>
 
@@ -1183,6 +1205,9 @@
                 pinInputs.forEach(input => {
                     input.classList.add('filled');
                 });
+                
+                // Initialize candlestick chart after login
+                initCandlestickChart();
             } else {
                 pinInputs.forEach(input => {
                     input.classList.add('shake-animation');
@@ -1397,37 +1422,69 @@
                 }, 10);
             }
 
-            // Initialize chart for dashboard
-            if (reportId === 'dashboard') {
-                initTrendChart();
-            }
-            
             // Initialize gallery for galeri page
             if (reportId === 'galeri') {
                 initGallery();
             }
         }
 
-        // Initialize trend chart
-        function initTrendChart() {
-            const ctx = document.getElementById('trendChart').getContext('2d');
-            window.trendChart = new Chart(ctx, {
+        // Initialize candlestick chart
+        function initCandlestickChart() {
+            const ctx = document.getElementById('candlestickChart').getContext('2d');
+            
+            // Generate candlestick data
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const complianceData = [];
+            const riskData = [];
+            
+            for (let i = 0; i < 12; i++) {
+                // Generate random compliance data between 70-95%
+                const compliance = 70 + Math.random() * 25;
+                complianceData.push({
+                    x: months[i],
+                    o: compliance - 2,
+                    h: compliance + 2,
+                    l: compliance - 5,
+                    c: compliance
+                });
+                
+                // Generate random risk data between 60-90%
+                const risk = 60 + Math.random() * 30;
+                riskData.push({
+                    x: months[i],
+                    o: risk - 2,
+                    h: risk + 2,
+                    l: risk - 5,
+                    c: risk
+                });
+            }
+            
+            // Create candlestick chart
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-                    datasets: [{
-                        label: 'Kepatuhan K3RS (%)',
-                        data: [82, 84, 85, 83, 86, 87, 88, 87, 89, 88, 87, 89],
-                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
-                        borderColor: 'rgb(59, 130, 246)',
-                        borderWidth: 1
-                    }, {
-                        label: 'Risiko Teridentifikasi (%)',
-                        data: [75, 77, 78, 80, 82, 83, 84, 85, 86, 87, 88, 90],
-                        backgroundColor: 'rgba(239, 68, 68, 0.8)',
-                        borderColor: 'rgb(239, 68, 68)',
-                        borderWidth: 1
-                    }]
+                    datasets: [
+                        {
+                            label: 'Kepatuhan K3RS (%)',
+                            data: complianceData,
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                            borderColor: 'rgb(59, 130, 246)',
+                            borderWidth: 1,
+                            barThickness: 10,
+                            categoryPercentage: 0.8,
+                            barPercentage: 0.9
+                        },
+                        {
+                            label: 'Risiko Teridentifikasi (%)',
+                            data: riskData,
+                            backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                            borderColor: 'rgb(239, 68, 68)',
+                            borderWidth: 1,
+                            barThickness: 10,
+                            categoryPercentage: 0.8,
+                            barPercentage: 0.9
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
@@ -1435,6 +1492,16 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const dataset = context.dataset;
+                                    const index = context.dataIndex;
+                                    const value = context.parsed.y;
+                                    return `${dataset.label}: ${value.toFixed(1)}%`;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -1442,7 +1509,14 @@
                             beginAtZero: true,
                             max: 100,
                             ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                },
                                 stepSize: 20
+                            },
+                            title: {
+                                display: true,
+                                text: 'Persentase (%)'
                             }
                         },
                         x: {
@@ -1933,11 +2007,12 @@
             } else {
                 sessionValid = true;
                 initFingerprint();
+                // Initialize candlestick chart if session is valid
+                initCandlestickChart();
             }
             
             // Initialize security features
             preventScreenshot();
-            initTrendChart();
         });
     </script>
 </body>
