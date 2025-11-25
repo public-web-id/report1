@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Monitoring K3RS/MFK</title>
+    <title>Laporan K3RS/MFK</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -232,19 +232,100 @@
         
         .pin-container {
             background: white;
-            padding: 1.5rem;
+            padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             text-align: center;
             max-width: 90%;
-            width: 320px;
         }
         
-        /* Small modal content */
-        .small-modal-content {
-            max-width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
+        /* PIN input styles */
+        .pin-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .pin-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .pin-input:focus {
+            border-color: #3B82F6;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .pin-input.error {
+            border-color: #EF4444;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        /* Dropdown menu */
+        .dropdown {
+            position: relative;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-item {
+            display: block;
+            padding: 10px 15px;
+            color: #374151;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        
+        .dropdown-item:hover {
+            background: #f3f4f6;
+        }
+        
+        .dropdown-item i {
+            margin-right: 8px;
+            width: 16px;
+        }
+        
+        /* Real-time clock background */
+        .clock-bg {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 14px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
         /* Gallery styles */
@@ -420,7 +501,7 @@
             }
         }
         
-        /* New styles for improved UI */
+        /* Loading overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -447,152 +528,6 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
-        }
-        
-        .shake-animation {
-            animation: shake 0.5s;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        
-        .tooltip {
-            position: relative;
-        }
-        
-        .tooltip::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        
-        .tooltip:hover::after {
-            opacity: 1;
-        }
-        
-        .fade-out {
-            animation: fadeOut 0.3s ease-out forwards;
-        }
-        
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        
-        /* PIN input styles */
-        .pin-input-container {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin-bottom: 16px;
-        }
-        
-        .pin-input {
-            width: 40px;
-            height: 40px;
-            text-align: center;
-            font-size: 20px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        .pin-input:focus {
-            border-color: #3b82f6;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        
-        .pin-input.filled {
-            border-color: #10b981;
-            background-color: #f0fdf4;
-        }
-        
-        /* Time display styles */
-        .time-display {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 5px 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Dropdown menu styles */
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            min-width: 200px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            z-index: 100;
-        }
-        
-        .dropdown-menu.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        
-        .dropdown-item {
-            padding: 10px 15px;
-            border-bottom: 1px solid #f3f4f6;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .dropdown-item:hover {
-            background-color: #f9fafb;
-        }
-        
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-        
-        /* Candlestick chart styles */
-        .candlestick-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-        
-        /* Responsive header */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .header-right {
-                width: 100%;
-                justify-content: space-between;
-                margin-top: 10px;
-            }
         }
     </style>
 </head>
@@ -625,14 +560,14 @@
     <!-- Blur Overlay with PIN -->
     <div id="blurOverlay" class="blur-overlay">
         <div class="pin-container">
-            <h2 class="text-lg font-bold mb-3">Masukkan PIN</h2>
-            <div class="pin-input-container">
-                <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 0)">
-                <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 1)">
-                <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 2)">
-                <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 3)">
-                <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 4)">
-                <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 5)">
+            <h2 class="text-xl font-bold mb-4">Masukkan PIN untuk Akses</h2>
+            <div class="pin-inputs">
+                <input type="password" class="pin-input" maxlength="1" onkeyup="handlePinInput(this, 0)">
+                <input type="password" class="pin-input" maxlength="1" onkeyup="handlePinInput(this, 1)">
+                <input type="password" class="pin-input" maxlength="1" onkeyup="handlePinInput(this, 2)">
+                <input type="password" class="pin-input" maxlength="1" onkeyup="handlePinInput(this, 3)">
+                <input type="password" class="pin-input" maxlength="1" onkeyup="handlePinInput(this, 4)">
+                <input type="password" class="pin-input" maxlength="1" onkeyup="handlePinInput(this, 5)">
             </div>
             <button onclick="checkPin()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 w-full">
                 <i class="fas fa-check-circle mr-2"></i>Verifikasi
@@ -644,60 +579,55 @@
     <!-- Header -->
     <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 py-2">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center header-content">
-                <div class="mb-2 md:mb-0">
-                    <h1 class="text-lg md:text-xl font-bold cursor-pointer" onclick="showReport('dashboard')">
-                        Sistem Monitoring K3RS/MFK
-                    </h1>
-                    <p class="text-xs md:text-sm opacity-90">Rumah Sakit Umum Daerah Talaud</p>
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-2 md:mb-0 cursor-pointer" onclick="showReport('dashboard')">
+                    <h1 class="text-lg md:text-xl font-bold">Laporan K3RS/MFK</h1>
                 </div>
                 
-                <div class="flex items-center space-x-2 w-full md:w-auto header-right">
-                    <div class="time-display">
-                        <span id="clock">00:00:00</span>
+                <div class="flex items-center space-x-4">
+                    <div class="clock-bg">
+                        <span id="clock"></span>
                     </div>
                     
-                    <div class="relative">
-                        <button class="bg-white bg-opacity-20 px-3 py-1 rounded-lg hover:bg-opacity-30 text-xs md:text-sm relative flex items-center gap-2" onclick="toggleDropdown()">
-                            <i class="fas fa-ellipsis-v"></i>
-                            <span class="hidden md:inline">Menu</span>
-                            <span class="notification-badge">3</span>
-                        </button>
-                        
-                        <div id="dropdownMenu" class="dropdown-menu">
-                            <div class="dropdown-item" onclick="showReport('dashboard')">
-                                <i class="fas fa-tachometer-alt"></i>
-                                <span>Dashboard</span>
-                            </div>
-                            <div class="dropdown-item" onclick="showReport('risiko')">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <span>Manajemen Risiko</span>
-                            </div>
-                            <div class="dropdown-item" onclick="showReport('kebakaran')">
-                                <i class="fas fa-fire"></i>
-                                <span>Manajemen Kebakaran</span>
-                            </div>
-                            <div class="dropdown-item" onclick="showReport('bencana')">
-                                <i class="fas fa-cloud-showers-heavy"></i>
-                                <span>Manajemen Bencana</span>
-                            </div>
-                            <div class="dropdown-item" onclick="showReport('keamanan')">
-                                <i class="fas fa-shield-alt"></i>
-                                <span>Manajemen Keamanan</span>
-                            </div>
-                            <div class="dropdown-item" onclick="showReport('b3')">
-                                <i class="fas fa-flask"></i>
-                                <span>Manajemen B3</span>
-                            </div>
-                            <div class="dropdown-item" onclick="showReport('fasilitas')">
-                                <i class="fas fa-building"></i>
-                                <span>Manajemen Fasilitas</span>
-                            </div>
-                            <div class="dropdown-item" onclick="showReport('galeri')">
-                                <i class="fas fa-images"></i>
-                                <span>Galeri Kegiatan</span>
+                    <div class="flex items-center space-x-2">
+                        <div class="dropdown">
+                            <button class="bg-white bg-opacity-20 px-3 py-1 rounded-lg hover:bg-opacity-30 text-sm relative flex items-center" onclick="toggleDropdown()">
+                                <i class="fas fa-ellipsis-v mr-1"></i>
+                                <span class="hidden sm:inline">Menu</span>
+                                <span class="notification-badge">3</span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a href="#" class="dropdown-item" onclick="showReport('dashboard')">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
+                                <a href="#" class="dropdown-item" onclick="showReport('risiko')">
+                                    <i class="fas fa-exclamation-triangle"></i> Manajemen Risiko
+                                </a>
+                                <a href="#" class="dropdown-item" onclick="showReport('kebakaran')">
+                                    <i class="fas fa-fire"></i> Manajemen Kebakaran
+                                </a>
+                                <a href="#" class="dropdown-item" onclick="showReport('bencana')">
+                                    <i class="fas fa-cloud-showers-heavy"></i> Manajemen Bencana
+                                </a>
+                                <a href="#" class="dropdown-item" onclick="showReport('keamanan')">
+                                    <i class="fas fa-shield-alt"></i> Manajemen Keamanan
+                                </a>
+                                <a href="#" class="dropdown-item" onclick="showReport('b3')">
+                                    <i class="fas fa-flask"></i> Manajemen B3
+                                </a>
+                                <a href="#" class="dropdown-item" onclick="showReport('fasilitas')">
+                                    <i class="fas fa-building"></i> Manajemen Fasilitas
+                                </a>
+                                <a href="#" class="dropdown-item" onclick="showReport('galeri')">
+                                    <i class="fas fa-images"></i> Galeri Kegiatan
+                                </a>
                             </div>
                         </div>
+                        
+                        <button class="bg-white bg-opacity-20 px-3 py-1 rounded-lg hover:bg-opacity-30 text-sm relative tooltip" data-tooltip="Lihat notifikasi">
+                            <i class="fas fa-user-md"></i> Tim K3RS/MFK
+                            <span class="notification-badge">3</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -757,11 +687,11 @@
                 </div>
             </div>
 
-            <!-- Candlestick Chart -->
+            <!-- Monthly Trend Chart - Visible on main page -->
             <div class="bg-white rounded-xl shadow-md p-4 mb-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-3">Tren K3RS Bulanan (Candlestick)</h3>
-                <div class="candlestick-container">
-                    <canvas id="candlestickChart"></canvas>
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">Tren K3RS Bulanan</h3>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
                 </div>
             </div>
 
@@ -1171,25 +1101,51 @@
             });
         }
         
-        // PIN verification with better validation
+        // PIN input handling
+        function handlePinInput(input, index) {
+            // Move to next input
+            if (input.value.length === 1 && index < 5) {
+                const nextInput = input.parentElement.children[index + 1];
+                nextInput.focus();
+            }
+            
+            // Move to previous input on backspace
+            if (input.value === '' && index > 0) {
+                const prevInput = input.parentElement.children[index - 1];
+                prevInput.focus();
+            }
+            
+            // Check if all inputs are filled
+            checkAllInputsFilled();
+        }
+        
+        // Check if all PIN inputs are filled
+        function checkAllInputsFilled() {
+            const inputs = document.querySelectorAll('.pin-input');
+            const allFilled = Array.from(inputs).every(input => input.value.length === 1);
+            
+            if (allFilled) {
+                // Auto-submit when all inputs are filled
+                checkPin();
+            }
+        }
+        
+        // PIN verification
         function checkPin() {
-            const pinInputs = document.querySelectorAll('.pin-input');
+            const inputs = document.querySelectorAll('.pin-input');
             const pinError = document.getElementById('pinError');
             const blurOverlay = document.getElementById('blurOverlay');
             
+            // Get PIN value
             let pinValue = '';
-            pinInputs.forEach(input => {
+            inputs.forEach(input => {
                 pinValue += input.value;
             });
             
             if (pinValue.length !== 6) {
-                pinInputs.forEach(input => {
-                    input.classList.add('shake-animation');
-                });
+                inputs.forEach(input => input.classList.add('error'));
                 setTimeout(() => {
-                    pinInputs.forEach(input => {
-                        input.classList.remove('shake-animation');
-                    });
+                    inputs.forEach(input => input.classList.remove('error'));
                 }, 500);
                 return;
             }
@@ -1200,55 +1156,29 @@
                 sessionValid = true;
                 initFingerprint();
                 pinError.classList.add('hidden');
-                
-                // Mark filled inputs
-                pinInputs.forEach(input => {
-                    input.classList.add('filled');
-                });
-                
-                // Initialize candlestick chart after login
-                initCandlestickChart();
             } else {
-                pinInputs.forEach(input => {
-                    input.classList.add('shake-animation');
-                });
-                setTimeout(() => {
-                    pinInputs.forEach(input => {
-                        input.classList.remove('shake-animation');
-                    });
-                }, 500);
+                inputs.forEach(input => input.classList.add('error'));
                 pinError.classList.remove('hidden');
-            }
-        }
-        
-        // Move to next PIN input
-        function moveToNext(current, index) {
-            if (current.value.length === 1 && index < 5) {
-                const nextInput = document.querySelectorAll('.pin-input')[index + 1];
-                nextInput.focus();
-            }
-            
-            // Check if all inputs are filled
-            const allInputs = document.querySelectorAll('.pin-input');
-            const allFilled = Array.from(allInputs).every(input => input.value.length === 1);
-            
-            if (allFilled) {
-                checkPin();
+                setTimeout(() => {
+                    inputs.forEach(input => {
+                        input.value = '';
+                        input.classList.remove('error');
+                    });
+                    inputs[0].focus();
+                }, 500);
             }
         }
         
         // Toggle dropdown menu
         function toggleDropdown() {
-            const dropdown = document.getElementById('dropdownMenu');
+            const dropdown = document.querySelector('.dropdown');
             dropdown.classList.toggle('active');
         }
         
         // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('dropdownMenu');
-            const button = event.target.closest('button');
-            
-            if (!button || !button.onclick || button.onclick.toString().indexOf('toggleDropdown') === -1) {
+        document.addEventListener('click', (e) => {
+            const dropdown = document.querySelector('.dropdown');
+            if (!dropdown.contains(e.target)) {
                 dropdown.classList.remove('active');
             }
         });
@@ -1401,7 +1331,7 @@
             }
             
             // Close dropdown menu
-            document.getElementById('dropdownMenu').classList.remove('active');
+            document.querySelector('.dropdown').classList.remove('active');
             
             // Show loading overlay
             document.getElementById('loadingOverlay').classList.add('active');
@@ -1422,69 +1352,37 @@
                 }, 10);
             }
 
+            // Initialize chart for dashboard
+            if (reportId === 'dashboard') {
+                initTrendChart();
+            }
+            
             // Initialize gallery for galeri page
             if (reportId === 'galeri') {
                 initGallery();
             }
         }
 
-        // Initialize candlestick chart
-        function initCandlestickChart() {
-            const ctx = document.getElementById('candlestickChart').getContext('2d');
-            
-            // Generate candlestick data
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            const complianceData = [];
-            const riskData = [];
-            
-            for (let i = 0; i < 12; i++) {
-                // Generate random compliance data between 70-95%
-                const compliance = 70 + Math.random() * 25;
-                complianceData.push({
-                    x: months[i],
-                    o: compliance - 2,
-                    h: compliance + 2,
-                    l: compliance - 5,
-                    c: compliance
-                });
-                
-                // Generate random risk data between 60-90%
-                const risk = 60 + Math.random() * 30;
-                riskData.push({
-                    x: months[i],
-                    o: risk - 2,
-                    h: risk + 2,
-                    l: risk - 5,
-                    c: risk
-                });
-            }
-            
-            // Create candlestick chart
-            new Chart(ctx, {
+        // Initialize trend chart with short columns
+        function initTrendChart() {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            window.trendChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    datasets: [
-                        {
-                            label: 'Kepatuhan K3RS (%)',
-                            data: complianceData,
-                            backgroundColor: 'rgba(59, 130, 246, 0.8)',
-                            borderColor: 'rgb(59, 130, 246)',
-                            borderWidth: 1,
-                            barThickness: 10,
-                            categoryPercentage: 0.8,
-                            barPercentage: 0.9
-                        },
-                        {
-                            label: 'Risiko Teridentifikasi (%)',
-                            data: riskData,
-                            backgroundColor: 'rgba(239, 68, 68, 0.8)',
-                            borderColor: 'rgb(239, 68, 68)',
-                            borderWidth: 1,
-                            barThickness: 10,
-                            categoryPercentage: 0.8,
-                            barPercentage: 0.9
-                        }
-                    ]
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                    datasets: [{
+                        label: 'Kepatuhan K3RS (%)',
+                        data: [82, 84, 85, 83, 86, 87, 88, 87, 89, 88, 87, 89],
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                        borderColor: 'rgb(59, 130, 246)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Risiko Teridentifikasi (%)',
+                        data: [75, 77, 78, 80, 82, 83, 84, 85, 86, 87, 88, 90],
+                        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                        borderColor: 'rgb(239, 68, 68)',
+                        borderWidth: 1
+                    }]
                 },
                 options: {
                     responsive: true,
@@ -1496,10 +1394,7 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    const dataset = context.dataset;
-                                    const index = context.dataIndex;
-                                    const value = context.parsed.y;
-                                    return `${dataset.label}: ${value.toFixed(1)}%`;
+                                    return context.dataset.label + ': ' + context.parsed.y + '%';
                                 }
                             }
                         }
@@ -1513,10 +1408,6 @@
                                     return value + '%';
                                 },
                                 stepSize: 20
-                            },
-                            title: {
-                                display: true,
-                                text: 'Persentase (%)'
                             }
                         },
                         x: {
@@ -2007,12 +1898,11 @@
             } else {
                 sessionValid = true;
                 initFingerprint();
-                // Initialize candlestick chart if session is valid
-                initCandlestickChart();
             }
             
             // Initialize security features
             preventScreenshot();
+            initTrendChart();
         });
     </script>
 </body>
