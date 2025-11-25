@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Laporan K3RS RSUD Talaud</title>
+    <title>Laporan K3RS/MFK</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -113,7 +113,7 @@
         
         .chart-container {
             position: relative;
-            height: 200px;
+            height: 300px;
             width: 100%;
         }
         
@@ -491,6 +491,87 @@
             from { opacity: 1; }
             to { opacity: 0; }
         }
+        
+        /* PIN input styles */
+        .pin-input-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .pin-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .pin-input:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .pin-input.filled {
+            border-color: #10b981;
+            background-color: #f0fdf4;
+        }
+        
+        /* Time display styles */
+        .time-display {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Dropdown menu styles */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f9fafb;
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
@@ -519,15 +600,21 @@
         <p class="text-gray-700">Memuat data...</p>
     </div>
 
-    <!-- Blur Overlay with Pin -->
+    <!-- Blur Overlay with PIN -->
     <div id="blurOverlay" class="blur-overlay">
         <div class="pin-container">
             <h2 class="text-xl font-bold mb-4">Masukkan PIN untuk Akses</h2>
-            <input type="password" id="pinInput" class="border rounded-lg px-4 py-2 mb-4 w-full" maxlength="6" autocomplete="off">
+            <div class="pin-input-container">
+                <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 0)">
+                <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 1)">
+                <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 2)">
+                <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 3)">
+                <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 4)">
+                <input type="password" class="pin-input" maxlength="1" onkeyup="moveToNext(this, 5)">
+            </div>
             <button onclick="checkPin()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 w-full">
                 <i class="fas fa-check-circle mr-2"></i>Verifikasi
             </button>
-            <p class="text-xs text-gray-500 mt-2">PIN: 291196</p>
             <div id="pinError" class="text-red-500 text-xs mt-2 hidden">PIN salah. Silakan coba lagi.</div>
         </div>
     </div>
@@ -537,56 +624,61 @@
         <div class="container mx-auto px-4 py-2">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
                 <div class="mb-2 md:mb-0">
-                    <h1 class="text-lg md:text-xl font-bold">RSUD Talaud</h1>
-                    <p class="text-xs md:text-sm opacity-90">Sistem Laporan K3RS</p>
+                    <h1 class="text-lg md:text-xl font-bold cursor-pointer" onclick="showReport('dashboard')">
+                        Laporan K3RS/MFK
+                    </h1>
+                    <p class="text-xs md:text-sm opacity-90">Sistem Monitoring K3RS/MFK</p>
                 </div>
                 
-                <div class="flex flex-wrap items-center justify-between w-full md:w-auto">
-                    <div class="flex items-center space-x-2 mb-2 md:mb-0">
-                        <span class="text-xs md:text-sm">Tahun: <span id="currentYear">2024</span></span>
-                        <button class="year-btn tooltip px-2 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30 text-xs" data-tooltip="Tampilkan data 2024" onclick="setYear(2024)">2024</button>
-                        <button class="year-btn tooltip px-2 py-1 rounded-md bg-white bg-opacity-20 hover:bg-opacity-30 text-xs" data-tooltip="Tampilkan data 2025" onclick="setYear(2025)">2025</button>
+                <div class="flex items-center space-x-2 w-full md:w-auto">
+                    <div class="time-display">
+                        <span id="clock">00:00:00</span>
                     </div>
                     
-                    <div class="flex items-center space-x-2">
-                        <span id="clock" class="text-xs md:text-sm font-mono"></span>
-                        <button class="bg-white bg-opacity-20 px-3 py-1 rounded-lg hover:bg-opacity-30 text-xs md:text-sm relative tooltip" data-tooltip="Lihat notifikasi">
-                            <i class="fas fa-user-md mr-1"></i>Tim K3RS/MFK
+                    <div class="relative">
+                        <button class="bg-white bg-opacity-20 px-3 py-1 rounded-lg hover:bg-opacity-30 text-xs md:text-sm relative flex items-center gap-2" onclick="toggleDropdown()">
+                            <i class="fas fa-ellipsis-v"></i>
+                            <span class="hidden md:inline">Menu</span>
                             <span class="notification-badge">3</span>
                         </button>
+                        
+                        <div id="dropdownMenu" class="dropdown-menu">
+                            <div class="dropdown-item" onclick="showReport('dashboard')">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Dashboard</span>
+                            </div>
+                            <div class="dropdown-item" onclick="showReport('risiko')">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <span>Manajemen Risiko</span>
+                            </div>
+                            <div class="dropdown-item" onclick="showReport('kebakaran')">
+                                <i class="fas fa-fire"></i>
+                                <span>Manajemen Kebakaran</span>
+                            </div>
+                            <div class="dropdown-item" onclick="showReport('bencana')">
+                                <i class="fas fa-cloud-showers-heavy"></i>
+                                <span>Manajemen Bencana</span>
+                            </div>
+                            <div class="dropdown-item" onclick="showReport('keamanan')">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Manajemen Keamanan</span>
+                            </div>
+                            <div class="dropdown-item" onclick="showReport('b3')">
+                                <i class="fas fa-flask"></i>
+                                <span>Manajemen B3</span>
+                            </div>
+                            <div class="dropdown-item" onclick="showReport('fasilitas')">
+                                <i class="fas fa-building"></i>
+                                <span>Manajemen Fasilitas</span>
+                            </div>
+                            <div class="dropdown-item" onclick="showReport('galeri')">
+                                <i class="fas fa-images"></i>
+                                <span>Galeri Kegiatan</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Navigation in Header -->
-            <nav class="mt-2">
-                <ul class="flex flex-wrap gap-2 md:gap-4">
-                    <li><a href="#" class="nav-item active text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('dashboard')">
-                        <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
-                    </a></li>
-                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('risiko')">
-                        <i class="fas fa-exclamation-triangle mr-1"></i>Manajemen Risiko
-                    </a></li>
-                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('kebakaran')">
-                        <i class="fas fa-fire mr-1"></i>Manajemen Kebakaran
-                    </a></li>
-                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('bencana')">
-                        <i class="fas fa-cloud-showers-heavy mr-1"></i>Manajemen Bencana
-                    </a></li>
-                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('keamanan')">
-                        <i class="fas fa-shield-alt mr-1"></i>Manajemen Keamanan
-                    </a></li>
-                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('b3')">
-                        <i class="fas fa-flask mr-1"></i>Manajemen B3
-                    </a></li>
-                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('fasilitas')">
-                        <i class="fas fa-building mr-1"></i>Manajemen Fasilitas
-                    </a></li>
-                    <li><a href="#" class="nav-item text-white hover:text-blue-200 font-medium text-xs md:text-sm py-1" onclick="showReport('galeri')">
-                        <i class="fas fa-images mr-1"></i>Galeri Kegiatan
-                    </a></li>
-                </ul>
-            </nav>
         </div>
     </header>
 
@@ -594,7 +686,7 @@
     <main class="container mx-auto px-4 py-6 flex-grow">
         <!-- Dashboard -->
         <div id="dashboard" class="report-content fade-in">
-            <h2 class="text-xl font-bold text-gray-800 mb-6">Dashboard K3RS RSUD Talaud</h2>
+            <h2 class="text-xl font-bold text-gray-800 mb-6">Dashboard K3RS/MFK</h2>
             
             <!-- Summary Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -643,7 +735,7 @@
                 </div>
             </div>
 
-            <!-- Monthly Trend Chart - Short Columns -->
+            <!-- Monthly Trend Chart -->
             <div class="bg-white rounded-xl shadow-md p-4 mb-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-3">Tren K3RS Bulanan</h3>
                 <div class="chart-container">
@@ -976,7 +1068,7 @@
     <footer class="footer-gradient text-white py-4 mt-auto">
         <div class="container mx-auto px-4 text-center">
             <p class="text-xs">Di kembangkan oleh Jhosua V. Malendes, S.K.M</p>
-            <p class="text-xs mt-1">© 2024 Rumah Sakit Umum Daerah Talaud | Jl. Raya Talaud No. 123, Talaud, Sulawesi Utara</p>
+            <p class="text-xs mt-1">© 2024 Rumah Sakit Umum Daerah Talaud | Jln. Raya Mala-Melonguane, Talaud, Sulawesi Utara</p>
         </div>
     </footer>
 
@@ -1059,38 +1151,80 @@
         
         // PIN verification with better validation
         function checkPin() {
-            const pinInput = document.getElementById('pinInput');
+            const pinInputs = document.querySelectorAll('.pin-input');
             const pinError = document.getElementById('pinError');
             const blurOverlay = document.getElementById('blurOverlay');
             
-            if (pinInput.value.length !== 6) {
-                pinInput.classList.add('shake-animation');
-                pinError.classList.remove('hidden');
+            let pinValue = '';
+            pinInputs.forEach(input => {
+                pinValue += input.value;
+            });
+            
+            if (pinValue.length !== 6) {
+                pinInputs.forEach(input => {
+                    input.classList.add('shake-animation');
+                });
                 setTimeout(() => {
-                    pinInput.classList.remove('shake-animation');
+                    pinInputs.forEach(input => {
+                        input.classList.remove('shake-animation');
+                    });
                 }, 500);
                 return;
             }
             
-            if (pinInput.value === '291196') {
+            if (pinValue === '291196') {
                 blurOverlay.style.display = 'none';
                 localStorage.setItem('sessionValid', 'true');
                 sessionValid = true;
                 initFingerprint();
                 pinError.classList.add('hidden');
+                
+                // Mark filled inputs
+                pinInputs.forEach(input => {
+                    input.classList.add('filled');
+                });
             } else {
-                pinInput.classList.add('shake-animation');
-                pinError.classList.remove('hidden');
+                pinInputs.forEach(input => {
+                    input.classList.add('shake-animation');
+                });
                 setTimeout(() => {
-                    pinInput.classList.remove('shake-animation');
+                    pinInputs.forEach(input => {
+                        input.classList.remove('shake-animation');
+                    });
                 }, 500);
+                pinError.classList.remove('hidden');
             }
         }
         
-        // Allow Enter key to submit PIN
-        document.getElementById('pinInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
+        // Move to next PIN input
+        function moveToNext(current, index) {
+            if (current.value.length === 1 && index < 5) {
+                const nextInput = document.querySelectorAll('.pin-input')[index + 1];
+                nextInput.focus();
+            }
+            
+            // Check if all inputs are filled
+            const allInputs = document.querySelectorAll('.pin-input');
+            const allFilled = Array.from(allInputs).every(input => input.value.length === 1);
+            
+            if (allFilled) {
                 checkPin();
+            }
+        }
+        
+        // Toggle dropdown menu
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdownMenu');
+            dropdown.classList.toggle('active');
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('dropdownMenu');
+            const button = event.target.closest('button');
+            
+            if (!button || !button.onclick || button.onclick.toString().indexOf('toggleDropdown') === -1) {
+                dropdown.classList.remove('active');
             }
         });
 
@@ -1233,49 +1367,6 @@
         // Current year
         let currentYear = 2024;
 
-        // Set year function
-        function setYear(year) {
-            currentYear = year;
-            document.getElementById('currentYear').textContent = year;
-            
-            // Show loading overlay
-            document.getElementById('loadingOverlay').classList.add('active');
-            
-            // Update data based on year
-            setTimeout(() => {
-                if (year === 2025) {
-                    // Use 2024 data for 2025
-                    updateDataFor2025();
-                } else {
-                    // Reset to 2024 data
-                    updateDataFor2024();
-                }
-                
-                // Hide loading overlay
-                document.getElementById('loadingOverlay').classList.remove('active');
-            }, 1000);
-        }
-
-        // Update data for 2025 (using 2024 data)
-        function updateDataFor2025() {
-            // Update chart data for 2025
-            if (window.trendChart) {
-                window.trendChart.data.datasets[0].data = [85, 86, 87, 88, 89, 90, 91, 92, 93, 92, 91, 94];
-                window.trendChart.data.datasets[1].data = [80, 82, 84, 85, 87, 88, 89, 90, 91, 92, 93, 95];
-                window.trendChart.update();
-            }
-        }
-
-        // Update data for 2024
-        function updateDataFor2024() {
-            // Update chart data for 2024
-            if (window.trendChart) {
-                window.trendChart.data.datasets[0].data = [82, 84, 85, 83, 86, 87, 88, 87, 89, 88, 87, 89];
-                window.trendChart.data.datasets[1].data = [75, 77, 78, 80, 82, 83, 84, 85, 86, 87, 88, 90];
-                window.trendChart.update();
-            }
-        }
-
         // Show report function
         function showReport(reportId) {
             // Check session validity
@@ -1283,6 +1374,9 @@
                 logout();
                 return;
             }
+            
+            // Close dropdown menu
+            document.getElementById('dropdownMenu').classList.remove('active');
             
             // Show loading overlay
             document.getElementById('loadingOverlay').classList.add('active');
@@ -1303,12 +1397,6 @@
                 }, 10);
             }
 
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.closest('.nav-item').classList.add('active');
-
             // Initialize chart for dashboard
             if (reportId === 'dashboard') {
                 initTrendChart();
@@ -1320,7 +1408,7 @@
             }
         }
 
-        // Initialize trend chart with short columns
+        // Initialize trend chart
         function initTrendChart() {
             const ctx = document.getElementById('trendChart').getContext('2d');
             window.trendChart = new Chart(ctx, {
