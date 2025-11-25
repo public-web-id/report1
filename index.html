@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan K3RS/MFK</title>
+    <title>K3RS/MFK</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -395,6 +395,98 @@
             20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
         
+        /* Opening animation */
+        .opening-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        
+        .opening-logo {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            animation: logoAnimation 1s ease-in-out;
+        }
+        
+        @keyframes logoAnimation {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+            100% { transform: scale(1) rotate(360deg); opacity: 1; }
+        }
+        
+        .opening-text {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            animation: textAnimation 1s ease-in-out;
+        }
+        
+        @keyframes textAnimation {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        .opening-progress {
+            width: 200px;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+        
+        .opening-progress-bar {
+            height: 100%;
+            background-color: white;
+            width: 0%;
+            animation: progressAnimation 10s linear;
+        }
+        
+        @keyframes progressAnimation {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        
+        /* Page transition animation */
+        .page-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .page-transition.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .page-transition-content {
+            text-align: center;
+            color: white;
+        }
+        
+        .page-transition-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            animation: slideIn 0.5s ease-out;
+        }
+        
         /* Print prevention */
         @media print {
             body * {
@@ -469,15 +561,58 @@
             color: white;
             border-color: #3b82f6;
         }
+        
+        /* Warning animations */
+        .warning-danger {
+            color: #EF4444;
+            font-weight: bold;
+            animation: dangerPulse 1.5s infinite;
+        }
+        
+        @keyframes dangerPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Summary animations */
+        .summary-card {
+            animation: slideInUp 0.8s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Opening Overlay -->
+    <div id="openingOverlay" class="opening-overlay">
+        <div class="opening-logo">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <div class="opening-text">K3RS/MFK</div>
+        <div class="opening-text text-sm">Rumah Sakit Umum Daerah Talaud</div>
+        <div class="opening-progress">
+            <div class="opening-progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Page Transition Overlay -->
+    <div id="pageTransition" class="page-transition">
+        <div class="page-transition-content">
+            <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
+            <h3 class="page-transition-title" id="transitionTitle">Memuat...</h3>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4 py-2">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
                 <div class="mb-2 md:mb-0 cursor-pointer" onclick="showReport('dashboard')">
-                    <h1 class="text-lg md:text-xl font-bold">Laporan K3RS/MFK</h1>
+                    <h1 class="text-lg md:text-xl font-bold">K3RS/MFK</h1>
                     <p class="text-xs md:text-sm opacity-90">Rumah Sakit Umum Daerah Talaud</p>
                 </div>
                 
@@ -579,6 +714,29 @@
                     </div>
                     <h3 class="text-xl font-bold text-gray-800">89%</h3>
                     <p class="text-xs text-gray-600 mt-1">Fasilitas baik</p>
+                </div>
+            </div>
+
+            <!-- Summary Findings -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-white rounded-xl shadow-md p-4 summary-card">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Ringkasan Temuan Tahunan</h3>
+                    <p class="text-sm text-gray-600">
+                        Berdasarkan inspeksi selama setahun, teridentifikasi 156 risiko aktif di 24 ruangan. 
+                        Kategori terbanyak adalah keamanan dengan tingkat kepatuhan 94%, diikuti kebakaran 91% 
+                        dan fasilitas 89%. Ruangan dengan risiko tertinggi adalah IGD dengan 18 risiko, ICU dengan 15 risiko, 
+                        dan Laboratorium dengan 12 risiko. 
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-md p-4 summary-card">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Ringkasan Inspeksi APAR</h3>
+                    <p class="text-sm text-gray-600">
+                        Dari 24 ruangan, hanya 5 ruangan yang dilengkapi APAR 2kg (IGD, Kantor, Medrec, Gizi, IPSRS). 
+                        Tiga di antaranya perlu diisi ulang (IGD, Medrec, Kantor). 
+                        Rekomendasi segera pasang APAR di ruangan yang belum memiliki dan lakukan pengisian ulang 
+                        untuk yang sudah terpasang tetapi perlu diisi.
+                    </p>
                 </div>
             </div>
 
@@ -1166,7 +1324,7 @@
             }
         }
 
-        // Show report function
+        // Show report function with page transition
         function showReport(reportId) {
             // Check session validity
             if (!sessionValid) {
@@ -1174,29 +1332,55 @@
                 return;
             }
             
+            // Show page transition
+            const pageTransition = document.getElementById('pageTransition');
+            const transitionTitle = document.getElementById('transitionTitle');
+            
+            // Set transition title based on report
+            const reportTitles = {
+                'dashboard': 'Dashboard',
+                'apar': 'Inspeksi APAR',
+                'kebakaran': 'Manajemen Kebakaran',
+                'bencana': 'Manajemen Bencana',
+                'keamanan': 'Manajemen Keamanan',
+                'b3': 'Manajemen B3',
+                'fasilitas': 'Manajemen Fasilitas',
+                'galeri': 'Galeri Kegiatan'
+            };
+            
+            transitionTitle.textContent = `Memuat ${reportTitles[reportId]}...`;
+            pageTransition.classList.add('active');
+            
+            // Hide all reports
             const reports = document.querySelectorAll('.report-content');
             reports.forEach(report => {
                 report.classList.add('hidden');
                 report.classList.remove('fade-in');
             });
-
-            const selectedReport = document.getElementById(reportId);
-            if (selectedReport) {
-                selectedReport.classList.remove('hidden');
-                setTimeout(() => {
-                    selectedReport.classList.add('fade-in');
-                }, 10);
-            }
-
-            // Initialize chart for dashboard
-            if (reportId === 'dashboard') {
-                initTrendChart();
-            }
             
-            // Initialize gallery for galeri page
-            if (reportId === 'galeri') {
-                initGallery();
-            }
+            // Show selected report after transition
+            setTimeout(() => {
+                const selectedReport = document.getElementById(reportId);
+                if (selectedReport) {
+                    selectedReport.classList.remove('hidden');
+                    setTimeout(() => {
+                        selectedReport.classList.add('fade-in');
+                    }, 100);
+                }
+                
+                // Hide page transition
+                pageTransition.classList.remove('active');
+                
+                // Initialize chart for dashboard
+                if (reportId === 'dashboard') {
+                    initTrendChart();
+                }
+                
+                // Initialize gallery for galeri page
+                if (reportId === 'galeri') {
+                    initGallery();
+                }
+            }, 2000);
         }
 
         // Initialize trend chart with short columns
@@ -1436,19 +1620,19 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div class="border rounded-lg p-2">
                                 <h5 class="font-medium mb-1 text-xs">AP 2 kg</h5>
-                                <p class="text-xs text-gray-600">0 unit</p>
+                                <p class="text-xs text-gray-600 warning-danger">0 <span class="text-red-600 font-bold">Unit</span></p>
                             </div>
                             <div class="border rounded-lg p-2">
                                 <h5 class="font-medium mb-1 text-xs">AP 9 kg</h5>
-                                <p class="text-xs text-gray-600">0 unit</p>
+                                <p class="text-xs text-gray-600 warning-danger">0 <span class="text-red-600 font-bold">Unit</span></p>
                             </div>
                             <div class="border rounded-lg p-2">
                                 <h5 class="font-medium mb-1 text-xs">AP Kering</h5>
-                                <p class="text-xs text-gray-600">0 unit</p>
+                                <p class="text-xs text-gray-600 warning-danger">0 <span class="text-red-600 font-bold">Unit</span></p>
                             </div>
                             <div class="border rounded-lg p-2">
                                 <h5 class="font-medium mb-1 text-xs">Alarm Kebakaran</h5>
-                                <p class="text-xs text-gray-600">0 unit</p>
+                                <p class="text-xs text-gray-600 warning-danger">0 <span class="text-red-600 font-bold">Unit</span></p>
                             </div>
                             <div class="border rounded-lg p-2 col-span-2">
                                 <h5 class="font-medium mb-1 text-xs">Jalur Evakuasi</h5>
@@ -1487,7 +1671,7 @@
                             <div class="border rounded-lg p-2 text-center">
                                 <i class="fas fa-first-aid text-xl text-red-600 mb-1"></i>
                                 <h5 class="font-medium text-xs">P3K</h5>
-                                <p class="text-xs text-gray-600">Tidak tersedia</p>
+                                <p class="text-xs text-gray-600 warning-danger">Tidak <span class="text-red-600 font-bold">Tersedia</span></p>
                             </div>
                             <div class="border rounded-lg p-2 text-center">
                                 <i class="fas fa-tshirt text-xl text-blue-600 mb-1"></i>
@@ -1530,7 +1714,7 @@
                         <div class="space-y-2">
                             <div class="flex justify-between items-center p-2 border rounded-lg">
                                 <span class="text-sm">CCTV</span>
-                                <span class="text-xs text-red-600">Tidak tersedia</span>
+                                <p class="text-xs text-gray-600 warning-danger">Tidak <span class="text-red-600 font-bold">Tersedia</span></p>
                             </div>
                             <div class="flex justify-between items-center p-2 border rounded-lg">
                                 <span class="text-sm">Access Control</span>
@@ -1538,7 +1722,7 @@
                             </div>
                             <div class="flex justify-between items-center p-2 border rounded-lg">
                                 <span class="text-sm">Alarm Keamanan</span>
-                                <span class="text-xs text-red-600">Tidak tersedia</span>
+                                <p class="text-xs text-gray-600 warning-danger">Tidak <span class="text-red-600 font-bold">Tersedia</span></p>
                             </div>
                         </div>
                     </div>
@@ -1788,11 +1972,20 @@
         updateClock();
         setInterval(updateClock, 1000);
 
-        // Initialize security features
+        // Initialize opening animation
         window.addEventListener('load', () => {
-            // Initialize security features
-            preventScreenshot();
-            initTrendChart();
+            // Show opening overlay
+            const openingOverlay = document.getElementById('openingOverlay');
+            openingOverlay.style.display = 'flex';
+            
+            // Hide opening overlay after 10 seconds
+            setTimeout(() => {
+                openingOverlay.style.display = 'none';
+                
+                // Initialize security features
+                preventScreenshot();
+                initTrendChart();
+            }, 10000);
         });
     </script>
 </body>
