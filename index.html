@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://fpcdn.io/v3/1L3Y8V8X5W9A2C3E6F7G8H9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         /* Reset CSS untuk mobile */
         * {
@@ -206,29 +205,6 @@
         }
         
         .menu-toggle i {
-            color: white;
-            font-size: 18px;
-        }
-        
-        /* Logout button styles */
-        .logout-btn {
-            background: rgba(239, 68, 68, 0.8);
-            border: none;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .logout-btn:hover {
-            background: rgba(239, 68, 68, 1);
-        }
-        
-        .logout-btn i {
             color: white;
             font-size: 18px;
         }
@@ -857,26 +833,51 @@
             font-weight: bold;
         }
         
-        /* Refresh indicator */
-        .refresh-indicator {
-            position: fixed;
-            top: 64px;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: #667eea;
-            transform: translateY(-100%);
-            transition: transform 0.3s;
-            z-index: 1001;
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .summary-cards {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .quick-links {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .room-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
         
-        .refresh-indicator.active {
-            transform: translateY(0);
+        /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #securityOverlay, #securityOverlay * {
+                visibility: visible;
+            }
+            #securityOverlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: white;
+                z-index: 99999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
         }
         
         /* Login styles */
         .login-container {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: white;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             padding: 24px;
@@ -889,7 +890,7 @@
             font-weight: 700;
             text-align: center;
             margin-bottom: 24px;
-            color: white;
+            color: #1f2937;
         }
         
         .login-form {
@@ -907,27 +908,26 @@
         .form-label {
             font-size: 14px;
             font-weight: 600;
-            color: white;
+            color: #374151;
         }
         
         .form-input {
             padding: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid #e5e7eb;
             border-radius: 8px;
             font-size: 14px;
-            background: rgba(255, 255, 255, 0.9);
             transition: all 0.2s;
         }
         
         .form-input:focus {
             outline: none;
-            border-color: white;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
         .login-btn {
-            background: white;
-            color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             border: none;
             border-radius: 8px;
             padding: 12px;
@@ -962,7 +962,7 @@
         }
         
         .logout-btn {
-            background: rgba(239, 68, 68, 0.8);
+            background: rgba(255, 255, 255, 0.2);
             border: none;
             border-radius: 6px;
             padding: 4px 8px;
@@ -973,7 +973,7 @@
         }
         
         .logout-btn:hover {
-            background: rgba(239, 68, 68, 1);
+            background: rgba(255, 255, 255, 0.3);
         }
         
         .locked-nav-item {
@@ -993,59 +993,58 @@
             color: #ef4444;
         }
         
-        /* Activity log styles */
-        .activity-log {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin-bottom: 16px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .activity-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: #1f2937;
-        }
-        
-        .activity-item {
+        /* Pull to refresh styles */
+        .pull-to-refresh {
+            position: fixed;
+            top: -60px;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #f3f4f6;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            transition: top 0.3s ease;
+            z-index: 1001;
         }
         
-        .activity-item:last-child {
-            border-bottom: none;
+        .pull-to-refresh.active {
+            top: 0;
         }
         
-        .activity-name {
-            font-size: 13px;
-            font-weight: 500;
-        }
-        
-        .activity-time {
-            font-size: 12px;
-            color: #6b7280;
-        }
-        
-        /* Loading spinner */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
+        .pull-to-refresh i {
+            margin-right: 8px;
+            animation: spin 1s linear infinite;
         }
         
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Guest logout button */
+        .guest-logout {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+        }
+        
+        .guest-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .guest-logout i {
+            font-size: 18px;
         }
     </style>
 </head>
@@ -1059,8 +1058,11 @@
         </div>
     </div>
 
-    <!-- Refresh indicator -->
-    <div id="refreshIndicator" class="refresh-indicator"></div>
+    <!-- Pull to refresh indicator -->
+    <div id="pullToRefresh" class="pull-to-refresh">
+        <i class="fas fa-sync-alt"></i>
+        <span>Refresh...</span>
+    </div>
 
     <!-- Login Page -->
     <div id="loginPage" class="scroll-container" style="display: none;">
@@ -1075,13 +1077,10 @@
                     <label class="form-label" for="password">Password</label>
                     <input type="password" id="password" class="form-input" placeholder="Masukkan password" required>
                 </div>
-                <button type="submit" class="login-btn" id="loginBtn">
-                    <span id="loginBtnText">Login</span>
-                    <span id="loginSpinner" class="spinner" style="display: none;"></span>
-                </button>
+                <button type="submit" class="login-btn">Login</button>
             </form>
             <div class="mt-4 text-center">
-                <p class="text-sm text-white">Login sebagai <a href="#" onclick="loginAsGuest()" class="text-white underline">Tamu</a></p>
+                <p class="text-sm text-gray-600">Login sebagai <a href="#" onclick="loginAsGuest()" class="text-blue-600">Tamu</a></p>
             </div>
         </div>
     </div>
@@ -1098,9 +1097,7 @@
                 <div class="header-actions">
                     <div class="user-info" id="userInfo" style="display: none;">
                         <span class="user-name" id="userName">Admin</span>
-                        <button class="logout-btn" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
                     </div>
                     <div class="time-display" id="clock">00:00:00</div>
                     <div class="year-selector">
@@ -1110,7 +1107,7 @@
                     <button class="menu-toggle" onclick="toggleMenu()">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <button class="logout-btn" onclick="logout()">
+                    <button class="guest-logout" id="guestLogout" style="display: none;" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </div>
@@ -1122,14 +1119,6 @@
             <!-- Dashboard -->
             <div id="dashboard" class="content-section">
                 <h2 class="text-xl font-bold text-gray-800 mb-4">Dashboard K3RS/MFK</h2>
-                
-                <!-- Activity Log -->
-                <div class="activity-log">
-                    <h3 class="activity-title">Riwayat Aktivitas</h3>
-                    <div id="activityList">
-                        <!-- Activities will be inserted here -->
-                    </div>
-                </div>
                 
                 <!-- Summary Cards -->
                 <div class="summary-cards">
@@ -1605,13 +1594,12 @@
         let currentYear = 2024;
         let currentFilter = null;
         let currentUser = null;
-        let activities = [];
-        let isRefreshing = false;
         
-        // Google Sheets API configuration
-        const SPREADSHEET_ID = '1ywapY_5c5mUbUWco0EPVcty5ks8a1smi8FUzMki0-Ks';
-        const API_KEY = 'AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg';
-        const DRIVE_FOLDER_ID = '1zWtn8b9lqhnuyy_Tk8tKRhaJ9m-hUE2R';
+        // Pull to refresh variables
+        let pullStartY = 0;
+        let pullDistance = 0;
+        let isPulling = false;
+        let isRefreshing = false;
         
         // Initialize fingerprint
         async function initFingerprint() {
@@ -1645,12 +1633,6 @@
             document.getElementById('loginPage').style.display = 'block';
             document.getElementById('mainApp').style.display = 'none';
             updateNavigationForGuest();
-            
-            // Log logout activity
-            logActivity('Logout', 'User logged out');
-            
-            // Send logout data to Google Sheets
-            sendActivityToGoogleSheets();
         }
         
         // Prevent screenshot and print
@@ -1685,108 +1667,7 @@
                 e.preventDefault();
             });
         }
-        
-        // Log activity
-        function logActivity(action, details) {
-            const activity = {
-                timestamp: new Date().toISOString(),
-                user: currentUser ? currentUser.name : 'Guest',
-                action: action,
-                details: details,
-                deviceFingerprint: deviceFingerprint,
-                userAgent: navigator.userAgent,
-                screenResolution: `${screen.width}x${screen.height}`,
-                viewportSize: `${window.innerWidth}x${window.innerHeight}`,
-                platform: navigator.platform,
-                language: navigator.language
-            };
-            
-            activities.unshift(activity);
-            
-            // Keep only last 50 activities
-            if (activities.length > 50) {
-                activities = activities.slice(0, 50);
-            }
-            
-            updateActivityList();
-        }
-        
-        // Update activity list
-        function updateActivityList() {
-            const activityList = document.getElementById('activityList');
-            activityList.innerHTML = activities.slice(0, 10).map(activity => `
-                <div class="activity-item">
-                    <div class="activity-name">${activity.action}: ${activity.details}</div>
-                    <div class="activity-time">${new Date(activity.timestamp).toLocaleTimeString()}</div>
-                </div>
-            `).join('');
-        }
-        
-        // Send activity to Google Sheets
-        async function sendActivityToGoogleSheets() {
-            if (activities.length === 0) return;
-            
-            try {
-                // Prepare data for Google Sheets
-                const data = activities.map(activity => [
-                    activity.timestamp,
-                    activity.user,
-                    activity.action,
-                    activity.details,
-                    activity.deviceFingerprint,
-                    activity.userAgent,
-                    activity.screenResolution,
-                    activity.viewportSize,
-                    activity.platform,
-                    activity.language
-                ]);
-                
-                // Convert to CSV format
-                const csvContent = [
-                    ['Timestamp', 'User', 'Action', 'Details', 'Device Fingerprint', 'User Agent', 'Screen Resolution', 'Viewport Size', 'Platform', 'Language'],
-                    ...data
-                ].map(row => row.map(field => `"${field}"`).join(',')).join('\n');
-                
-                // Create blob
-                const blob = new Blob([csvContent], { type: 'text/csv' });
-                
-                // Create file metadata
-                const metadata = {
-                    name: `K3RS_Activity_Log_${new Date().toISOString().split('T')[0]}.csv`,
-                    parents: [DRIVE_FOLDER_ID]
-                };
-                
-                // Create file in Google Drive
-                const response = await fetch(`https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${getAccessToken()}`,
-                        'Content-Type': 'multipart/related; boundary=boundary'
-                    },
-                    body: `--boundary\nContent-Type: application/json\n${JSON.stringify(metadata)}\n--boundary\nContent-Type: text/csv\n${csvContent}\n--boundary--`
-                });
-                
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log('Activity log saved to Google Drive:', result);
-                } else {
-                    console.error('Failed to save activity log to Google Drive');
-                }
-                
-                // Clear activities after sending
-                activities = [];
-            } catch (error) {
-                console.error('Error sending activity to Google Sheets:', error);
-            }
-        }
-        
-        // Get access token (simplified for demo)
-        function getAccessToken() {
-            // In a real application, this would involve OAuth 2.0 flow
-            // For demo purposes, we'll use a placeholder
-            return 'YOUR_GOOGLE_ACCESS_TOKEN';
-        }
-        
+
         // Gallery data
         const galleryData = [
             {
@@ -1953,9 +1834,6 @@
                 }
             }
             
-            // Log activity
-            logActivity('Navigation', `Navigated to ${sectionId}`);
-            
             // Hide all sections
             const sections = document.querySelectorAll('.content-section');
             sections.forEach(section => {
@@ -2057,9 +1935,6 @@
 
             modalTitle.textContent = `Detail Laporan ${type} - ${room} - ${getMonthName(month)} ${currentYear}`;
 
-            // Log activity
-            logActivity('Detail View', `Viewed ${type} details for ${room}`);
-
             // Generate detailed content based on type
             let content = '';
             switch(type) {
@@ -2097,9 +1972,6 @@
         function toggleMenu() {
             const teamModal = document.getElementById('teamModal');
             teamModal.classList.toggle('active');
-            
-            // Log activity
-            logActivity('Menu', 'Team modal toggled');
         }
 
         // Close team modal
@@ -2656,41 +2528,19 @@
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            const loginBtn = document.getElementById('loginBtn');
-            const loginBtnText = document.getElementById('loginBtnText');
-            const loginSpinner = document.getElementById('loginSpinner');
-            
-            // Show loading state
-            loginBtn.disabled = true;
-            loginBtnText.style.display = 'none';
-            loginSpinner.style.display = 'inline-block';
             
             // Simple authentication - in real app, this would be server-side
-            setTimeout(() => {
-                if (username === 'mfk2023' && password === 'mfk2023') {
-                    currentUser = {
-                        id: username,
-                        name: 'Admin K3RS/MFK',
-                        role: 'admin'
-                    };
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    
-                    // Log login activity
-                    logActivity('Login', 'User logged in successfully');
-                    
-                    showMainApp();
-                } else {
-                    alert('ID Petugas atau Password salah. Silakan coba lagi.');
-                    
-                    // Log failed login attempt
-                    logActivity('Failed Login', `Failed login attempt with username: ${username}`);
-                }
-                
-                // Reset button state
-                loginBtn.disabled = false;
-                loginBtnText.style.display = 'inline';
-                loginSpinner.style.display = 'none';
-            }, 1000);
+            if (username === 'mfk2023' && password === 'mfk2023') {
+                currentUser = {
+                    id: username,
+                    name: 'Admin K3RS/MFK',
+                    role: 'admin'
+                };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showMainApp();
+            } else {
+                alert('ID Petugas atau Password salah. Silakan coba lagi.');
+            }
         }
 
         function loginAsGuest() {
@@ -2700,10 +2550,6 @@
                 role: 'guest'
             };
             localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            
-            // Log login activity
-            logActivity('Login', 'User logged in as guest');
-            
             showMainApp();
         }
 
@@ -2730,6 +2576,9 @@
             navItems.forEach(item => {
                 item.classList.remove('locked-nav-item');
             });
+            
+            // Hide guest logout button
+            document.getElementById('guestLogout').style.display = 'none';
         }
 
         function updateNavigationForGuest() {
@@ -2741,68 +2590,103 @@
                     item.classList.add('locked-nav-item');
                 }
             });
+            
+            // Show guest logout button
+            document.getElementById('guestLogout').style.display = 'flex';
         }
 
-        // Refresh functionality
-        function handleRefresh() {
-            if (isRefreshing) return;
+        // Pull to refresh functionality
+        function initPullToRefresh() {
+            const scrollContainer = document.querySelector('.scroll-container');
+            const pullToRefresh = document.getElementById('pullToRefresh');
             
-            isRefreshing = true;
-            const refreshIndicator = document.getElementById('refreshIndicator');
-            refreshIndicator.classList.add('active');
+            // Touch events for mobile
+            scrollContainer.addEventListener('touchstart', (e) => {
+                if (scrollContainer.scrollTop === 0) {
+                    pullStartY = e.touches[0].clientY;
+                    isPulling = true;
+                }
+            });
             
-            // Log refresh activity
-            logActivity('Refresh', 'App refreshed by user');
-            
-            // Send activities to Google Sheets before refresh
-            sendActivityToGoogleSheets();
-            
-            // Simulate refresh delay
-            setTimeout(() => {
-                // Log out user
-                logout();
+            scrollContainer.addEventListener('touchmove', (e) => {
+                if (!isPulling) return;
                 
-                // Reset refresh state
-                isRefreshing = false;
-                refreshIndicator.classList.remove('active');
+                const currentY = e.touches[0].clientY;
+                pullDistance = currentY - pullStartY;
                 
-                // Show login page
-                document.getElementById('loginPage').style.display = 'block';
-                document.getElementById('mainApp').style.display = 'none';
-            }, 1500);
-        }
-
-        // Touch handling for refresh
-        let touchStartY = 0;
-        let touchEndY = 0;
-        
-        function handleTouchStart(e) {
-            touchStartY = e.touches[0].clientY;
-        }
-        
-        function handleTouchMove(e) {
-            touchEndY = e.touches[0].clientY;
+                if (pullDistance > 0 && pullDistance < 100) {
+                    pullToRefresh.classList.add('active');
+                    pullToRefresh.style.transform = `translateY(${pullDistance * 0.5}px)`;
+                }
+            });
             
-            // Check if user is pulling down from top
-            const pullDistance = touchStartY - touchEndY;
-            if (pullDistance > 50 && window.scrollY === 0) {
-                // Show refresh indicator
-                const refreshIndicator = document.getElementById('refreshIndicator');
-                refreshIndicator.style.height = `${pullDistance}px`;
-            }
-        }
-        
-        function handleTouchEnd() {
-            const pullDistance = touchStartY - touchEndY;
+            scrollContainer.addEventListener('touchend', () => {
+                if (!isPulling) return;
+                
+                isPulling = false;
+                
+                if (pullDistance > 80) {
+                    // Trigger refresh
+                    isRefreshing = true;
+                    pullToRefresh.querySelector('i').style.animation = 'spin 1s linear infinite';
+                    
+                    // Simulate refresh delay
+                    setTimeout(() => {
+                        // Clear session and redirect to login
+                        logout();
+                        isRefreshing = false;
+                        pullToRefresh.querySelector('i').style.animation = '';
+                    }, 1500);
+                }
+                
+                pullDistance = 0;
+                pullToRefresh.classList.remove('active');
+                pullToRefresh.style.transform = '';
+            });
             
-            // If pulled down enough, trigger refresh
-            if (pullDistance > 100 && window.scrollY === 0) {
-                handleRefresh();
-            }
+            // Mouse events for desktop
+            scrollContainer.addEventListener('mousedown', (e) => {
+                if (scrollContainer.scrollTop === 0) {
+                    pullStartY = e.clientY;
+                    isPulling = true;
+                }
+            });
             
-            // Reset refresh indicator
-            const refreshIndicator = document.getElementById('refreshIndicator');
-            refreshIndicator.style.height = '4px';
+            scrollContainer.addEventListener('mousemove', (e) => {
+                if (!isPulling) return;
+                
+                const currentY = e.clientY;
+                pullDistance = currentY - pullStartY;
+                
+                if (pullDistance > 0 && pullDistance < 100) {
+                    pullToRefresh.classList.add('active');
+                    pullToRefresh.style.transform = `translateY(${pullDistance * 0.5}px)`;
+                }
+            });
+            
+            scrollContainer.addEventListener('mouseup', () => {
+                if (!isPulling) return;
+                
+                isPulling = false;
+                
+                if (pullDistance > 80) {
+                    // Trigger refresh
+                    isRefreshing = true;
+                    pullToRefresh.querySelector('i').style.animation = 'spin 1s linear infinite';
+                    
+                    // Simulate refresh delay
+                    setTimeout(() => {
+                        // Clear session and redirect to login
+                        logout();
+                        isRefreshing = false;
+                        pullToRefresh.querySelector('i').style.animation = '';
+                    }, 1500);
+                }
+                
+                pullDistance = 0;
+                pullToRefresh.classList.remove('active');
+                pullToRefresh.style.transform = '';
+            });
         }
 
         // Initialize on load
@@ -2810,22 +2694,8 @@
             // Initialize security features
             preventScreenshot();
             
-            // Add touch event listeners for refresh
-            const scrollContainer = document.querySelector('.scroll-container');
-            scrollContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
-            scrollContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
-            scrollContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
-            
-            // Add click event listeners to track all interactions
-            document.addEventListener('click', (e) => {
-                // Get element tag and class for better tracking
-                const tagName = e.target.tagName;
-                const className = e.target.className;
-                const id = e.target.id;
-                
-                // Log click activity
-                logActivity('Click', `Clicked on ${tagName} with class "${className}" and id "${id}"`);
-            });
+            // Initialize pull to refresh
+            initPullToRefresh();
             
             // Check if user is already logged in
             const savedUser = localStorage.getItem('currentUser');
