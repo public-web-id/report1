@@ -2,33 +2,92 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>K3RS/MFK - Rumah Sakit Umum Daerah Talaud</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://fpcdn.io/v3/1L3Y8V8X5W9A2C3E6F7G8H9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6.js"></script>
     <style>
+        /* Reset CSS untuk mobile */
         * {
-            transition: all 0.3s ease;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            -webkit-touch-callout: none;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
-            -webkit-touch-callout: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #f9fafb;
+            color: #1f2937;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Prevent horizontal scroll */
+        html {
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        
+        /* Custom scrollbar for mobile */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* Prevent text selection */
+        * {
             -webkit-user-select: none;
-            -khtml-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
         }
         
+        /* Prevent double tap zoom */
+        * {
+            touch-action: manipulation;
+        }
+        
+        /* Prevent iOS rubber band effect */
+        html, body {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .scroll-container {
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+        
+        /* Animations */
         .fade-in {
-            animation: fadeIn 0.5s ease-in;
+            animation: fadeIn 0.3s ease-in-out;
         }
         
         @keyframes fadeIn {
@@ -36,145 +95,258 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
         }
         
-        .card-hover:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
         }
         
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        
-        .room-card {
+        /* Card styles */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            margin-bottom: 16px;
             transition: all 0.3s ease;
         }
         
-        .room-card:hover {
-            transform: scale(1.02);
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
-        .detail-modal {
-            display: none;
+        /* Header styles */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 16px;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            right: 0;
             z-index: 1000;
-            animation: fadeIn 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
-        .detail-modal.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-        
-        .tab-container {
-            display: flex;
-            overflow-x: auto;
-            gap: 0.5rem;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .tab-button {
-            padding: 0.5rem 1rem;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-bottom: none;
-            border-radius: 6px 6px 0 0;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-            font-size: 0.875rem;
-        }
-        
-        .tab-button:hover {
-            background: #f3f4f6;
-        }
-        
-        .tab-button.active {
-            background: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
-        }
-        
-        .search-container {
-            position: relative;
-            width: 100%;
-            max-width: 300px;
-        }
-        
-        .search-container input {
-            width: 100%;
-            padding: 0.5rem 2.5rem 0.5rem 1rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            transition: all 0.3s;
-        }
-        
-        .search-container input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        
-        .search-container button {
-            position: absolute;
-            right: 0.5rem;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #6b7280;
-            cursor: pointer;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            max-width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        
-        .modal-header {
-            padding: 1rem;
-            border-bottom: 1px solid #e5e7eb;
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
-        .modal-body {
-            padding: 1rem;
+        .logo {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
         
+        .logo h1 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        
+        .logo p {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .time-display {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .year-selector {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .year-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            padding: 4px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .year-btn.active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        
+        .year-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Menu styles */
+        .menu-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .menu-toggle i {
+            color: white;
+            font-size: 18px;
+        }
+        
+        /* Main content */
+        .main-content {
+            margin-top: 64px;
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+        
+        /* Summary cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .summary-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        
+        .summary-card-icon i {
+            font-size: 20px;
+        }
+        
+        .summary-card-title {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        
+        .summary-card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .summary-card-desc {
+            font-size: 11px;
+            color: #6b7280;
+        }
+        
+        /* Chart container */
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1f2937;
+        }
+        
+        .chart-wrapper {
+            height: 200px;
+            position: relative;
+        }
+        
+        /* Quick links */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .quick-link-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .quick-link-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1f2937;
+        }
+        
+        .quick-link-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .quick-link-item:last-child {
+            border-bottom: none;
+        }
+        
+        .quick-link-name {
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .quick-link-value {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        /* Status badges */
         .status-badge {
             display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
             font-weight: 600;
         }
         
@@ -198,170 +370,338 @@
             color: #1e40af;
         }
         
-        .action-button {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.3s;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        
-        .action-button-primary {
-            background: #3b82f6;
-            color: white;
-        }
-        
-        .action-button-primary:hover {
-            background: #2563eb;
-        }
-        
-        .action-button-secondary {
-            background: #f3f4f6;
-            color: #374151;
-        }
-        
-        .action-button-secondary:hover {
-            background: #e5e7eb;
-        }
-        
-        .action-button-danger {
-            background: #ef4444;
-            color: white;
-        }
-        
-        .action-button-danger:hover {
-            background: #dc2626;
-        }
-        
-        .notification {
+        /* Navigation */
+        .nav {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            color: white;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            z-index: 10000;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            z-index: 1000;
             display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            transform: translateX(400px);
-            transition: transform 0.3s ease-out;
+            justify-content: center;
+            padding: 4px 8px;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s;
         }
         
-        .notification.show {
-            transform: translateX(0);
+        .nav-item.active {
+            color: #667eea;
         }
         
-        .notification-success {
-            background: #10b981;
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 2px;
         }
         
-        .notification-error {
-            background: #ef4444;
+        .nav-item span {
+            font-size: 11px;
         }
         
-        .notification-warning {
-            background: #f59e0b;
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
         }
         
-        .notification-info {
-            background: #3b82f6;
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
         }
         
-        .notification-icon {
-            margin-right: 0.75rem;
-            font-size: 1.25rem;
+        .modal-content {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 4px;
+        }
+        
+        .modal-body {
+            padding: 16px;
+        }
+        
+        /* Tab styles */
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        /* Room grid */
+        .room-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .room-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .room-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .room-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .room-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* Search styles */
+        .search-container {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        
+        /* Gallery styles */
+        .gallery-filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .gallery-filters::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .filter-btn {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
         }
         
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-            padding: 1rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
         }
         
         .gallery-item {
             position: relative;
             overflow: hidden;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            aspect-ratio: 1;
             cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-        
-        .gallery-item:hover {
-            transform: scale(1.05);
         }
         
         .gallery-item img {
             width: 100%;
-            height: 200px;
+            height: 100%;
             object-fit: cover;
         }
         
-        .gallery-item-info {
+        .gallery-info {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
             background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            color: white;
-            padding: 1rem;
+            padding: 12px;
             transform: translateY(100%);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s;
         }
         
-        .gallery-item:hover .gallery-item-info {
+        .gallery-item:hover .gallery-info {
             transform: translateY(0);
         }
         
-        .gallery-filters {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .filter-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid #e5e7eb;
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.875rem;
-        }
-        
-        .filter-btn:hover {
-            background: #f3f4f6;
-        }
-        
-        .filter-btn.active {
-            background: #3b82f6;
+        .gallery-title {
             color: white;
-            border-color: #3b82f6;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
         }
         
+        .gallery-date {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+        }
+        
+        /* Summary text */
+        .summary-text {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+        }
+        
+        .summary-text-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+        
+        .summary-text p {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #4b5563;
+        }
+        
+        /* Loading animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f4f6;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Image modal */
         .image-modal {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
             background: rgba(0, 0, 0, 0.9);
-            z-index: 1001;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        .image-modal.active {
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 4000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .image-modal.active {
+            opacity: 1;
+            visibility: visible;
         }
         
         .image-modal-content {
@@ -374,6 +714,7 @@
             max-width: 100%;
             max-height: 90vh;
             object-fit: contain;
+            border-radius: 12px;
         }
         
         .image-modal-close {
@@ -381,388 +722,101 @@
             top: -40px;
             right: 0;
             color: white;
-            font-size: 2rem;
+            font-size: 24px;
             cursor: pointer;
         }
         
-        .dropdown {
+        /* Risk matrix */
+        .risk-matrix {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 16px;
+        }
+        
+        .risk-table {
+            min-width: 320px;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        
+        .risk-table th,
+        .risk-table td {
+            padding: 6px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .risk-table th {
+            background: #f9fafb;
+            font-weight: 600;
+        }
+        
+        .risk-low {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .risk-medium {
+            background-color: #fed7aa;
+            color: #92400e;
+        }
+        
+        .risk-high {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        /* Recommendations */
+        .recommendations {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        
+        .recommendations-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+        
+        .recommendations-list {
+            list-style: none;
+        }
+        
+        .recommendations-list li {
             position: relative;
-            display: inline-block;
+            padding-left: 20px;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #4b5563;
         }
         
-        .dropdown-content {
-            display: none;
+        .recommendations-list li:before {
+            content: "•";
             position: absolute;
-            right: 0;
-            background-color: white;
-            min-width: 200px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-        
-        .dropdown-item {
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            color: #333;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-        
-        .dropdown-item:hover {
-            background-color: #f1f1f1;
-        }
-        
-        .dropdown-item i {
-            margin-right: 10px;
-            width: 20px;
-        }
-        
-        .time-display {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-            border-radius: 20px;
-            padding: 4px 12px;
-            font-family: 'Courier New', monospace;
+            left: 0;
+            color: #667eea;
             font-weight: bold;
         }
         
-        .warning-pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-        
-        .warning-shake {
-            animation: shake 0.5s;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        
-        .opening-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-        }
-        
-        .opening-logo {
-            font-size: 4rem;
-            margin-bottom: 2rem;
-            animation: logoAnimation 1s ease-in-out;
-        }
-        
-        @keyframes logoAnimation {
-            0% { transform: scale(0) rotate(0deg); opacity: 0; }
-            50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
-            100% { transform: scale(1) rotate(360deg); opacity: 1; }
-        }
-        
-        .opening-text {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            animation: textAnimation 1s ease-in-out;
-        }
-        
-        @keyframes textAnimation {
-            0% { transform: translateY(50px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-        
-        .opening-progress {
-            width: 200px;
-            height: 4px;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 2rem;
-        }
-        
-        .opening-progress-bar {
-            height: 100%;
-            background-color: white;
-            width: 0%;
-            animation: progressAnimation 10s linear;
-        }
-        
-        @keyframes progressAnimation {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
-        
-        .page-transition {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .page-transition.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .page-transition-content {
-            text-align: center;
-            color: white;
-        }
-        
-        .page-transition-title {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            animation: slideIn 0.5s ease-out;
-        }
-        
-        .chart-legend {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            font-size: 0.875rem;
-        }
-        
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 2px;
-            margin-right: 0.5rem;
-        }
-        
-        .risk-matrix-container {
-            margin: 1rem 0;
-            overflow-x: auto;
-        }
-        
-        .risk-matrix {
-            display: grid;
-            grid-template-columns: auto repeat(5, 1fr);
-            grid-template-rows: auto repeat(5, 1fr);
-            gap: 2px;
-            min-width: 400px;
-        }
-        
-        .risk-header {
-            background: #f3f4f6;
-            padding: 0.5rem;
-            font-weight: 600;
-            text-align: center;
-            font-size: 0.75rem;
-        }
-        
-        .risk-likelihood {
-            background: #f3f4f6;
-            padding: 0.5rem;
-            font-weight: 600;
-            text-align: center;
-            font-size: 0.75rem;
-        }
-        
-        .risk-impact {
-            background: #f3f4f6;
-            padding: 0.5rem;
-            font-weight: 600;
-            text-align: center;
-            font-size: 0.75rem;
-        }
-        
-        .risk-low { background-color: #10B981; }
-        .risk-medium { background-color: #F59E0B; }
-        .risk-high { background-color: #EF4444; }
-        
-        .footer-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        /* Responsive adjustments - Desktop */
-        @media (max-width: 1200px) {
-            .container {
-                max-width: 1140px;
-            }
-        }
-        
-        /* Responsive adjustments - Tablet */
-        @media (max-width: 768px) {
-            .container {
-                max-width: 100%;
-                padding: 0 1rem;
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .summary-cards {
+                grid-template-columns: repeat(4, 1fr);
             }
             
-            .header {
-                padding: 0.5rem 0;
-            }
-            
-            .header h1 {
-                font-size: 1.25rem;
-            }
-            
-            .header p {
-                font-size: 0.75rem;
-            }
-            
-            .time-display {
-                font-size: 0.75rem;
-                padding: 2px 8px;
-            }
-            
-            .year-selector {
-                gap: 4px;
-            }
-            
-            .year-btn {
-                padding: 2px 8px;
-                font-size: 0.75rem;
-            }
-            
-            .dropdown button {
-                padding: 0.5rem;
-            }
-            
-            .dropdown button span {
-                display: none;
-            }
-            
-            .dropdown button i {
-                font-size: 1.25rem;
-            }
-            
-            .search-container {
-                max-width: 200px;
-            }
-            
-            .search-container input {
-                font-size: 0.875rem;
-                padding: 0.375rem 2rem 0.375rem 0.75rem;
-            }
-            
-            .action-button {
-                padding: 0.375rem 0.75rem;
-                font-size: 0.75rem;
-            }
-            
-            .grid-cols-1 {
-                grid-template-columns: 1fr;
-            }
-            
-            .grid-cols-2 {
-                grid-template-columns: 1fr;
-            }
-            
-            .grid-cols-3 {
+            .quick-links {
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .grid-cols-4 {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .chart-container {
-                height: 250px;
-            }
-            
-            .tab-button {
-                padding: 0.375rem 0.75rem;
-                font-size: 0.75rem;
-            }
-            
-            .modal-content {
-                max-width: 95%;
-            }
-            
-            .modal-header h3 {
-                font-size: 1.125rem;
+            .room-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
             
             .gallery-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                gap: 1rem;
-            }
-            
-            .gallery-item img {
-                height: 150px;
-            }
-            
-            .gallery-item-info h4 {
-                font-size: 0.875rem;
-            }
-            
-            .gallery-item-info p {
-                font-size: 0.625rem;
-            }
-            
-            .notification {
-                padding: 0.75rem 1rem;
-            }
-            
-            .notification-icon {
-                font-size: 1rem;
-            }
-            
-            .notification-text {
-                font-size: 0.875rem;
-            }
-            
-            .form-input {
-                font-size: 0.875rem;
-                padding: 0.375rem 0.75rem;
-            }
-            
-            .form-label {
-                font-size: 0.75rem;
-            }
-            
-            .status-badge {
-                padding: 0.125rem 0.5rem;
-                font-size: 0.625rem;
-            }
-            
-            .data-table th,
-            .data-table td {
-                padding: 0.5rem;
-                font-size: 0.75rem;
-            }
-            
-            .opening-logo {
-                font-size: 3rem;
-            }
-            
-            .opening-text {
-                font-size: 1.5rem;
+                grid-template-columns: repeat(3, 1fr);
             }
         }
         
@@ -790,262 +844,180 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
-    <!-- Opening Overlay -->
-    <div id="openingOverlay" class="opening-overlay">
-        <div class="opening-logo">
-            <i class="fas fa-shield-alt"></i>
-        </div>
-        <div class="opening-text">K3RS/MFK</div>
-        <div class="opening-text text-sm">Rumah Sakit Umum Daerah Talaud</div>
-        <div class="opening-progress">
-            <div class="opening-progress-bar"></div>
-        </div>
-    </div>
-
-    <!-- Page Transition Overlay -->
-    <div id="pageTransition" class="page-transition">
-        <div class="page-transition-content">
-            <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
-            <h3 class="page-transition-title" id="transitionTitle">Memuat...</h3>
+<body>
+    <!-- Security overlay -->
+    <div id="securityOverlay" style="display: none;">
+        <div class="text-center">
+            <i class="fas fa-lock text-6xl text-gray-400 mb-4"></i>
+            <h2 class="text-2xl font-bold text-gray-700 mb-2">Akses Diblokir</h2>
+            <p class="text-gray-600">Anda tidak dapat mencetak atau mengambil tangkapan layar dari halaman ini.</p>
         </div>
     </div>
 
     <!-- Header -->
-    <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-2">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-                <div class="mb-2 md:mb-0 cursor-pointer" onclick="showReport('dashboard')">
-                    <h1 class="text-lg md:text-xl font-bold">K3RS/MFK</h1>
-                    <p class="text-xs md:text-sm opacity-90">Rumah Sakit Umum Daerah Talaud</p>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1>K3RS/MFK</h1>
+                <p>Rumah Sakit Umum Daerah Talaud</p>
+            </div>
+            <div class="header-actions">
+                <div class="time-display" id="clock">00:00:00</div>
+                <div class="year-selector">
+                    <button class="year-btn active" onclick="setYear(2024)">2024</button>
+                    <button class="year-btn" onclick="setYear(2025)">2025</button>
                 </div>
-                
-                <div class="flex flex-wrap items-center justify-between w-full md:w-auto">
-                    <div class="flex items-center space-x-2 mb-2 md:mb-0">
-                        <span class="time-display text-xs md:text-sm" id="clock"></span>
-                        <div class="year-selector">
-                            <button class="year-btn active" onclick="setYear(2024)">2024</button>
-                            <button class="year-btn" onclick="setYear(2025)">2025</button>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center space-x-2">
-                        <div class="dropdown">
-                            <button class="bg-white bg-opacity-20 px-3 py-1 rounded-lg hover:bg-opacity-30 text-xs md:text-sm relative flex items-center">
-                                <i class="fas fa-ellipsis-v mr-1"></i>
-                                <span class="hidden md:inline">Menu</span>
-                            </button>
-                            <div class="dropdown-content mt-1">
-                                <a href="#" class="dropdown-item" onclick="showReport('dashboard')">
-                                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                                </a>
-                                <a href="#" class="dropdown-item" onclick="showReport('apar')">
-                                    <i class="fas fa-fire-extinguisher"></i> Inspeksi APAR
-                                </a>
-                                <a href="#" class="dropdown-item" onclick="showReport('kebakaran')">
-                                    <i class="fas fa-fire"></i> Manajemen Kebakaran
-                                </a>
-                                <a href="#" class="dropdown-item" onclick="showReport('bencana')">
-                                    <i class="fas fa-cloud-showers-heavy"></i> Manajemen Bencana
-                                </a>
-                                <a href="#" class="dropdown-item" onclick="showReport('keamanan')">
-                                    <i class="fas fa-shield-alt"></i> Manajemen Keamanan
-                                </a>
-                                <a href="#" class="dropdown-item" onclick="showReport('b3')">
-                                    <i class="fas fa-flask"></i> Manajemen B3
-                                </a>
-                                <a href="#" class="dropdown-item" onclick="showReport('fasilitas')">
-                                    <i class="fas fa-building"></i> Manajemen Fasilitas
-                                </a>
-                                <a href="#" class="dropdown-item" onclick="showReport('galeri')">
-                                    <i class="fas fa-images"></i> Galeri Kegiatan
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <button class="menu-toggle" onclick="toggleMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-6 flex-grow">
+    <!-- Main content -->
+    <main class="main-content scroll-container">
         <!-- Dashboard -->
-        <div id="dashboard" class="report-content fade-in">
-            <h2 class="text-xl font-bold text-gray-800 mb-6">Dashboard K3RS/MFK</h2>
+        <div id="dashboard" class="content-section">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Dashboard K3RS/MFK</h2>
             
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="card-hover bg-white rounded-xl shadow-md p-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="bg-blue-100 p-2 rounded-lg">
-                            <i class="fas fa-exclamation-triangle text-blue-600 text-xl"></i>
-                        </div>
-                        <span class="text-xs text-gray-500">Total Risiko</span>
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="summary-card-icon bg-blue-100">
+                        <i class="fas fa-exclamation-triangle text-blue-600"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-800">156</h3>
-                    <p class="text-xs text-gray-600 mt-1">24 ruangan</p>
+                    <div class="summary-card-title">Total Risiko</div>
+                    <div class="summary-card-value">156</div>
+                    <div class="summary-card-desc">24 ruangan</div>
                 </div>
                 
-                <div class="card-hover bg-white rounded-xl shadow-md p-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="bg-red-100 p-2 rounded-lg">
-                            <i class="fas fa-fire text-red-600 text-xl"></i>
-                        </div>
-                        <span class="text-xs text-gray-500">Kebakaran</span>
+                <div class="summary-card">
+                    <div class="summary-card-icon bg-red-100">
+                        <i class="fas fa-fire text-red-600"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-800">24</h3>
-                    <p class="text-xs text-gray-600 mt-1">Insiden terdeteksi</p>
+                    <div class="summary-card-title">Kebakaran</div>
+                    <div class="summary-card-value">24</div>
+                    <div class="summary-card-desc">Insiden terdeteksi</div>
                 </div>
                 
-                <div class="card-hover bg-white rounded-xl shadow-md p-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="bg-green-100 p-2 rounded-lg">
-                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
-                        </div>
-                        <span class="text-xs text-gray-500">Kepatuhan</span>
+                <div class="summary-card">
+                    <div class="summary-card-icon bg-green-100">
+                        <i class="fas fa-check-circle text-green-600"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-800">87%</h3>
-                    <p class="text-xs text-gray-600 mt-1">Rata-rata</p>
+                    <div class="summary-card-title">Kepatuhan</div>
+                    <div class="summary-card-value">87%</div>
+                    <div class="summary-card-desc">Rata-rata</div>
                 </div>
                 
-                <div class="card-hover bg-white rounded-xl shadow-md p-4">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="bg-purple-100 p-2 rounded-lg">
-                            <i class="fas fa-tools text-purple-600 text-xl"></i>
-                        </div>
-                        <span class="text-xs text-gray-500">Pemeliharaan</span>
+                <div class="summary-card">
+                    <div class="summary-card-icon bg-purple-100">
+                        <i class="fas fa-tools text-purple-600"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-800">89%</h3>
-                    <p class="text-xs text-gray-600 mt-1">Fasilitas baik</p>
+                    <div class="summary-card-title">Pemeliharaan</div>
+                    <div class="summary-card-value">89%</div>
+                    <div class="summary-card-desc">Fasilitas baik</div>
                 </div>
             </div>
 
             <!-- Summary Findings -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div class="bg-white rounded-xl shadow-md p-4 summary-card">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Ringkasan Temuan Tahunan</h3>
-                    <p class="text-sm text-gray-600">
-                        Berdasarkan inspeksi selama setahun, teridentifikasi 156 risiko aktif di 24 ruangan. 
-                        Kategori terbanyak adalah keamanan dengan tingkat kepatuhan 94%, diikuti kebakaran 91% 
-                        dan fasilitas 89%. Ruangan dengan risiko tertinggi adalah IGD dengan 18 risiko, ICU dengan 15 risiko, 
-                        dan Laboratorium dengan 12 risiko. 
-                    </p>
-                </div>
-                
-                <div class="bg-white rounded-xl shadow-md p-4 summary-card">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Ringkasan Inspeksi APAR</h3>
-                    <p class="text-sm text-gray-600">
-                        Dari 24 ruangan, hanya 5 ruangan yang dilengkapi APAR 2kg (IGD, Kantor, Medrec, Gizi, IPSRS). 
-                        Tiga di antaranya perlu diisi ulang (IGD, Medrec, Kantor). 
-                        Rekomendasi segera pasang APAR di ruangan yang belum memiliki dan lakukan pengisian ulang 
-                        untuk yang sudah terpasang tetapi perlu diisi.
-                    </p>
-                </div>
+            <div class="summary-text">
+                <h3 class="summary-text-title">Ringkasan Temuan Tahunan</h3>
+                <p>
+                    Berdasarkan inspeksi selama setahun, teridentifikasi 156 risiko aktif di 24 ruangan. 
+                    Kategori terbanyak adalah keamanan dengan tingkat kepatuhan 94%, diikuti kebakaran 91% 
+                    dan fasilitas 89%. Ruangan dengan risiko tertinggi adalah IGD dengan 18 risiko, ICU dengan 15 risiko, 
+                    dan Laboratorium dengan 12 risiko.
+                </p>
+            </div>
+            
+            <div class="summary-text">
+                <h3 class="summary-text-title">Ringkasan Inspeksi APAR</h3>
+                <p>
+                    Dari 24 ruangan, hanya 5 ruangan yang dilengkapi APAR 2kg (IGD, Kantor, Medrec, Gizi, IPSRS). 
+                    Tiga di antaranya perlu diisi ulang (IGD, Medrec, Kantor). 
+                    Rekomendasi segera pasang APAR di ruangan yang belum memiliki dan lakukan pengisian ulang 
+                    untuk yang sudah terpasang tetapi perlu diisi.
+                </p>
             </div>
 
-            <!-- Monthly Trend Chart - Visible on Dashboard -->
-            <div class="bg-white rounded-xl shadow-md p-4 mb-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-3">Tren K3RS Bulanan</h3>
-                <div class="chart-container">
+            <!-- Monthly Trend Chart -->
+            <div class="chart-container">
+                <h3 class="chart-title">Tren K3RS Bulanan</h3>
+                <div class="chart-wrapper">
                     <canvas id="trendChart"></canvas>
-                </div>
-                <div class="chart-legend">
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: rgba(59, 130, 246, 0.8);"></div>
-                        <span>Kepatuhan K3RS (%)</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-color" style="background: rgba(239, 68, 68, 0.8);"></div>
-                        <span>Risiko Teridentifikasi (%)</span>
-                    </div>
                 </div>
             </div>
 
             <!-- Quick Links -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white rounded-xl shadow-md p-4">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Ruangan dengan Risiko Tertinggi</h3>
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between p-2 bg-red-50 rounded-lg">
-                            <span class="font-medium text-sm">IGD</span>
-                            <span class="text-xs text-red-600">18 risiko</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 bg-orange-50 rounded-lg">
-                            <span class="font-medium text-sm">ICU</span>
-                            <span class="text-xs text-orange-600">15 risiko</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 bg-yellow-50 rounded-lg">
-                            <span class="font-medium text-sm">LABORATORIUM</span>
-                            <span class="text-xs text-yellow-600">12 risiko</span>
-                        </div>
+            <div class="quick-links">
+                <div class="quick-link-card">
+                    <h3 class="quick-link-title">Ruangan dengan Risiko Tertinggi</h3>
+                    <div class="quick-link-item">
+                        <span class="quick-link-name">IGD</span>
+                        <span class="quick-link-value status-danger">18 risiko</span>
+                    </div>
+                    <div class="quick-link-item">
+                        <span class="quick-link-name">ICU</span>
+                        <span class="quick-link-value status-warning">15 risiko</span>
+                    </div>
+                    <div class="quick-link-item">
+                        <span class="quick-link-name">LABORATORIUM</span>
+                        <span class="quick-link-value status-warning">12 risiko</span>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-md p-4">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-3">Kategori K3RS Terbaik</h3>
-                    <div class="space-y-2">
-                        <div class="flex items-center justify-between p-2 bg-green-50 rounded-lg">
-                            <span class="font-medium text-sm">Keamanan</span>
-                            <span class="text-xs text-green-600">94% kepatuhan</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 bg-green-50 rounded-lg">
-                            <span class="font-medium text-sm">Kebakaran</span>
-                            <span class="text-xs text-green-600">91% kepatuhan</span>
-                        </div>
-                        <div class="flex items-center justify-between p-2 bg-blue-50 rounded-lg">
-                            <span class="font-medium text-sm">Fasilitas</span>
-                            <span class="text-xs text-blue-600">89% kepatuhan</span>
-                        </div>
+                <div class="quick-link-card">
+                    <h3 class="quick-link-title">Kategori K3RS Terbaik</h3>
+                    <div class="quick-link-item">
+                        <span class="quick-link-name">Keamanan</span>
+                        <span class="quick-link-value status-success">94% kepatuhan</span>
+                    </div>
+                    <div class="quick-link-item">
+                        <span class="quick-link-name">Kebakaran</span>
+                        <span class="quick-link-value status-success">91% kepatuhan</span>
+                    </div>
+                    <div class="quick-link-item">
+                        <span class="quick-link-name">Fasilitas</span>
+                        <span class="quick-link-value status-info">89% kepatuhan</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Laporan Inspeksi APAR -->
-        <div id="apar" class="report-content hidden">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Inspeksi APAR</h2>
-                <div class="flex items-center space-x-2 w-full md:w-auto">
-                    <div class="search-container">
-                        <input type="text" id="aparSearch" placeholder="Cari ruangan..." class="form-input">
-                        <button onclick="searchRooms('apar')">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                    <button class="action-button action-button-secondary" onclick="showFilterModal('apar')">
-                        <i class="fas fa-filter mr-1"></i>Filter
-                    </button>
-                </div>
+        <div id="apar" class="content-section hidden">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Laporan Inspeksi APAR</h2>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="aparSearch" placeholder="Cari ruangan..." class="search-input">
             </div>
             
             <!-- Monthly Tabs -->
-            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-                <div class="tab-container">
-                    <button class="tab-button active" onclick="showMonthlyApar('jan')">Jan</button>
-                    <button class="tab-button" onclick="showMonthlyApar('feb')">Feb</button>
-                    <button class="tab-button" onclick="showMonthlyApar('mar')">Mar</button>
-                    <button class="tab-button" onclick="showMonthlyApar('apr')">Apr</button>
-                    <button class="tab-button" onclick="showMonthlyApar('mei')">Mei</button>
-                    <button class="tab-button" onclick="showMonthlyApar('jun')">Jun</button>
-                    <button class="tab-button" onclick="showMonthlyApar('jul')">Jul</button>
-                    <button class="tab-button" onclick="showMonthlyApar('agu')">Agu</button>
-                    <button class="tab-button" onclick="showMonthlyApar('sep')">Sep</button>
-                    <button class="tab-button" onclick="showMonthlyApar('okt')">Okt</button>
-                    <button class="tab-button" onclick="showMonthlyApar('nov')">Nov</button>
-                    <button class="tab-button" onclick="showMonthlyApar('des')">Des</button>
-                </div>
+            <div class="tabs" id="aparTabs">
+                <button class="tab active" onclick="showMonthlyApar('jan')">Jan</button>
+                <button class="tab" onclick="showMonthlyApar('feb')">Feb</button>
+                <button class="tab" onclick="showMonthlyApar('mar')">Mar</button>
+                <button class="tab" onclick="showMonthlyApar('apr')">Apr</button>
+                <button class="tab" onclick="showMonthlyApar('mei')">Mei</button>
+                <button class="tab" onclick="showMonthlyApar('jun')">Jun</button>
+                <button class="tab" onclick="showMonthlyApar('jul')">Jul</button>
+                <button class="tab" onclick="showMonthlyApar('agu')">Agu</button>
+                <button class="tab" onclick="showMonthlyApar('sep')">Sep</button>
+                <button class="tab" onclick="showMonthlyApar('okt')">Okt</button>
+                <button class="tab" onclick="showMonthlyApar('nov')">Nov</button>
+                <button class="tab" onclick="showMonthlyApar('des')">Des</button>
+            </div>
 
-                <!-- Room Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="aparGrid">
-                    <!-- Ruangan akan diisi oleh JavaScript -->
-                </div>
+            <!-- Room Grid -->
+            <div class="room-grid" id="aparGrid">
+                <!-- Ruangan akan diisi oleh JavaScript -->
             </div>
         </div>
 
         <!-- Galeri Kegiatan -->
-        <div id="galeri" class="report-content hidden">
-            <h2 class="text-xl font-bold text-gray-800 mb-6">Galeri Kegiatan K3RS</h2>
+        <div id="galeri" class="content-section hidden">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Galeri Kegiatan K3RS</h2>
             
             <!-- Filter Buttons -->
             <div class="gallery-filters">
@@ -1063,243 +1035,206 @@
         </div>
 
         <!-- Laporan Manajemen Kebakaran -->
-        <div id="kebakaran" class="report-content hidden">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen Kebakaran</h2>
-                <div class="flex items-center space-x-2 w-full md:w-auto">
-                    <div class="search-container">
-                        <input type="text" id="fireSearch" placeholder="Cari ruangan..." class="form-input">
-                        <button onclick="searchRooms('kebakaran')">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                    <button class="action-button action-button-secondary" onclick="showFilterModal('kebakaran')">
-                        <i class="fas fa-filter mr-1"></i>Filter
-                    </button>
-                </div>
+        <div id="kebakaran" class="content-section hidden">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Laporan Manajemen Kebakaran</h2>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="fireSearch" placeholder="Cari ruangan..." class="search-input">
             </div>
             
             <!-- Monthly Tabs -->
-            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-                <div class="tab-container">
-                    <button class="tab-button active" onclick="showMonthlyKebakaran('jan')">Jan</button>
-                    <button class="tab-button" onclick="showMonthlyKebakaran('feb')">Feb</button>
-                    <button class="tab-button" onclick="showMonthlyKebakaran('mar')">Mar</button>
-                    <button class="tab-button" onclick="showMonthlyKebakaran('apr')">Apr</button>
-                    <button class="tab-button" onclick="showMonthlyKebakaran('mei')">Mei</button>
-                    <button class="tab-button" onclick="showMonthlyKebakaran('jun')">Jun</button>
-                    <button class="tab-button" onclick="showMonthlyKebakaran('jul')">Jul</button>
-                    <button class="tab-button" onclick="showMonthlyKebakaran('agu')">Agu</button>
-                    <button class="tab-button" onclick="showMonthlyKebakaran('sep')">Sep</button>
-                    <button class="tab-button" onclick="showMonthlyKebakaran('okt')">Okt</button>
-                    <button class="tab-button" onclick="showMonthlyKebakaran('nov')">Nov</button>
-                    <button class="tab-button" onclick="showMonthlyKebakaran('des')">Des</button>
-                </div>
+            <div class="tabs" id="kebakaranTabs">
+                <button class="tab active" onclick="showMonthlyKebakaran('jan')">Jan</button>
+                <button class="tab" onclick="showMonthlyKebakaran('feb')">Feb</button>
+                <button class="tab" onclick="showMonthlyKebakaran('mar')">Mar</button>
+                <button class="tab" onclick="showMonthlyKebakaran('apr')">Apr</button>
+                <button class="tab" onclick="showMonthlyKebakaran('mei')">Mei</button>
+                <button class="tab" onclick="showMonthlyKebakaran('jun')">Jun</button>
+                <button class="tab" onclick="showMonthlyKebakaran('jul')">Jul</button>
+                <button class="tab" onclick="showMonthlyKebakaran('agu')">Agu</button>
+                <button class="tab" onclick="showMonthlyKebakaran('sep')">Sep</button>
+                <button class="tab" onclick="showMonthlyKebakaran('okt')">Okt</button>
+                <button class="tab" onclick="showMonthlyKebakaran('nov')">Nov</button>
+                <button class="tab" onclick="showMonthlyKebakaran('des')">Des</button>
+            </div>
 
-                <!-- Room Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="kebakaranGrid">
-                    <!-- Ruangan akan diisi oleh JavaScript -->
-                </div>
+            <!-- Room Grid -->
+            <div class="room-grid" id="kebakaranGrid">
+                <!-- Ruangan akan diisi oleh JavaScript -->
             </div>
         </div>
 
         <!-- Laporan Manajemen Bencana -->
-        <div id="bencana" class="report-content hidden">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen Bencana</h2>
-                <div class="flex items-center space-x-2 w-full md:w-auto">
-                    <div class="search-container">
-                        <input type="text" id="disasterSearch" placeholder="Cari ruangan..." class="form-input">
-                        <button onclick="searchRooms('bencana')">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                    <button class="action-button action-button-secondary" onclick="showFilterModal('bencana')">
-                        <i class="fas fa-filter mr-1"></i>Filter
-                    </button>
-                </div>
+        <div id="bencana" class="content-section hidden">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Laporan Manajemen Bencana</h2>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="disasterSearch" placeholder="Cari ruangan..." class="search-input">
             </div>
             
             <!-- Monthly Tabs -->
-            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-                <div class="tab-container">
-                    <button class="tab-button active" onclick="showMonthlyBencana('jan')">Jan</button>
-                    <button class="tab-button" onclick="showMonthlyBencana('feb')">Feb</button>
-                    <button class="tab-button" onclick="showMonthlyBencana('mar')">Mar</button>
-                    <button class="tab-button" onclick="showMonthlyBencana('apr')">Apr</button>
-                    <button class="tab-button" onclick="showMonthlyBencana('mei')">Mei</button>
-                    <button class="tab-button" onclick="showMonthlyBencana('jun')">Jun</button>
-                    <button class="tab-button" onclick="showMonthlyBencana('jul')">Jul</button>
-                    <button class="tab-button" onclick="showMonthlyBencana('agu')">Agu</button>
-                    <button class="tab-button" onclick="showMonthlyBencana('sep')">Sep</button>
-                    <button class="tab-button" onclick="showMonthlyBencana('okt')">Okt</button>
-                    <button class="tab-button" onclick="showMonthlyBencana('nov')">Nov</button>
-                    <button class="tab-button" onclick="showMonthlyBencana('des')">Des</button>
-                </div>
+            <div class="tabs" id="bencanaTabs">
+                <button class="tab active" onclick="showMonthlyBencana('jan')">Jan</button>
+                <button class="tab" onclick="showMonthlyBencana('feb')">Feb</button>
+                <button class="tab" onclick="showMonthlyBencana('mar')">Mar</button>
+                <button class="tab" onclick="showMonthlyBencana('apr')">Apr</button>
+                <button class="tab" onclick="showMonthlyBencana('mei')">Mei</button>
+                <button class="tab" onclick="showMonthlyBencana('jun')">Jun</button>
+                <button class="tab" onclick="showMonthlyBencana('jul')">Jul</button>
+                <button class="tab" onclick="showMonthlyBencana('agu')">Agu</button>
+                <button class="tab" onclick="showMonthlyBencana('sep')">Sep</button>
+                <button class="tab" onclick="showMonthlyBencana('okt')">Okt</button>
+                <button class="tab" onclick="showMonthlyBencana('nov')">Nov</button>
+                <button class="tab" onclick="showMonthlyBencana('des')">Des</button>
+            </div>
 
-                <!-- Room Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="bencanaGrid">
-                    <!-- Ruangan akan diisi oleh JavaScript -->
-                </div>
+            <!-- Room Grid -->
+            <div class="room-grid" id="bencanaGrid">
+                <!-- Ruangan akan diisi oleh JavaScript -->
             </div>
         </div>
 
         <!-- Laporan Manajemen Keamanan -->
-        <div id="keamanan" class="report-content hidden">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen Keamanan</h2>
-                <div class="flex items-center space-x-2 w-full md:w-auto">
-                    <div class="search-container">
-                        <input type="text" id="securitySearch" placeholder="Cari ruangan..." class="form-input">
-                        <button onclick="searchRooms('keamanan')">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                    <button class="action-button action-button-secondary" onclick="showFilterModal('keamanan')">
-                        <i class="fas fa-filter mr-1"></i>Filter
-                    </button>
-                </div>
+        <div id="keamanan" class="content-section hidden">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Laporan Manajemen Keamanan</h2>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="securitySearch" placeholder="Cari ruangan..." class="search-input">
             </div>
             
             <!-- Monthly Tabs -->
-            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-                <div class="tab-container">
-                    <button class="tab-button active" onclick="showMonthlyKeamanan('jan')">Jan</button>
-                    <button class="tab-button" onclick="showMonthlyKeamanan('feb')">Feb</button>
-                    <button class="tab-button" onclick="showMonthlyKeamanan('mar')">Mar</button>
-                    <button class="tab-button" onclick="showMonthlyKeamanan('apr')">Apr</button>
-                    <button class="tab-button" onclick="showMonthlyKeamanan('mei')">Mei</button>
-                    <button class="tab-button" onclick="showMonthlyKeamanan('jun')">Jun</button>
-                    <button class="tab-button" onclick="showMonthlyKeamanan('jul')">Jul</button>
-                    <button class="tab-button" onclick="showMonthlyKeamanan('agu')">Agu</button>
-                    <button class="tab-button" onclick="showMonthlyKeamanan('sep')">Sep</button>
-                    <button class="tab-button" onclick="showMonthlyKeamanan('okt')">Okt</button>
-                    <button class="tab-button" onclick="showMonthlyKeamanan('nov')">Nov</button>
-                    <button class="tab-button" onclick="showMonthlyKeamanan('des')">Des</button>
-                </div>
+            <div class="tabs" id="keamananTabs">
+                <button class="tab active" onclick="showMonthlyKeamanan('jan')">Jan</button>
+                <button class="tab" onclick="showMonthlyKeamanan('feb')">Feb</button>
+                <button class="tab" onclick="showMonthlyKeamanan('mar')">Mar</button>
+                <button class="tab" onclick="showMonthlyKeamanan('apr')">Apr</button>
+                <button class="tab" onclick="showMonthlyKeamanan('mei')">Mei</button>
+                <button class="tab" onclick="showMonthlyKeamanan('jun')">Jun</button>
+                <button class="tab" onclick="showMonthlyKeamanan('jul')">Jul</button>
+                <button class="tab" onclick="showMonthlyKeamanan('agu')">Agu</button>
+                <button class="tab" onclick="showMonthlyKeamanan('sep')">Sep</button>
+                <button class="tab" onclick="showMonthlyKeamanan('okt')">Okt</button>
+                <button class="tab" onclick="showMonthlyKeamanan('nov')">Nov</button>
+                <button class="tab" onclick="showMonthlyKeamanan('des')">Des</button>
+            </div>
 
-                <!-- Room Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="keamananGrid">
-                    <!-- Ruangan akan diisi oleh JavaScript -->
-                </div>
+            <!-- Room Grid -->
+            <div class="room-grid" id="keamananGrid">
+                <!-- Ruangan akan diisi oleh JavaScript -->
             </div>
         </div>
 
         <!-- Laporan Manajemen B3 -->
-        <div id="b3" class="report-content hidden">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen B3</h2>
-                <div class="flex items-center space-x-2 w-full md:w-auto">
-                    <div class="search-container">
-                        <input type="text" id="b3Search" placeholder="Cari ruangan..." class="form-input">
-                        <button onclick="searchRooms('b3')">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                    <button class="action-button action-button-secondary" onclick="showFilterModal('b3')">
-                        <i class="fas fa-filter mr-1"></i>Filter
-                    </button>
-                </div>
+        <div id="b3" class="content-section hidden">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Laporan Manajemen B3</h2>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="b3Search" placeholder="Cari ruangan..." class="search-input">
             </div>
             
             <!-- Monthly Tabs -->
-            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-                <div class="tab-container">
-                    <button class="tab-button active" onclick="showMonthlyB3('jan')">Jan</button>
-                    <button class="tab-button" onclick="showMonthlyB3('feb')">Feb</button>
-                    <button class="tab-button" onclick="showMonthlyB3('mar')">Mar</button>
-                    <button class="tab-button" onclick="showMonthlyB3('apr')">Apr</button>
-                    <button class="tab-button" onclick="showMonthlyB3('mei')">Mei</button>
-                    <button class="tab-button" onclick="showMonthlyB3('jun')">Jun</button>
-                    <button class="tab-button" onclick="showMonthlyB3('jul')">Jul</button>
-                    <button class="tab-button" onclick="showMonthlyB3('agu')">Agu</button>
-                    <button class="tab-button" onclick="showMonthlyB3('sep')">Sep</button>
-                    <button class="tab-button" onclick="showMonthlyB3('okt')">Okt</button>
-                    <button class="tab-button" onclick="showMonthlyB3('nov')">Nov</button>
-                    <button class="tab-button" onclick="showMonthlyB3('des')">Des</button>
-                </div>
+            <div class="tabs" id="b3Tabs">
+                <button class="tab active" onclick="showMonthlyB3('jan')">Jan</button>
+                <button class="tab" onclick="showMonthlyB3('feb')">Feb</button>
+                <button class="tab" onclick="showMonthlyB3('mar')">Mar</button>
+                <button class="tab" onclick="showMonthlyB3('apr')">Apr</button>
+                <button class="tab" onclick="showMonthlyB3('mei')">Mei</button>
+                <button class="tab" onclick="showMonthlyB3('jun')">Jun</button>
+                <button class="tab" onclick="showMonthlyB3('jul')">Jul</button>
+                <button class="tab" onclick="showMonthlyB3('agu')">Agu</button>
+                <button class="tab" onclick="showMonthlyB3('sep')">Sep</button>
+                <button class="tab" onclick="showMonthlyB3('okt')">Okt</button>
+                <button class="tab" onclick="showMonthlyB3('nov')">Nov</button>
+                <button class="tab" onclick="showMonthlyB3('des')">Des</button>
+            </div>
 
-                <!-- Room Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="b3Grid">
-                    <!-- Ruangan akan diisi oleh JavaScript -->
-                </div>
+            <!-- Room Grid -->
+            <div class="room-grid" id="b3Grid">
+                <!-- Ruangan akan diisi oleh JavaScript -->
             </div>
         </div>
 
         <!-- Laporan Manajemen Fasilitas -->
-        <div id="fasilitas" class="report-content hidden">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen Fasilitas</h2>
-                <div class="flex items-center space-x-2 w-full md:w-auto">
-                    <div class="search-container">
-                        <input type="text" id="facilitySearch" placeholder="Cari ruangan..." class="form-input">
-                        <button onclick="searchRooms('fasilitas')">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                    <button class="action-button action-button-secondary" onclick="showFilterModal('fasilitas')">
-                        <i class="fas fa-filter mr-1"></i>Filter
-                    </button>
-                </div>
+        <div id="fasilitas" class="content-section hidden">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Laporan Manajemen Fasilitas</h2>
+            
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="facilitySearch" placeholder="Cari ruangan..." class="search-input">
             </div>
             
             <!-- Monthly Tabs -->
-            <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-                <div class="tab-container">
-                    <button class="tab-button active" onclick="showMonthlyFasilitas('jan')">Jan</button>
-                    <button class="tab-button" onclick="showMonthlyFasilitas('feb')">Feb</button>
-                    <button class="tab-button" onclick="showMonthlyFasilitas('mar')">Mar</button>
-                    <button class="tab-button" onclick="showMonthlyFasilitas('apr')">Apr</button>
-                    <button class="tab-button" onclick="showMonthlyFasilitas('mei')">Mei</button>
-                    <button class="tab-button" onclick="showMonthlyFasilitas('jun')">Jun</button>
-                    <button class="tab-button" onclick="showMonthlyFasilitas('jul')">Jul</button>
-                    <button class="tab-button" onclick="showMonthlyFasilitas('agu')">Agu</button>
-                    <button class="tab-button" onclick="showMonthlyFasilitas('sep')">Sep</button>
-                    <button class="tab-button" onclick="showMonthlyFasilitas('okt')">Okt</button>
-                    <button class="tab-button" onclick="showMonthlyFasilitas('nov')">Nov</button>
-                    <button class="tab-button" onclick="showMonthlyFasilitas('des')">Des</button>
-                </div>
+            <div class="tabs" id="fasilitasTabs">
+                <button class="tab active" onclick="showMonthlyFasilitas('jan')">Jan</button>
+                <button class="tab" onclick="showMonthlyFasilitas('feb')">Feb</button>
+                <button class="tab" onclick="showMonthlyFasilitas('mar')">Mar</button>
+                <button class="tab" onclick="showMonthlyFasilitas('apr')">Apr</button>
+                <button class="tab" onclick="showMonthlyFasilitas('mei')">Mei</button>
+                <button class="tab" onclick="showMonthlyFasilitas('jun')">Jun</button>
+                <button class="tab" onclick="showMonthlyFasilitas('jul')">Jul</button>
+                <button class="tab" onclick="showMonthlyFasilitas('agu')">Agu</button>
+                <button class="tab" onclick="showMonthlyFasilitas('sep')">Sep</button>
+                <button class="tab" onclick="showMonthlyFasilitas('okt')">Okt</button>
+                <button class="tab" onclick="showMonthlyFasilitas('nov')">Nov</button>
+                <button class="tab" onclick="showMonthlyFasilitas('des')">Des</button>
+            </div>
 
-                <!-- Room Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="fasilitasGrid">
-                    <!-- Ruangan akan diisi oleh JavaScript -->
-                </div>
+            <!-- Room Grid -->
+            <div class="room-grid" id="fasilitasGrid">
+                <!-- Ruangan akan diisi oleh JavaScript -->
             </div>
         </div>
     </main>
 
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="#" class="nav-item active" onclick="showSection('dashboard')">
+            <i class="fas fa-home"></i>
+            <span>Beranda</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('apar')">
+            <i class="fas fa-fire-extinguisher"></i>
+            <span>APAR</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('kebakaran')">
+            <i class="fas fa-fire"></i>
+            <span>Kebakaran</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('bencana')">
+            <i class="fas fa-cloud-showers-heavy"></i>
+            <span>Bencana</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('keamanan')">
+            <i class="fas fa-shield-alt"></i>
+            <span>Keamanan</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('b3')">
+            <i class="fas fa-flask"></i>
+            <span>B3</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('fasilitas')">
+            <i class="fas fa-building"></i>
+            <span>Fasilitas</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showSection('galeri')">
+            <i class="fas fa-images"></i>
+            <span>Galeri</span>
+        </a>
+    </nav>
+
     <!-- Detail Modal -->
-    <div id="detailModal" class="detail-modal">
+    <div id="detailModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="text-lg font-bold text-gray-800" id="modalTitle">Detail Laporan</h3>
-                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
+                <h3 class="modal-title" id="modalTitle">Detail Laporan</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body" id="modalContent">
                 <!-- Detail content will be inserted here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Filter Modal -->
-    <div id="filterModal" class="detail-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="text-lg font-bold text-gray-800" id="filterModalTitle">Filter</h3>
-                <button onclick="closeFilterModal()" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="filterContent">
-                    <!-- Filter options will be inserted here -->
-                </div>
-                <div class="flex justify-end space-x-2 mt-4">
-                    <button class="action-button action-button-secondary" onclick="closeFilterModal()">Batal</button>
-                    <button class="action-button action-button-primary" onclick="applyFilter()">Terapkan</button>
-                </div>
             </div>
         </div>
     </div>
@@ -1315,20 +1250,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Notification -->
-    <div id="notification" class="notification">
-        <i class="notification-icon fas fa-check-circle"></i>
-        <span id="notificationText">Notifikasi</span>
-    </div>
-
-    <!-- Footer -->
-    <footer class="footer-gradient text-white py-4 mt-auto">
-        <div class="container mx-auto px-4 text-center">
-            <p class="text-xs">Di kembangkan oleh Tim K3RS/MFK</p>
-            <p class="text-xs mt-1">© 2024 Rumah Sakit Umum Daerah Talaud | Jln. Raya Mala-Melonguane, Talaud, Sulawesi Utara</p>
-        </div>
-    </footer>
 
     <script>
         // Device fingerprinting
@@ -1351,7 +1272,7 @@
             const storedFingerprint = localStorage.getItem('deviceFingerprint');
             if (storedFingerprint && storedFingerprint !== deviceFingerprint) {
                 // Device changed
-                showNotification('Perangkat berubah. Sesi Anda akan diakhiri.', 'error');
+                console.log('Perangkat berubah. Sesi Anda akan diakhiri.');
                 setTimeout(() => {
                     logout();
                 }, 3000);
@@ -1364,41 +1285,10 @@
         function logout() {
             sessionValid = false;
             localStorage.removeItem('sessionValid');
-            showNotification('Anda telah keluar dari sesi', 'info');
+            console.log('Anda telah keluar dari sesi');
         }
         
-        // Show notification
-        function showNotification(message, type = 'success') {
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notificationText');
-            const notificationIcon = notification.querySelector('.notification-icon');
-            
-            // Set message
-            notificationText.textContent = message;
-            
-            // Set type
-            notification.className = 'notification show';
-            notification.classList.remove('notification-success', 'notification-error', 'notification-warning', 'notification-info');
-            notification.classList.add(`notification-${type}`);
-            
-            // Set icon
-            if (type === 'success') {
-                notificationIcon.className = 'notification-icon fas fa-check-circle';
-            } else if (type === 'error') {
-                notificationIcon.className = 'notification-icon fas fa-exclamation-circle';
-            } else if (type === 'warning') {
-                notificationIcon.className = 'notification-icon fas fa-exclamation-triangle';
-            } else if (type === 'info') {
-                notificationIcon.className = 'notification-icon fas fa-info-circle';
-            }
-            
-            // Hide after 3 seconds
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-        
-        // Check for screenshot attempts
+        // Prevent screenshot and print
         function preventScreenshot() {
             // Disable print
             window.addEventListener('beforeprint', () => {
@@ -1505,9 +1395,9 @@
             galleryGrid.innerHTML = galleryData.map(item => `
                 <div class="gallery-item" data-category="${item.category}" onclick="openImageModal(${item.id})">
                     <img src="${item.image}" alt="${item.title}" loading="lazy">
-                    <div class="gallery-item-info">
-                        <h4 class="font-semibold text-sm">${item.title}</h4>
-                        <p class="text-xs opacity-90">${item.date}</p>
+                    <div class="gallery-info">
+                        <h4 class="gallery-title">${item.title}</h4>
+                        <p class="gallery-date">${item.date}</p>
                     </div>
                 </div>
             `).join('');
@@ -1601,66 +1491,52 @@
             }
         }
 
-        // Show report function with page transition
-        function showReport(reportId) {
+        // Show section function
+        function showSection(sectionId) {
             // Check session validity
             if (!sessionValid) {
                 logout();
                 return;
             }
             
-            // Show page transition
-            const pageTransition = document.getElementById('pageTransition');
-            const transitionTitle = document.getElementById('transitionTitle');
-            
-            // Set transition title based on report
-            const reportTitles = {
-                'dashboard': 'Dashboard',
-                'apar': 'Inspeksi APAR',
-                'kebakaran': 'Manajemen Kebakaran',
-                'bencana': 'Manajemen Bencana',
-                'keamanan': 'Manajemen Keamanan',
-                'b3': 'Manajemen B3',
-                'fasilitas': 'Manajemen Fasilitas',
-                'galeri': 'Galeri Kegiatan'
-            };
-            
-            transitionTitle.textContent = `Memuat ${reportTitles[reportId]}...`;
-            pageTransition.classList.add('active');
-            
-            // Hide all reports
-            const reports = document.querySelectorAll('.report-content');
-            reports.forEach(report => {
-                report.classList.add('hidden');
-                report.classList.remove('fade-in');
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.add('hidden');
             });
             
-            // Show selected report after transition
-            setTimeout(() => {
-                const selectedReport = document.getElementById(reportId);
-                if (selectedReport) {
-                    selectedReport.classList.remove('hidden');
-                    setTimeout(() => {
-                        selectedReport.classList.add('fade-in');
-                    }, 100);
-                }
-                
-                // Hide page transition
-                pageTransition.classList.remove('active');
-                
-                // Initialize chart for dashboard
-                if (reportId === 'dashboard') {
-                    initTrendChart();
-                }
-                
-                // Initialize gallery for galeri page
-                if (reportId === 'galeri') {
-                    initGallery();
-                }
-            }, 2000);
+            // Show selected section
+            const selectedSection = document.getElementById(sectionId);
+            if (selectedSection) {
+                selectedSection.classList.remove('hidden');
+                selectedSection.classList.add('fade-in');
+            }
+            
+            // Update navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const activeNavItem = Array.from(navItems).find(item => 
+                item.getAttribute('onclick').includes(sectionId)
+            );
+            if (activeNavItem) {
+                activeNavItem.classList.add('active');
+            }
+            
+            // Initialize chart for dashboard
+            if (sectionId === 'dashboard') {
+                initTrendChart();
+            }
+            
+            // Initialize gallery for galeri page
+            if (sectionId === 'galeri') {
+                initGallery();
+            }
         }
 
-        // Initialize trend chart with short columns
+        // Initialize trend chart
         function initTrendChart() {
             const ctx = document.getElementById('trendChart').getContext('2d');
             window.trendChart = new Chart(ctx, {
@@ -1748,325 +1624,186 @@
             modal.classList.remove('active');
         }
 
-        // Show filter modal
-        function showFilterModal(category) {
-            const modal = document.getElementById('filterModal');
-            const modalTitle = document.getElementById('filterModalTitle');
-            const filterContent = document.getElementById('filterContent');
-            
-            modalTitle.textContent = `Filter - ${category}`;
-            
-            // Generate filter options based on category
-            let filterOptions = '';
-            switch(category) {
-                case 'apar':
-                    filterOptions = `
-                        <div class="form-group">
-                            <label class="form-label">Status APAR</label>
-                            <select class="form-input" id="filterStatus">
-                                <option value="all">Semua</option>
-                                <option value="available">Tersedia</option>
-                                <option value="need-refill">Perlu Isi Ulang</option>
-                                <option value="not-available">Tidak Tersedia</option>
-                            </select>
-                        </div>
-                    `;
-                    break;
-                case 'kebakaran':
-                    filterOptions = `
-                        <div class="form-group">
-                            <label class="form-label">Status Kebakaran</label>
-                            <select class="form-input" id="filterFireStatus">
-                                <option value="all">Semua</option>
-                                <option value="no-equipment">Tidak Ada Peralatan</option>
-                                <option value="complete">Lengkap</option>
-                            </select>
-                        </div>
-                    `;
-                    break;
-                case 'bencana':
-                    filterOptions = `
-                        <div class="form-group">
-                            <label class="form-label">Tingkat Kesiapan</label>
-                            <select class="form-input" id="filterReadiness">
-                                <option value="all">Semua</option>
-                                <option value="high">Tinggi (>80%)</option>
-                                <option value="medium">Sedang (60-80%)</option>
-                                <option value="low">Rendah (<60%)</option>
-                            </select>
-                        </div>
-                    `;
-                    break;
-                case 'keamanan':
-                    filterOptions = `
-                        <div class="form-group">
-                            <label class="form-label">Sistem Keamanan</label>
-                            <select class="form-input" id="filterSecurity">
-                                <option value="all">Semua</option>
-                                <option value="normal">Normal</option>
-                                <option value="warning">Perhatian</option>
-                                <option value="critical">Kritis</option>
-                            </select>
-                        </div>
-                    `;
-                    break;
-                case 'b3':
-                    filterOptions = `
-                        <div class="form-group">
-                            <label class="form-label">Tingkat Kepatuhan</label>
-                            <select class="form-input" id="filterCompliance">
-                                <option value="all">Semua</option>
-                                <option value="high">Tinggi (>80%)</option>
-                                <option value="medium">Sedang (60-80%)</option>
-                                <option value="low">Rendah (<60%)</option>
-                            </select>
-                        </div>
-                    `;
-                    break;
-                case 'fasilitas':
-                    filterOptions = `
-                        <div class="form-group">
-                            <label class="form-label">Kondisi Fasilitas</label>
-                            <select class="form-input" id="filterFacility">
-                                <option value="all">Semua</option>
-                                <option value="good">Baik</option>
-                                <option value="needs-maintenance">Perlu Perawatan</option>
-                                <option value="damaged">Rusak</option>
-                            </select>
-                        </div>
-                    `;
-                    break;
-            }
-            
-            filterContent.innerHTML = filterOptions;
-            currentFilter = category;
-            modal.classList.add('active');
-        }
-
-        // Close filter modal
-        function closeFilterModal() {
-            const modal = document.getElementById('filterModal');
-            modal.classList.remove('active');
-            currentFilter = null;
-        }
-
-        // Apply filter
-        function applyFilter() {
-            if (!currentFilter) return;
-            
-            // Get filter value based on category
-            let filterValue = 'all';
-            switch(currentFilter) {
-                case 'apar':
-                    filterValue = document.getElementById('filterStatus').value;
-                    break;
-                case 'kebakaran':
-                    filterValue = document.getElementById('filterFireStatus').value;
-                    break;
-                case 'bencana':
-                    filterValue = document.getElementById('filterReadiness').value;
-                    break;
-                case 'keamanan':
-                    filterValue = document.getElementById('filterSecurity').value;
-                    break;
-                case 'b3':
-                    filterValue = document.getElementById('filterCompliance').value;
-                    break;
-                case 'fasilitas':
-                    filterValue = document.getElementById('filterFacility').value;
-                    break;
-            }
-            
-            // Apply filter to the current view
-            switch(currentFilter) {
-                case 'apar':
-                    applyAparFilter(filterValue);
-                    break;
-                case 'kebakaran':
-                    applyKebakaranFilter(filterValue);
-                    break;
-                case 'bencana':
-                    applyBencanaFilter(filterValue);
-                    break;
-                case 'keamanan':
-                    applyKeamananFilter(filterValue);
-                    break;
-                case 'b3':
-                    applyB3Filter(filterValue);
-                    break;
-                case 'fasilitas':
-                    applyFasilitasFilter(filterValue);
-                    break;
-            }
-            
-            closeFilterModal();
-            showNotification('Filter berhasil diterapkan', 'success');
-        }
-
-        // Apply APAR filter
-        function applyAparFilter(filterValue) {
+        // Show monthly reports for each category
+        function showMonthlyApar(month) {
+            updateMonthTabs('apar', month);
             const grid = document.getElementById('aparGrid');
-            const items = grid.querySelectorAll('.room-card');
             
-            items.forEach(item => {
-                const roomName = item.querySelector('h4').textContent;
-                const statusElement = item.querySelector('.status-badge');
+            grid.innerHTML = rooms.map(room => {
+                const hasApar = roomsWithApar.includes(room);
+                const needRefill = roomsNeedRefill.includes(room);
                 
-                let shouldShow = true;
-                if (filterValue === 'available') {
-                    shouldShow = roomsWithApar.includes(roomName) && !roomsNeedRefill.includes(roomName);
-                } else if (filterValue === 'need-refill') {
-                    shouldShow = roomsNeedRefill.includes(roomName);
-                } else if (filterValue === 'not-available') {
-                    shouldShow = !roomsWithApar.includes(roomName);
+                let statusClass = '';
+                let statusText = '';
+                let statusIcon = '';
+                
+                if (hasApar && !needRefill) {
+                    statusClass = 'status-success';
+                    statusText = 'Tersedia';
+                    statusIcon = 'fas fa-check-circle';
+                } else if (hasApar && needRefill) {
+                    statusClass = 'status-warning';
+                    statusText = 'Perlu Isi Ulang';
+                    statusIcon = 'fas fa-exclamation-triangle';
+                } else {
+                    statusClass = 'status-danger';
+                    statusText = 'Tidak Tersedia';
+                    statusIcon = 'fas fa-times-circle';
                 }
                 
-                item.style.display = shouldShow ? 'block' : 'none';
-            });
+                return `
+                    <div class="room-card" onclick="showDetail('${room}', '${month}', 'APAR')">
+                        <h4 class="room-name">${room}</h4>
+                        <div class="room-info">
+                            <span class="text-xs text-gray-600">APAR 2kg</span>
+                            <span class="status-badge ${statusClass}">
+                                <i class="${statusIcon} mr-1"></i>${statusText}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
-        // Apply Kebakaran filter
-        function applyKebakaranFilter(filterValue) {
+        function showMonthlyKebakaran(month) {
+            updateMonthTabs('kebakaran', month);
             const grid = document.getElementById('kebakaranGrid');
-            const items = grid.querySelectorAll('.room-card');
             
-            items.forEach(item => {
-                if (filterValue === 'no-equipment') {
-                    item.style.display = 'block';
-                } else if (filterValue === 'complete') {
-                    item.style.display = 'none';
-                } else {
-                    item.style.display = 'block';
-                }
-            });
+            grid.innerHTML = rooms.map(room => `
+                <div class="room-card" onclick="showDetail('${room}', '${month}', 'Kebakaran')">
+                    <h4 class="room-name">${room}</h4>
+                    <div class="room-info">
+                        <span class="text-xs text-gray-600">Tidak ada AP</span>
+                        <span class="status-badge status-danger">Perbaatan</span>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // Apply Bencana filter
-        function applyBencanaFilter(filterValue) {
+        function showMonthlyBencana(month) {
+            updateMonthTabs('bencana', month);
             const grid = document.getElementById('bencanaGrid');
-            const items = grid.querySelectorAll('.room-card');
-            
-            items.forEach(item => {
-                const readinessText = item.querySelector('.status-badge').textContent;
-                let readinessValue = parseInt(readinessText);
-                
-                let shouldShow = true;
-                if (filterValue === 'high') {
-                    shouldShow = readinessValue > 80;
-                } else if (filterValue === 'medium') {
-                    shouldShow = readinessValue >= 60 && readinessValue <= 80;
-                } else if (filterValue === 'low') {
-                    shouldShow = readinessValue < 60;
-                }
-                
-                item.style.display = shouldShow ? 'block' : 'none';
-            });
-        }
-
-        // Apply Keamanan filter
-        function applyKeamananFilter(filterValue) {
-            const grid = document.getElementById('keamananGrid');
-            const items = grid.querySelectorAll('.room-card');
-            
-            items.forEach(item => {
-                const statusElement = item.querySelector('.status-badge');
-                const statusText = statusElement.textContent;
-                
-                let shouldShow = true;
-                if (filterValue === 'normal') {
-                    shouldShow = statusText === 'Normal';
-                } else if (filterValue === 'warning') {
-                    shouldShow = statusText === 'Perhatian';
-                } else if (filterValue === 'critical') {
-                    shouldShow = statusText === 'Kritis';
-                }
-                
-                item.style.display = shouldShow ? 'block' : 'none';
-            });
-        }
-
-        // Apply B3 filter
-        function applyB3Filter(filterValue) {
-            const grid = document.getElementById('b3Grid');
-            const items = grid.querySelectorAll('.room-card');
-            
-            items.forEach(item => {
-                const complianceText = item.querySelector('.status-badge').textContent;
-                let complianceValue = parseInt(complianceText);
-                
-                let shouldShow = true;
-                if (filterValue === 'high') {
-                    shouldShow = complianceValue > 80;
-                } else if (filterValue === 'medium') {
-                    shouldShow = complianceValue >= 60 && complianceValue <= 80;
-                } else if (filterValue === 'low') {
-                    shouldShow = complianceValue < 60;
-                }
-                
-                item.style.display = shouldShow ? 'block' : 'none';
-            });
-        }
-
-        // Apply Fasilitas filter
-        function applyFasilitasFilter(filterValue) {
-            const grid = document.getElementById('fasilitasGrid');
-            const items = grid.querySelectorAll('.room-card');
-            
-            items.forEach(item => {
-                const statusElement = item.querySelector('.status-badge');
-                const statusText = statusElement.textContent;
-                
-                let shouldShow = true;
-                if (filterValue === 'good') {
-                    shouldShow = statusText === 'Baik';
-                } else if (filterValue === 'needs-maintenance') {
-                    shouldShow = statusText === 'Perlu Perawatan';
-                } else if (filterValue === 'damaged') {
-                    shouldShow = statusText === 'Rusak';
-                }
-                
-                item.style.display = shouldShow ? 'block' : 'none';
-            });
-        }
-
-        // Search rooms function
-        function searchRooms(category) {
-            const searchInput = document.getElementById(`${category}Search`);
-            const searchTerm = searchInput.value.toLowerCase();
-            
-            let gridId = '';
-            switch(category) {
-                case 'apar':
-                    gridId = 'aparGrid';
-                    break;
-                case 'kebakaran':
-                    gridId = 'kebakaranGrid';
-                    break;
-                case 'bencana':
-                    gridId = 'bencanaGrid';
-                    break;
-                case 'keamanan':
-                    gridId = 'keamananGrid';
-                    break;
-                case 'b3':
-                    gridId = 'b3Grid';
-                    break;
-                case 'fasilitas':
-                    gridId = 'fasilitasGrid';
-                    break;
-            }
-            
-            const grid = document.getElementById(gridId);
-            const items = grid.querySelectorAll('.room-card');
-            
-            items.forEach(item => {
-                const roomName = item.querySelector('h4').textContent.toLowerCase();
-                if (roomName.includes(searchTerm)) {
-                    item.style.display = 'block';
+            grid.innerHTML = rooms.map(room => {
+                const readiness = generateRandomData(60, 95);
+                let statusClass = '';
+                if (readiness > 80) {
+                    statusClass = 'status-success';
+                } else if (readiness >= 60) {
+                    statusClass = 'status-warning';
                 } else {
-                    item.style.display = 'none';
+                    statusClass = 'status-danger';
                 }
+                
+                return `
+                    <div class="room-card" onclick="showDetail('${room}', '${month}', 'Bencana')">
+                        <h4 class="room-name">${room}</h4>
+                        <div class="room-info">
+                            <span class="text-xs text-gray-600">${readiness}%</span>
+                            <span class="status-badge ${statusClass}">${readiness > 80 ? 'Tinggi' : readiness >= 60 ? 'Sedang' : 'Rendah'}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showMonthlyKeamanan(month) {
+            updateMonthTabs('keamanan', month);
+            const grid = document.getElementById('keamananGrid');
+            grid.innerHTML = rooms.map(room => {
+                const security = generateRandomData(80, 100);
+                let statusClass = '';
+                let statusText = '';
+                
+                if (security > 90) {
+                    statusClass = 'status-success';
+                    statusText = 'Normal';
+                } else if (security >= 80) {
+                    statusClass = 'status-warning';
+                    statusText = 'Perhatian';
+                } else {
+                    statusClass = 'status-danger';
+                    statusText = 'Kritis';
+                }
+                
+                return `
+                    <div class="room-card" onclick="showDetail('${room}', '${month}', 'Keamanan')">
+                        <h4 class="room-name">${room}</h4>
+                        <div class="room-info">
+                            <span class="text-xs text-gray-600">${security}%</span>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showMonthlyB3(month) {
+            updateMonthTabs('b3', month);
+            const grid = document.getElementById('b3Grid');
+            grid.innerHTML = rooms.map(room => {
+                const compliance = generateRandomData(70, 100);
+                let statusClass = '';
+                if (compliance > 80) {
+                    statusClass = 'status-success';
+                } else if (compliance >= 60) {
+                    statusClass = 'status-warning';
+                } else {
+                    statusClass = 'status-danger';
+                }
+                
+                return `
+                    <div class="room-card" onclick="showDetail('${room}', '${month}', 'B3')">
+                        <h4 class="room-name">${room}</h4>
+                        <div class="room-info">
+                            <span class="text-xs text-gray-600">${compliance}%</span>
+                            <span class="status-badge ${statusClass}">${compliance > 80 ? 'Tinggi' : compliance >= 60 ? 'Sedang' : 'Rendah'}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showMonthlyFasilitas(month) {
+            updateMonthTabs('fasilitas', month);
+            const grid = document.getElementById('fasilitasGrid');
+            grid.innerHTML = rooms.map(room => {
+                const facility = generateRandomData(70, 100);
+                let statusClass = '';
+                let statusText = '';
+                
+                if (facility > 85) {
+                    statusClass = 'status-success';
+                    statusText = 'Baik';
+                } else if (facility >= 70) {
+                    statusClass = 'status-warning';
+                    statusText = 'Perlu Perawatan';
+                } else {
+                    statusClass = 'status-danger';
+                    statusText = 'Rusak';
+                }
+                
+                return `
+                    <div class="room-card" onclick="showDetail('${room}', '${month}', 'Fasilitas')">
+                        <h4 class="room-name">${room}</h4>
+                        <div class="room-info">
+                            <span class="text-xs text-gray-600">${facility}%</span>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateMonthTabs(category, activeMonth) {
+            const tabs = document.querySelectorAll(`#${category} .tab`);
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
             });
+            
+            const activeTab = Array.from(tabs).find(tab => tab.textContent.toLowerCase().includes(activeMonth));
+            if (activeTab) {
+                activeTab.classList.add('active');
+            }
         }
 
         // Get month name
@@ -2088,73 +1825,7 @@
             return months[month] || month;
         }
 
-        // Generate risk matrix
-        function generateRiskMatrix(room, month) {
-            const risks = [
-                { name: 'Kerusakan Alat Medis', likelihood: 4, impact: 5, risk: 20 },
-                { name: 'Infeksi Nosokomial', likelihood: 3, impact: 4, risk: 12 },
-                { name: 'Kecelakaan Kerja', likelihood: 2, impact: 3, risk: 6 },
-                { name: 'Kerusakan Infrastruktur', likelihood: 3, impact: 4, risk: 12 },
-                { name: 'Kehilangan Data', likelihood: 2, impact: 5, risk: 10 }
-            ];
-
-            let matrixHtml = `
-                <div class="mb-4">
-                    <h4 class="text-md font-semibold mb-2">Matriks Risiko - ${room}</h4>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full border-collapse border border-gray-300 text-xs">
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="border border-gray-300 px-2 py-1 text-left">Risiko</th>
-                                    <th class="border border-gray-300 px-2 py-1 text-center">Kemungkinan</th>
-                                    <th class="border border-gray-300 px-2 py-1 text-center">Dampak</th>
-                                    <th class="border border-gray-300 px-2 py-1 text-center">Skor Risiko</th>
-                                    <th class="border border-gray-300 px-2 py-1 text-center">Mitigasi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-            `;
-
-            risks.forEach(risk => {
-                const riskColor = risk.risk >= 15 ? 'risk-high' : risk.risk >= 10 ? 'risk-medium' : 'risk-low';
-                const mitigasi = getMitigation(risk.name);
-                
-                matrixHtml += `
-                    <tr>
-                        <td class="border border-gray-300 px-2 py-1 text-xs">${risk.name}</td>
-                        <td class="border border-gray-300 px-2 py-1 text-center text-xs">${risk.likelihood}</td>
-                        <td class="border border-gray-300 px-2 py-1 text-center text-xs">${risk.impact}</td>
-                        <td class="border border-gray-300 px-2 py-1 text-center text-xs">
-                            <span class="px-1 py-0.5 rounded ${riskColor} text-xs">${risk.risk}</span>
-                        </td>
-                        <td class="border border-gray-300 px-2 py-1 text-xs">${mitigasi}</td>
-                    </tr>
-                `;
-            });
-
-            matrixHtml += `
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            `;
-
-            return matrixHtml;
-        }
-
-        // Get mitigation based on risk name
-        function getMitigation(riskName) {
-            const mitigations = {
-                'Kerusakan Alat Medis': 'Perawatan rutin, kalibrasi berkala, training penggunaan',
-                'Infeksi Nosokomial': 'Protokol sterilisasi, monitoring rutin, edukasi staff',
-                'Kecelakaan Kerja': 'Pelatihan K3, inspeksi lingkungan, SOP jelas',
-                'Kerusakan Infrastruktur': 'Inspeksi berkala, perbaikan cepat, rencana backup',
-                'Kehilangan Data': 'Backup otomatis, enkripsi data, akses terbatas'
-            };
-            return mitigations[riskName] || 'Perlu ditindaklanjuti';
-        }
-
-        // Generate APAR detail
+        // Generate detailed reports with recommendations
         function generateAparDetail(room, month) {
             const hasApar = roomsWithApar.includes(room);
             const needRefill = roomsNeedRefill.includes(room);
@@ -2187,11 +1858,46 @@
                         <p class="text-xs">${room}: ${statusText}</p>
                     </div>
                     
-                    ${generateRiskMatrix(room, month)}
+                    <div class="risk-matrix">
+                        <table class="risk-table">
+                            <thead>
+                                <tr>
+                                    <th>Risiko</th>
+                                    <th>Kemungkinan</th>
+                                    <th>Dampak</th>
+                                    <th>Skor Risiko</th>
+                                    <th>Mitigasi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-xs">Kerusakan Alat Medis</td>
+                                    <td class="text-center">4</td>
+                                    <td class="text-center">5</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-high text-xs">20</span></td>
+                                    <td class="text-xs">Perawatan rutin</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-xs">Infeksi Nosokomial</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center">4</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-medium text-xs">12</span></td>
+                                    <td class="text-xs">Protokol sterilisasi</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-xs">Kecelakaan Kerja</td>
+                                    <td class="text-center">2</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-low text-xs">6</span></td>
+                                    <td class="text-xs">Pelatihan K3</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     
-                    <div class="space-y-3">
-                        <h4 class="font-semibold text-gray-800 text-sm">Rekomendasi</h4>
-                        <ul class="text-xs text-gray-600 space-y-1">
+                    <div class="recommendations">
+                        <h4 class="recommendations-title">Rekomendasi</h4>
+                        <ul class="recommendations-list">
                             ${!hasApar ? '<li>• Segera pasang minimal 1 unit APAR 2kg di ruangan ini</li>' : ''}
                             ${needRefill ? '<li>• Isi ulang APAR 2kg di ruangan ini</li>' : ''}
                             <li>• Lakukan inspeksi rutin setiap bulan</li>
@@ -2202,7 +1908,6 @@
             `;
         }
 
-        // Generate detailed reports with recommendations
         function generateKebakaranDetail(room, month) {
             return `
                 <div class="space-y-4">
@@ -2211,37 +1916,46 @@
                         <p class="text-xs text-red-800">Pada bulan ${getMonthName(month)}, ruangan ${room} tidak memiliki AP 2kg, AP 9kg, AP kering, atau alarm kebakaran. Hanya jalur evakuasi yang tersedia.</p>
                     </div>
                     
-                    ${generateRiskMatrix(room, month)}
-                    
-                    <div class="space-y-3">
-                        <h4 class="font-semibold text-gray-800 text-sm">Pemeriksaan Kebakaran</h4>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="border rounded-lg p-2">
-                                <h5 class="font-medium mb-1 text-xs">AP 2 kg</h5>
-                                <p class="text-xs text-gray-600 warning-danger">0 <span class="text-red-600 font-bold">Unit</span></p>
-                            </div>
-                            <div class="border rounded-lg p-2">
-                                <h5 class="font-medium mb-1 text-xs">AP 9 kg</h5>
-                                <p class="text-xs text-gray-600 warning-danger">0 <span class="text-red-600 font-bold">Unit</span></p>
-                            </div>
-                            <div class="border rounded-lg p-2">
-                                <h5 class="font-medium mb-1 text-xs">AP Kering</h5>
-                                <p class="text-xs text-gray-600 warning-danger">0 <span class="text-red-600 font-bold">Unit</span></p>
-                            </div>
-                            <div class="border rounded-lg p-2">
-                                <h5 class="font-medium mb-1 text-xs">Alarm Kebakaran</h5>
-                                <p class="text-xs text-gray-600 warning-danger">0 <span class="text-red-600 font-bold">Unit</span></p>
-                            </div>
-                            <div class="border rounded-lg p-2 col-span-2">
-                                <h5 class="font-medium mb-1 text-xs">Jalur Evakuasi</h5>
-                                <p class="text-xs text-gray-600">1 titik</p>
-                            </div>
-                        </div>
+                    <div class="risk-matrix">
+                        <table class="risk-table">
+                            <thead>
+                                <tr>
+                                    <th>Risiko</th>
+                                    <th>Kemungkinan</th>
+                                    <th>Dampak</th>
+                                    <th>Skor Risiko</th>
+                                    <th>Mitigasi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-xs">Kerusakan Alat Medis</td>
+                                    <td class="text-center">4</td>
+                                    <td class="text-center">5</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-high text-xs">20</span></td>
+                                    <td class="text-xs">Perawatan rutin</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-xs">Infeksi Nosokomial</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center">4</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-medium text-xs">12</span></td>
+                                    <td class="text-xs">Protokol sterilisasi</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-xs">Kecelakaan Kerja</td>
+                                    <td class="text-center">2</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-low text-xs">6</span></td>
+                                    <td class="text-xs">Pelatihan K3</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     
                     <div class="bg-gray-50 p-3 rounded-lg">
                         <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="text-xs text-gray-600 space-y-1">
+                        <ul class="recommendations-list">
                             <li>• Segera pasang minimal 1 unit AP 2kg</li>
                             <li>• Pertimbangkan untuk menambahkan AP 9kg</li>
                             <li>• Pasang alarm kebakaran untuk keamanan maksimal</li>
@@ -2254,39 +1968,63 @@
         }
 
         function generateBencanaDetail(room, month) {
+            const readiness = generateRandomData(60, 95);
+            let statusClass = '';
+            if (readiness > 80) {
+                statusClass = 'status-success';
+            } else if (readiness >= 60) {
+                statusClass = 'status-warning';
+            } else {
+                statusClass = 'status-danger';
+            }
+            
             return `
                 <div class="space-y-4">
                     <div class="bg-purple-50 p-3 rounded-lg">
                         <h4 class="font-semibold text-purple-900 mb-1 text-sm">Kesiapan Bencana</h4>
-                        <p class="text-xs text-purple-800">Ruangan ${room} siap menghadapi bencana alam dengan tingkat kesiapan ${generateRandomData(60, 95)}%</p>
+                        <p class="text-xs text-purple-800">Ruangan ${room} siap menghadapi bencana alam dengan tingkat kesiapan ${readiness}%</p>
                     </div>
                     
-                    ${generateRiskMatrix(room, month)}
-                    
-                    <div class="space-y-3">
-                        <h4 class="font-semibold text-gray-800 text-sm">Persediaan Darurat</h4>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div class="border rounded-lg p-2 text-center">
-                                <i class="fas fa-first-aid text-xl text-red-600 mb-1"></i>
-                                <h5 class="font-medium text-xs">P3K</h5>
-                                <p class="text-xs text-gray-600 warning-danger">Tidak <span class="text-red-600 font-bold">Tersedia</span></p>
-                            </div>
-                            <div class="border rounded-lg p-2 text-center">
-                                <i class="fas fa-tshirt text-xl text-blue-600 mb-1"></i>
-                                <h5 class="font-medium text-xs">Pakaian</h5>
-                                <p class="text-xs text-gray-600">Selalu tersedia</p>
-                            </div>
-                            <div class="border rounded-lg p-2 text-center">
-                                <i class="fas fa-utensils text-xl text-green-600 mb-1"></i>
-                                <h5 class="font-medium text-xs">Makanan</h5>
-                                <p class="text-xs text-gray-600">Selalu tersedia</p>
-                            </div>
-                        </div>
+                    <div class="risk-matrix">
+                        <table class="risk-table">
+                            <thead>
+                                <tr>
+                                    <th>Risiko</th>
+                                    <th>Kemungkinan</th>
+                                    <th>Dampak</th>
+                                    <th>Skor Risiko</th>
+                                    <th>Mitigasi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-xs">Kerusakan Alat Medis</td>
+                                    <td class="text-center">4</td>
+                                    <td class="text-center">5</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-high text-xs">20</span></td>
+                                    <td class="text-xs">Perawatan rutin</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-xs">Infeksi Nosokomial</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center">4</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-medium text-xs">12</span></td>
+                                    <td class="text-xs">Protokol sterilisasi</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-xs">Kecelakaan Kerja</td>
+                                    <td class="text-center">2</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-low text-xs">6</span></td>
+                                    <td class="text-xs">Pelatihan K3</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     
                     <div class="bg-gray-50 p-3 rounded-lg">
                         <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="text-xs text-gray-600 space-y-1">
+                        <ul class="recommendations-list">
                             <li>• Sediakan P3K minimal di setiap ruangan</li>
                             <li>• Lakukan simulasi evakuasi minimal 1 kali setiap 6 bulan</li>
                             <li>• Pastikan semua staf mengetahui prosedur evakuasi</li>
@@ -2298,36 +2036,68 @@
         }
 
         function generateKeamananDetail(room, month) {
+            const security = generateRandomData(80, 100);
+            let statusClass = '';
+            let statusText = '';
+            
+            if (security > 90) {
+                statusClass = 'status-success';
+                statusText = 'Normal';
+            } else if (security >= 80) {
+                statusClass = 'status-warning';
+                statusText = 'Perhatian';
+            } else {
+                statusClass = 'status-danger';
+                statusText = 'Kritis';
+            }
+            
             return `
                 <div class="space-y-4">
                     <div class="bg-green-50 p-3 rounded-lg">
                         <h4 class="font-semibold text-green-900 mb-1 text-sm">Status Keamanan</h4>
-                        <p class="text-xs text-green-800">Keamanan ruangan ${room} dalam kondisi ${generateRandomData(80, 100)}% baik</p>
+                        <p class="text-xs text-green-800">Keamanan ruangan ${room} dalam kondisi ${security}% baik</p>
                     </div>
                     
-                    ${generateRiskMatrix(room, month)}
-                    
-                    <div class="space-y-3">
-                        <h4 class="font-semibold text-gray-800 text-sm">Sistem Keamanan</h4>
-                        <div class="space-y-2">
-                            <div class="flex justify-between items-center p-2 border rounded-lg">
-                                <span class="text-sm">CCTV</span>
-                                <p class="text-xs text-gray-600 warning-danger">Tidak <span class="text-red-600 font-bold">Tersedia</span></p>
-                            </div>
-                            <div class="flex justify-between items-center p-2 border rounded-lg">
-                                <span class="text-sm">Access Control</span>
-                                <span class="text-xs text-green-600">Normal</span>
-                            </div>
-                            <div class="flex justify-between items-center p-2 border rounded-lg">
-                                <span class="text-sm">Alarm Keamanan</span>
-                                <p class="text-xs text-gray-600 warning-danger">Tidak <span class="text-red-600 font-bold">Tersedia</span></p>
-                            </div>
-                        </div>
+                    <div class="risk-matrix">
+                        <table class="risk-table">
+                            <thead>
+                                <tr>
+                                    <th>Risiko</th>
+                                    <th>Kemungkinan</th>
+                                    <th>Dampak</th>
+                                    <th>Skor Risiko</th>
+                                    <th>Mitigasi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-xs">Kerusakan Alat Medis</td>
+                                    <td class="text-center">4</td>
+                                    <td class="text-center">5</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-high text-xs">20</span></td>
+                                    <td class="text-xs">Perawatan rutin</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-xs">Infeksi Nosokomial</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center">4</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-medium text-xs">12</span></td>
+                                    <td class="text-xs">Protokol sterilisasi</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-xs">Kecelakaan Kerja</td>
+                                    <td class="text-center">2</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-low text-xs">6</span></td>
+                                    <td class="text-xs">Pelatihan K3</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     
                     <div class="bg-gray-50 p-3 rounded-lg">
                         <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="text-xs text-gray-600 space-y-1">
+                        <ul class="recommendations-list">
                             <li>• Pasang CCTV di area kritis</li>
                             <li>• Pasang alarm keamanan di setiap lantai</li>
                             <li>• Lakukan patroli rutin setiap 2 jam</li>
@@ -2339,32 +2109,63 @@
         }
 
         function generateB3Detail(room, month) {
+            const compliance = generateRandomData(70, 100);
+            let statusClass = '';
+            if (compliance > 80) {
+                statusClass = 'status-success';
+            } else if (compliance >= 60) {
+                statusClass = 'status-warning';
+            } else {
+                statusClass = 'status-danger';
+            }
+            
             return `
                 <div class="space-y-4">
                     <div class="bg-yellow-50 p-3 rounded-lg">
                         <h4 class="font-semibold text-yellow-900 mb-1 text-sm">Status B3</h4>
-                        <p class="text-xs text-yellow-800">Pengelolaan B3 di ruangan ${room} sesuai standar ${generateRandomData(70, 100)}%</p>
+                        <p class="text-xs text-yellow-800">Pengelolaan B3 di ruangan ${room} sesuai standar ${compliance}%</p>
                     </div>
                     
-                    ${generateRiskMatrix(room, month)}
-                    
-                    <div class="space-y-3">
-                        <h4 class="font-semibold text-gray-800 text-sm">Inventaris B3</h4>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="border rounded-lg p-2">
-                                <h5 class="font-medium mb-1 text-xs">Kimia Beracun</h5>
-                                <p class="text-xs text-gray-600">${generateRandomData(1, 10)} jenis</p>
-                            </div>
-                            <div class="border rounded-lg p-2">
-                                <h5 class="font-medium mb-1 text-xs">Radiokatif</h5>
-                                <p class="text-xs text-gray-600">${generateRandomData(0, 3)} jenis</p>
-                            </div>
-                        </div>
+                    <div class="risk-matrix">
+                        <table class="risk-table">
+                            <thead>
+                                <tr>
+                                    <th>Risiko</th>
+                                    <th>Kemungkinan</th>
+                                    <th>Dampak</th>
+                                    <th>Skor Risiko</th>
+                                    <th>Mitigasi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-xs">Kerusakan Alat Medis</td>
+                                    <td class="text-center">4</td>
+                                    <td class="text-center">5</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-high text-xs">20</span></td>
+                                    <td class="text-xs">Perawatan rutin</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-xs">Infeksi Nosokomial</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center">4</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-medium text-xs">12</span></td>
+                                    <td class="text-xs">Protokol sterilisasi</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-xs">Kecelakaan Kerja</td>
+                                    <td class="text-center">2</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-low text-xs">6</span></td>
+                                    <td class="text-xs">Pelatihan K3</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     
                     <div class="bg-gray-50 p-3 rounded-lg">
                         <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="text-xs text-gray-600 space-y-1">
+                        <ul class="recommendations-list">
                             <li>• Pisahkan limbah medis dan non medis dengan jelas</li>
                             <li>• Sediakan tempat penimbunan limbah B3 khusus</li>
                             <li>• Lakukan pelatihan pengelolaan limbah B3 minimal 1 kali setahun</li>
@@ -2376,6 +2177,21 @@
         }
 
         function generateFasilitasDetail(room, month) {
+            const facility = generateRandomData(70, 100);
+            let statusClass = '';
+            let statusText = '';
+            
+            if (facility > 85) {
+                statusClass = 'status-success';
+                statusText = 'Baik';
+            } else if (facility >= 70) {
+                statusClass = 'status-warning';
+                statusText = 'Perlu Perawatan';
+            } else {
+                statusClass = 'status-danger';
+                statusText = 'Rusak';
+            }
+            
             return `
                 <div class="space-y-4">
                     <div class="bg-indigo-50 p-3 rounded-lg">
@@ -2383,29 +2199,46 @@
                         <p class="text-xs text-indigo-800">Kondisi fasilitas di ${room} normal dan berfungsi dengan baik</p>
                     </div>
                     
-                    ${generateRiskMatrix(room, month)}
-                    
-                    <div class="space-y-3">
-                        <h4 class="font-semibold text-gray-800 text-sm">Pemeriksaan Fasilitas</h4>
-                        <div class="space-y-2">
-                            <div class="flex justify-between items-center p-2 border rounded-lg">
-                                <span class="text-sm">AC</span>
-                                <span class="text-xs text-green-600">Normal</span>
-                            </div>
-                            <div class="flex justify-between items-center p-2 border rounded-lg">
-                                <span class="text-sm">Listrik</span>
-                                <span class="text-xs text-green-600">Normal</span>
-                            </div>
-                            <div class="flex justify-between items-center p-2 border rounded-lg">
-                                <span class="text-sm">Pipa Air</span>
-                                <span class="text-xs text-green-600">Normal</span>
-                            </div>
-                        </div>
+                    <div class="risk-matrix">
+                        <table class="risk-table">
+                            <thead>
+                                <tr>
+                                    <th>Risiko</th>
+                                    <th>Kemungkinan</th>
+                                    <th>Dampak</th>
+                                    <th>Skor Risiko</th>
+                                    <th>Mitigasi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-xs">Kerusakan Alat Medis</td>
+                                    <td class="text-center">4</td>
+                                    <td class="text-center">5</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-high text-xs">20</span></td>
+                                    <td class="text-xs">Perawatan rutin</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-xs">Infeksi Nosokomial</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center">4</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-medium text-xs">12</span></td>
+                                    <td class="text-xs">Protokol sterilisasi</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-xs">Kecelakaan Kerja</td>
+                                    <td class="text-center">2</td>
+                                    <td class="text-center">3</td>
+                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-low text-xs">6</span></td>
+                                    <td class="text-xs">Pelatihan K3</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     
                     <div class="bg-gray-50 p-3 rounded-lg">
                         <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="text-xs text-gray-600 space-y-1">
+                        <ul class="recommendations-list">
                             <li>• Lakukan pemeliharaan AC minimal 2 kali setahun</li>
                             <li>• Periksa instalasi listrik setiap 3 bulan</li>
                             <li>• Ganti filter air setiap 6 bulan</li>
@@ -2414,190 +2247,6 @@
                     </div>
                 </div>
             `;
-        }
-
-        // Show monthly reports for each category
-        function showMonthlyApar(month) {
-            updateMonthTabs('apar', month);
-            const grid = document.getElementById('aparGrid');
-            
-            grid.innerHTML = rooms.map(room => {
-                const hasApar = roomsWithApar.includes(room);
-                const needRefill = roomsNeedRefill.includes(room);
-                
-                let statusClass = '';
-                let statusText = '';
-                let statusIcon = '';
-                
-                if (hasApar && !needRefill) {
-                    statusClass = 'status-success';
-                    statusText = 'Tersedia';
-                    statusIcon = 'fas fa-check-circle';
-                } else if (hasApar && needRefill) {
-                    statusClass = 'status-warning';
-                    statusText = 'Perlu Isi Ulang';
-                    statusIcon = 'fas fa-exclamation-triangle';
-                } else {
-                    statusClass = 'status-danger';
-                    statusText = 'Tidak Tersedia';
-                    statusIcon = 'fas fa-times-circle';
-                }
-                
-                return `
-                    <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg ${statusClass.includes('danger') ? '' : ''}" onclick="showDetail('${room}', '${month}', 'APAR')">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray-600">APAR 2kg</span>
-                            <span class="status-badge ${statusClass}">
-                                <i class="${statusIcon} mr-1"></i>${statusText}
-                            </span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function showMonthlyKebakaran(month) {
-            updateMonthTabs('kebakaran', month);
-            const grid = document.getElementById('kebakaranGrid');
-            
-            grid.innerHTML = rooms.map(room => `
-                <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Kebakaran')">
-                    <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-gray-600">Tidak ada AP</span>
-                        <span class="status-badge status-danger">Perbaatan</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function showMonthlyBencana(month) {
-            updateMonthTabs('bencana', month);
-            const grid = document.getElementById('bencanaGrid');
-            grid.innerHTML = rooms.map(room => {
-                const readiness = generateRandomData(60, 95);
-                let statusClass = '';
-                if (readiness > 80) {
-                    statusClass = 'status-success';
-                } else if (readiness >= 60) {
-                    statusClass = 'status-warning';
-                } else {
-                    statusClass = 'status-danger';
-                }
-                
-                return `
-                    <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Bencana')">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray-600">${readiness}%</span>
-                            <span class="status-badge ${statusClass}">${readiness > 80 ? 'Tinggi' : readiness >= 60 ? 'Sedang' : 'Rendah'}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function showMonthlyKeamanan(month) {
-            updateMonthTabs('keamanan', month);
-            const grid = document.getElementById('keamananGrid');
-            grid.innerHTML = rooms.map(room => {
-                const security = generateRandomData(80, 100);
-                let statusClass = '';
-                let statusText = '';
-                
-                if (security > 90) {
-                    statusClass = 'status-success';
-                    statusText = 'Normal';
-                } else if (security >= 80) {
-                    statusClass = 'status-warning';
-                    statusText = 'Perhatian';
-                } else {
-                    statusClass = 'status-danger';
-                    statusText = 'Kritis';
-                }
-                
-                return `
-                    <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Keamanan')">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray-600">${security}%</span>
-                            <span class="status-badge ${statusClass}">${statusText}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function showMonthlyB3(month) {
-            updateMonthTabs('b3', month);
-            const grid = document.getElementById('b3Grid');
-            grid.innerHTML = rooms.map(room => {
-                const compliance = generateRandomData(70, 100);
-                let statusClass = '';
-                if (compliance > 80) {
-                    statusClass = 'status-success';
-                } else if (compliance >= 60) {
-                    statusClass = 'status-warning';
-                } else {
-                    statusClass = 'status-danger';
-                }
-                
-                return `
-                    <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'B3')">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray-600">${compliance}%</span>
-                            <span class="status-badge ${statusClass}">${compliance > 80 ? 'Tinggi' : compliance >= 60 ? 'Sedang' : 'Rendah'}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function showMonthlyFasilitas(month) {
-            updateMonthTabs('fasilitas', month);
-            const grid = document.getElementById('fasilitasGrid');
-            grid.innerHTML = rooms.map(room => {
-                const facility = generateRandomData(70, 100);
-                let statusClass = '';
-                let statusText = '';
-                
-                if (facility > 85) {
-                    statusClass = 'status-success';
-                    statusText = 'Baik';
-                } else if (facility >= 70) {
-                    statusClass = 'status-warning';
-                    statusText = 'Perlu Perawatan';
-                } else {
-                    statusClass = 'status-danger';
-                    statusText = 'Rusak';
-                }
-                
-                return `
-                    <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Fasilitas')">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs text-gray-600">${facility}%</span>
-                            <span class="status-badge ${statusClass}">${statusText}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function updateMonthTabs(category, activeMonth) {
-            const tabs = document.querySelectorAll(`#${category} .tab-button`);
-            tabs.forEach(tab => {
-                tab.classList.remove('bg-blue-600', 'text-white');
-                tab.classList.add('bg-gray-200', 'text-gray-700');
-            });
-            
-            const activeTab = Array.from(tabs).find(tab => tab.textContent.toLowerCase().includes(activeMonth));
-            if (activeTab) {
-                activeTab.classList.remove('bg-gray-200', 'text-gray-700');
-                activeTab.classList.add('bg-blue-600', 'text-white');
-            }
         }
 
         // Update clock
@@ -2614,20 +2263,20 @@
         updateClock();
         setInterval(updateClock, 1000);
 
-        // Initialize opening animation
+        // Initialize on load
         window.addEventListener('load', () => {
-            // Show opening overlay
-            const openingOverlay = document.getElementById('openingOverlay');
-            openingOverlay.style.display = 'flex';
+            // Initialize security features
+            preventScreenshot();
+            initTrendChart();
             
-            // Hide opening overlay after 10 seconds
-            setTimeout(() => {
-                openingOverlay.style.display = 'none';
-                
-                // Initialize security features
-                preventScreenshot();
-                initTrendChart();
-            }, 10000);
+            // Initialize default section
+            showSection('dashboard');
+        });
+
+        // Handle back button for mobile
+        window.addEventListener('popstate', (e) => {
+            e.preventDefault();
+            showSection('dashboard');
         });
     </script>
 </body>
