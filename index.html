@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K3RS/MFK</title>
+    <title>K3RS/MFK - Rumah Sakit Umum Daerah Talaud</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -45,27 +45,6 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
         
-        .nav-item {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #3B82F6, #8B5CF6);
-            transition: width 0.3s ease;
-        }
-        
-        .nav-item:hover::before,
-        .nav-item.active::before {
-            width: 100%;
-        }
-        
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
@@ -102,120 +81,202 @@
             justify-content: center;
         }
         
-        .slide-in {
-            animation: slideIn 0.4s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
-        }
-        
         .chart-container {
             position: relative;
-            height: 200px;
+            height: 300px;
             width: 100%;
         }
         
-        .risk-matrix {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 2px;
-            margin: 20px 0;
+        .tab-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 0.5rem;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
         }
         
-        .risk-cell {
-            aspect-ratio: 1;
+        .tab-button {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-size: 0.875rem;
+        }
+        
+        .tab-button:hover {
+            background: #f3f4f6;
+        }
+        
+        .tab-button.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        .search-container input {
+            width: 100%;
+            padding: 0.5rem 2.5rem 0.5rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .search-container input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .search-container button {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .modal-header {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-body {
+            padding: 1rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-warning {
+            background: #fed7aa;
+            color: #92400e;
+        }
+        
+        .status-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .action-button-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .action-button-primary:hover {
+            background: #2563eb;
+        }
+        
+        .action-button-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .action-button-secondary:hover {
+            background: #e5e7eb;
+        }
+        
+        .action-button-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .action-button-danger:hover {
+            background: #dc2626;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 10000;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s;
+            transform: translateX(400px);
+            transition: transform 0.3s ease-out;
         }
         
-        .risk-cell:hover {
-            transform: scale(1.1);
-            z-index: 10;
+        .notification.show {
+            transform: translateX(0);
         }
         
-        .risk-low { background-color: #10B981; }
-        .risk-medium { background-color: #F59E0B; }
-        .risk-high { background-color: #EF4444; }
-        
-        .footer-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .notification-success {
+            background: #10b981;
         }
         
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .nav-text {
-                font-size: 0.875rem;
-            }
-            .nav-item i {
-                font-size: 1rem;
-            }
+        .notification-error {
+            background: #ef4444;
         }
         
-        @media (max-width: 640px) {
-            .nav-text {
-                display: none;
-            }
-            .nav-item i {
-                font-size: 1.25rem;
-            }
+        .notification-warning {
+            background: #f59e0b;
         }
         
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        .notification-info {
+            background: #3b82f6;
         }
         
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+        .notification-icon {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
         }
         
-        ::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-        
-        /* Notification badge */
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: #EF4444;
-            color: white;
-            font-size: 0.625rem;
-            font-weight: bold;
-            padding: 2px 4px;
-            border-radius: 9999px;
-        }
-        
-        /* Loading spinner */
-        .spinner {
-            border: 3px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top: 3px solid #3B82F6;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Gallery styles */
         .gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -324,7 +385,6 @@
             cursor: pointer;
         }
         
-        /* Dropdown menu */
         .dropdown {
             position: relative;
             display: inline-block;
@@ -364,7 +424,6 @@
             width: 20px;
         }
         
-        /* Time display with background */
         .time-display {
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(5px);
@@ -374,7 +433,6 @@
             font-weight: bold;
         }
         
-        /* APAR warning animation */
         .warning-pulse {
             animation: pulse 2s infinite;
         }
@@ -395,7 +453,6 @@
             20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
         
-        /* Opening animation */
         .opening-overlay {
             position: fixed;
             top: 0;
@@ -455,7 +512,6 @@
             100% { width: 100%; }
         }
         
-        /* Page transition animation */
         .page-transition {
             position: fixed;
             top: 0;
@@ -487,6 +543,229 @@
             animation: slideIn 0.5s ease-out;
         }
         
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 0.5rem;
+        }
+        
+        .risk-matrix-container {
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        
+        .risk-matrix {
+            display: grid;
+            grid-template-columns: auto repeat(5, 1fr);
+            grid-template-rows: auto repeat(5, 1fr);
+            gap: 2px;
+            min-width: 400px;
+        }
+        
+        .risk-header {
+            background: #f3f4f6;
+            padding: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+        
+        .risk-likelihood {
+            background: #f3f4f6;
+            padding: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+        
+        .risk-impact {
+            background: #f3f4f6;
+            padding: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+        
+        .risk-low { background-color: #10B981; }
+        .risk-medium { background-color: #F59E0B; }
+        .risk-high { background-color: #EF4444; }
+        
+        .footer-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Responsive adjustments - Desktop */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 1140px;
+            }
+        }
+        
+        /* Responsive adjustments - Tablet */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 100%;
+                padding: 0 1rem;
+            }
+            
+            .header {
+                padding: 0.5rem 0;
+            }
+            
+            .header h1 {
+                font-size: 1.25rem;
+            }
+            
+            .header p {
+                font-size: 0.75rem;
+            }
+            
+            .time-display {
+                font-size: 0.75rem;
+                padding: 2px 8px;
+            }
+            
+            .year-selector {
+                gap: 4px;
+            }
+            
+            .year-btn {
+                padding: 2px 8px;
+                font-size: 0.75rem;
+            }
+            
+            .dropdown button {
+                padding: 0.5rem;
+            }
+            
+            .dropdown button span {
+                display: none;
+            }
+            
+            .dropdown button i {
+                font-size: 1.25rem;
+            }
+            
+            .search-container {
+                max-width: 200px;
+            }
+            
+            .search-container input {
+                font-size: 0.875rem;
+                padding: 0.375rem 2rem 0.375rem 0.75rem;
+            }
+            
+            .action-button {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.75rem;
+            }
+            
+            .grid-cols-1 {
+                grid-template-columns: 1fr;
+            }
+            
+            .grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .grid-cols-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .grid-cols-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+            
+            .tab-button {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.75rem;
+            }
+            
+            .modal-content {
+                max-width: 95%;
+            }
+            
+            .modal-header h3 {
+                font-size: 1.125rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+            
+            .gallery-item img {
+                height: 150px;
+            }
+            
+            .gallery-item-info h4 {
+                font-size: 0.875rem;
+            }
+            
+            .gallery-item-info p {
+                font-size: 0.625rem;
+            }
+            
+            .notification {
+                padding: 0.75rem 1rem;
+            }
+            
+            .notification-icon {
+                font-size: 1rem;
+            }
+            
+            .notification-text {
+                font-size: 0.875rem;
+            }
+            
+            .form-input {
+                font-size: 0.875rem;
+                padding: 0.375rem 0.75rem;
+            }
+            
+            .form-label {
+                font-size: 0.75rem;
+            }
+            
+            .status-badge {
+                padding: 0.125rem 0.5rem;
+                font-size: 0.625rem;
+            }
+            
+            .data-table th,
+            .data-table td {
+                padding: 0.5rem;
+                font-size: 0.75rem;
+            }
+            
+            .opening-logo {
+                font-size: 3rem;
+            }
+            
+            .opening-text {
+                font-size: 1.5rem;
+            }
+        }
+        
         /* Print prevention */
         @media print {
             body * {
@@ -508,81 +787,6 @@
                 justify-content: center;
                 flex-direction: column;
             }
-        }
-        
-        /* Tooltip */
-        .tooltip {
-            position: relative;
-        }
-        
-        .tooltip::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        
-        .tooltip:hover::after {
-            opacity: 1;
-        }
-        
-        /* Year selector */
-        .year-selector {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .year-btn {
-            padding: 4px 12px;
-            border: 1px solid #ccc;
-            background: white;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.875rem;
-        }
-        
-        .year-btn:hover {
-            background: #f3f4f6;
-        }
-        
-        .year-btn.active {
-            background: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
-        }
-        
-        /* Warning animations */
-        .warning-danger {
-            color: #EF4444;
-            font-weight: bold;
-            animation: dangerPulse 1.5s infinite;
-        }
-        
-        @keyframes dangerPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        /* Summary animations */
-        .summary-card {
-            animation: slideInUp 0.8s ease-out;
-        }
-        
-        @keyframes slideInUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
@@ -746,6 +950,16 @@
                 <div class="chart-container">
                     <canvas id="trendChart"></canvas>
                 </div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(59, 130, 246, 0.8);"></div>
+                        <span>Kepatuhan K3RS (%)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(239, 68, 68, 0.8);"></div>
+                        <span>Risiko Teridentifikasi (%)</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Quick Links -->
@@ -793,11 +1007,13 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                 <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Inspeksi APAR</h2>
                 <div class="flex items-center space-x-2 w-full md:w-auto">
-                    <div class="relative w-full md:w-auto">
-                        <input type="text" id="aparSearch" placeholder="Cari ruangan..." class="w-full px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                        <i class="fas fa-search absolute right-3 top-2 text-gray-400 text-xs"></i>
+                    <div class="search-container">
+                        <input type="text" id="aparSearch" placeholder="Cari ruangan..." class="form-input">
+                        <button onclick="searchRooms('apar')">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
-                    <button class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 text-sm">
+                    <button class="action-button action-button-secondary" onclick="showFilterModal('apar')">
                         <i class="fas fa-filter mr-1"></i>Filter
                     </button>
                 </div>
@@ -805,19 +1021,19 @@
             
             <!-- Monthly Tabs -->
             <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-                <div class="flex flex-wrap gap-1 mb-3">
-                    <button class="month-tab px-3 py-1 rounded-lg bg-red-600 text-white text-xs" onclick="showMonthlyApar('jan')">Jan</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyApar('feb')">Feb</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyApar('mar')">Mar</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyApar('apr')">Apr</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyApar('mei')">Mei</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyApar('jun')">Jun</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyApar('jul')">Jul</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyApar('agu')">Agu</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyApar('sep')">Sep</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyApar('okt')">Okt</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyApar('nov')">Nov</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyApar('des')">Des</button>
+                <div class="tab-container">
+                    <button class="tab-button active" onclick="showMonthlyApar('jan')">Jan</button>
+                    <button class="tab-button" onclick="showMonthlyApar('feb')">Feb</button>
+                    <button class="tab-button" onclick="showMonthlyApar('mar')">Mar</button>
+                    <button class="tab-button" onclick="showMonthlyApar('apr')">Apr</button>
+                    <button class="tab-button" onclick="showMonthlyApar('mei')">Mei</button>
+                    <button class="tab-button" onclick="showMonthlyApar('jun')">Jun</button>
+                    <button class="tab-button" onclick="showMonthlyApar('jul')">Jul</button>
+                    <button class="tab-button" onclick="showMonthlyApar('agu')">Agu</button>
+                    <button class="tab-button" onclick="showMonthlyApar('sep')">Sep</button>
+                    <button class="tab-button" onclick="showMonthlyApar('okt')">Okt</button>
+                    <button class="tab-button" onclick="showMonthlyApar('nov')">Nov</button>
+                    <button class="tab-button" onclick="showMonthlyApar('des')">Des</button>
                 </div>
 
                 <!-- Room Grid -->
@@ -851,11 +1067,13 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                 <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen Kebakaran</h2>
                 <div class="flex items-center space-x-2 w-full md:w-auto">
-                    <div class="relative w-full md:w-auto">
-                        <input type="text" id="fireSearch" placeholder="Cari ruangan..." class="w-full px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                        <i class="fas fa-search absolute right-3 top-2 text-gray-400 text-xs"></i>
+                    <div class="search-container">
+                        <input type="text" id="fireSearch" placeholder="Cari ruangan..." class="form-input">
+                        <button onclick="searchRooms('kebakaran')">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
-                    <button class="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 text-sm">
+                    <button class="action-button action-button-secondary" onclick="showFilterModal('kebakaran')">
                         <i class="fas fa-filter mr-1"></i>Filter
                     </button>
                 </div>
@@ -863,19 +1081,19 @@
             
             <!-- Monthly Tabs -->
             <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-                <div class="flex flex-wrap gap-1 mb-3">
-                    <button class="month-tab px-3 py-1 rounded-lg bg-red-600 text-white text-xs" onclick="showMonthlyKebakaran('jan')">Jan</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('feb')">Feb</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('mar')">Mar</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('apr')">Apr</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('mei')">Mei</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('jun')">Jun</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('jul')">Jul</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('agu')">Agu</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('sep')">Sep</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('okt')">Okt</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('nov')">Nov</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKebakaran('des')">Des</button>
+                <div class="tab-container">
+                    <button class="tab-button active" onclick="showMonthlyKebakaran('jan')">Jan</button>
+                    <button class="tab-button" onclick="showMonthlyKebakaran('feb')">Feb</button>
+                    <button class="tab-button" onclick="showMonthlyKebakaran('mar')">Mar</button>
+                    <button class="tab-button" onclick="showMonthlyKebakaran('apr')">Apr</button>
+                    <button class="tab-button" onclick="showMonthlyKebakaran('mei')">Mei</button>
+                    <button class="tab-button" onclick="showMonthlyKebakaran('jun')">Jun</button>
+                    <button class="tab-button" onclick="showMonthlyKebakaran('jul')">Jul</button>
+                    <button class="tab-button" onclick="showMonthlyKebakaran('agu')">Agu</button>
+                    <button class="tab-button" onclick="showMonthlyKebakaran('sep')">Sep</button>
+                    <button class="tab-button" onclick="showMonthlyKebakaran('okt')">Okt</button>
+                    <button class="tab-button" onclick="showMonthlyKebakaran('nov')">Nov</button>
+                    <button class="tab-button" onclick="showMonthlyKebakaran('des')">Des</button>
                 </div>
 
                 <!-- Room Grid -->
@@ -890,11 +1108,13 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                 <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen Bencana</h2>
                 <div class="flex items-center space-x-2 w-full md:w-auto">
-                    <div class="relative w-full md:w-auto">
-                        <input type="text" id="disasterSearch" placeholder="Cari ruangan..." class="w-full px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                        <i class="fas fa-search absolute right-3 top-2 text-gray-400 text-xs"></i>
+                    <div class="search-container">
+                        <input type="text" id="disasterSearch" placeholder="Cari ruangan..." class="form-input">
+                        <button onclick="searchRooms('bencana')">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
-                    <button class="bg-purple-600 text-white px-3 py-1 rounded-lg hover:bg-purple-700 text-sm">
+                    <button class="action-button action-button-secondary" onclick="showFilterModal('bencana')">
                         <i class="fas fa-filter mr-1"></i>Filter
                     </button>
                 </div>
@@ -902,19 +1122,19 @@
             
             <!-- Monthly Tabs -->
             <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-                <div class="flex flex-wrap gap-1 mb-3">
-                    <button class="month-tab px-3 py-1 rounded-lg bg-purple-600 text-white text-xs" onclick="showMonthlyBencana('jan')">Jan</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('feb')">Feb</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('mar')">Mar</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('apr')">Apr</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('mei')">Mei</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('jun')">Jun</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('jul')">Jul</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('agu')">Agu</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('sep')">Sep</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('okt')">Okt</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('nov')">Nov</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyBencana('des')">Des</button>
+                <div class="tab-container">
+                    <button class="tab-button active" onclick="showMonthlyBencana('jan')">Jan</button>
+                    <button class="tab-button" onclick="showMonthlyBencana('feb')">Feb</button>
+                    <button class="tab-button" onclick="showMonthlyBencana('mar')">Mar</button>
+                    <button class="tab-button" onclick="showMonthlyBencana('apr')">Apr</button>
+                    <button class="tab-button" onclick="showMonthlyBencana('mei')">Mei</button>
+                    <button class="tab-button" onclick="showMonthlyBencana('jun')">Jun</button>
+                    <button class="tab-button" onclick="showMonthlyBencana('jul')">Jul</button>
+                    <button class="tab-button" onclick="showMonthlyBencana('agu')">Agu</button>
+                    <button class="tab-button" onclick="showMonthlyBencana('sep')">Sep</button>
+                    <button class="tab-button" onclick="showMonthlyBencana('okt')">Okt</button>
+                    <button class="tab-button" onclick="showMonthlyBencana('nov')">Nov</button>
+                    <button class="tab-button" onclick="showMonthlyBencana('des')">Des</button>
                 </div>
 
                 <!-- Room Grid -->
@@ -929,11 +1149,13 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                 <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen Keamanan</h2>
                 <div class="flex items-center space-x-2 w-full md:w-auto">
-                    <div class="relative w-full md:w-auto">
-                        <input type="text" id="securitySearch" placeholder="Cari ruangan..." class="w-full px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                        <i class="fas fa-search absolute right-3 top-2 text-gray-400 text-xs"></i>
+                    <div class="search-container">
+                        <input type="text" id="securitySearch" placeholder="Cari ruangan..." class="form-input">
+                        <button onclick="searchRooms('keamanan')">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
-                    <button class="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 text-sm">
+                    <button class="action-button action-button-secondary" onclick="showFilterModal('keamanan')">
                         <i class="fas fa-filter mr-1"></i>Filter
                     </button>
                 </div>
@@ -941,19 +1163,19 @@
             
             <!-- Monthly Tabs -->
             <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-                <div class="flex flex-wrap gap-1 mb-3">
-                    <button class="month-tab px-3 py-1 rounded-lg bg-green-600 text-white text-xs" onclick="showMonthlyKeamanan('jan')">Jan</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('feb')">Feb</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('mar')">Mar</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('apr')">Apr</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('mei')">Mei</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('jun')">Jun</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('jul')">Jul</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('agu')">Agu</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('sep')">Sep</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('okt')">Okt</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('nov')">Nov</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyKeamanan('des')">Des</button>
+                <div class="tab-container">
+                    <button class="tab-button active" onclick="showMonthlyKeamanan('jan')">Jan</button>
+                    <button class="tab-button" onclick="showMonthlyKeamanan('feb')">Feb</button>
+                    <button class="tab-button" onclick="showMonthlyKeamanan('mar')">Mar</button>
+                    <button class="tab-button" onclick="showMonthlyKeamanan('apr')">Apr</button>
+                    <button class="tab-button" onclick="showMonthlyKeamanan('mei')">Mei</button>
+                    <button class="tab-button" onclick="showMonthlyKeamanan('jun')">Jun</button>
+                    <button class="tab-button" onclick="showMonthlyKeamanan('jul')">Jul</button>
+                    <button class="tab-button" onclick="showMonthlyKeamanan('agu')">Agu</button>
+                    <button class="tab-button" onclick="showMonthlyKeamanan('sep')">Sep</button>
+                    <button class="tab-button" onclick="showMonthlyKeamanan('okt')">Okt</button>
+                    <button class="tab-button" onclick="showMonthlyKeamanan('nov')">Nov</button>
+                    <button class="tab-button" onclick="showMonthlyKeamanan('des')">Des</button>
                 </div>
 
                 <!-- Room Grid -->
@@ -968,11 +1190,13 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                 <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen B3</h2>
                 <div class="flex items-center space-x-2 w-full md:w-auto">
-                    <div class="relative w-full md:w-auto">
-                        <input type="text" id="b3Search" placeholder="Cari ruangan..." class="w-full px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                        <i class="fas fa-search absolute right-3 top-2 text-gray-400 text-xs"></i>
+                    <div class="search-container">
+                        <input type="text" id="b3Search" placeholder="Cari ruangan..." class="form-input">
+                        <button onclick="searchRooms('b3')">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
-                    <button class="bg-yellow-600 text-white px-3 py-1 rounded-lg hover:bg-yellow-700 text-sm">
+                    <button class="action-button action-button-secondary" onclick="showFilterModal('b3')">
                         <i class="fas fa-filter mr-1"></i>Filter
                     </button>
                 </div>
@@ -980,19 +1204,19 @@
             
             <!-- Monthly Tabs -->
             <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-                <div class="flex flex-wrap gap-1 mb-3">
-                    <button class="month-tab px-3 py-1 rounded-lg bg-yellow-600 text-white text-xs" onclick="showMonthlyB3('jan')">Jan</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('feb')">Feb</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('mar')">Mar</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('apr')">Apr</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('mei')">Mei</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('jun')">Jun</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('jul')">Jul</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('agu')">Agu</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('sep')">Sep</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('okt')">Okt</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('nov')">Nov</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyB3('des')">Des</button>
+                <div class="tab-container">
+                    <button class="tab-button active" onclick="showMonthlyB3('jan')">Jan</button>
+                    <button class="tab-button" onclick="showMonthlyB3('feb')">Feb</button>
+                    <button class="tab-button" onclick="showMonthlyB3('mar')">Mar</button>
+                    <button class="tab-button" onclick="showMonthlyB3('apr')">Apr</button>
+                    <button class="tab-button" onclick="showMonthlyB3('mei')">Mei</button>
+                    <button class="tab-button" onclick="showMonthlyB3('jun')">Jun</button>
+                    <button class="tab-button" onclick="showMonthlyB3('jul')">Jul</button>
+                    <button class="tab-button" onclick="showMonthlyB3('agu')">Agu</button>
+                    <button class="tab-button" onclick="showMonthlyB3('sep')">Sep</button>
+                    <button class="tab-button" onclick="showMonthlyB3('okt')">Okt</button>
+                    <button class="tab-button" onclick="showMonthlyB3('nov')">Nov</button>
+                    <button class="tab-button" onclick="showMonthlyB3('des')">Des</button>
                 </div>
 
                 <!-- Room Grid -->
@@ -1007,11 +1231,13 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
                 <h2 class="text-xl font-bold text-gray-800 mb-2 md:mb-0">Laporan Manajemen Fasilitas</h2>
                 <div class="flex items-center space-x-2 w-full md:w-auto">
-                    <div class="relative w-full md:w-auto">
-                        <input type="text" id="facilitySearch" placeholder="Cari ruangan..." class="w-full px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                        <i class="fas fa-search absolute right-3 top-2 text-gray-400 text-xs"></i>
+                    <div class="search-container">
+                        <input type="text" id="facilitySearch" placeholder="Cari ruangan..." class="form-input">
+                        <button onclick="searchRooms('fasilitas')">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
-                    <button class="bg-indigo-600 text-white px-3 py-1 rounded-lg hover:bg-indigo-700 text-sm">
+                    <button class="action-button action-button-secondary" onclick="showFilterModal('fasilitas')">
                         <i class="fas fa-filter mr-1"></i>Filter
                     </button>
                 </div>
@@ -1019,19 +1245,19 @@
             
             <!-- Monthly Tabs -->
             <div class="bg-white rounded-xl shadow-md p-4 mb-4">
-                <div class="flex flex-wrap gap-1 mb-3">
-                    <button class="month-tab px-3 py-1 rounded-lg bg-indigo-600 text-white text-xs" onclick="showMonthlyFasilitas('jan')">Jan</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('feb')">Feb</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('mar')">Mar</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('apr')">Apr</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('mei')">Mei</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('jun')">Jun</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('jul')">Jul</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('agu')">Agu</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('sep')">Sep</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('okt')">Okt</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('nov')">Nov</button>
-                    <button class="month-tab px-3 py-1 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs" onclick="showMonthlyFasilitas('des')">Des</button>
+                <div class="tab-container">
+                    <button class="tab-button active" onclick="showMonthlyFasilitas('jan')">Jan</button>
+                    <button class="tab-button" onclick="showMonthlyFasilitas('feb')">Feb</button>
+                    <button class="tab-button" onclick="showMonthlyFasilitas('mar')">Mar</button>
+                    <button class="tab-button" onclick="showMonthlyFasilitas('apr')">Apr</button>
+                    <button class="tab-button" onclick="showMonthlyFasilitas('mei')">Mei</button>
+                    <button class="tab-button" onclick="showMonthlyFasilitas('jun')">Jun</button>
+                    <button class="tab-button" onclick="showMonthlyFasilitas('jul')">Jul</button>
+                    <button class="tab-button" onclick="showMonthlyFasilitas('agu')">Agu</button>
+                    <button class="tab-button" onclick="showMonthlyFasilitas('sep')">Sep</button>
+                    <button class="tab-button" onclick="showMonthlyFasilitas('okt')">Okt</button>
+                    <button class="tab-button" onclick="showMonthlyFasilitas('nov')">Nov</button>
+                    <button class="tab-button" onclick="showMonthlyFasilitas('des')">Des</button>
                 </div>
 
                 <!-- Room Grid -->
@@ -1044,15 +1270,36 @@
 
     <!-- Detail Modal -->
     <div id="detailModal" class="detail-modal">
-        <div class="bg-white rounded-xl shadow-2xl p-4 small-modal-content">
-            <div class="flex justify-between items-center mb-3">
+        <div class="modal-content">
+            <div class="modal-header">
                 <h3 class="text-lg font-bold text-gray-800" id="modalTitle">Detail Laporan</h3>
                 <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div id="modalContent">
+            <div class="modal-body" id="modalContent">
                 <!-- Detail content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Modal -->
+    <div id="filterModal" class="detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="text-lg font-bold text-gray-800" id="filterModalTitle">Filter</h3>
+                <button onclick="closeFilterModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="filterContent">
+                    <!-- Filter options will be inserted here -->
+                </div>
+                <div class="flex justify-end space-x-2 mt-4">
+                    <button class="action-button action-button-secondary" onclick="closeFilterModal()">Batal</button>
+                    <button class="action-button action-button-primary" onclick="applyFilter()">Terapkan</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1069,6 +1316,12 @@
         </div>
     </div>
 
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <i class="notification-icon fas fa-check-circle"></i>
+        <span id="notificationText">Notifikasi</span>
+    </div>
+
     <!-- Footer -->
     <footer class="footer-gradient text-white py-4 mt-auto">
         <div class="container mx-auto px-4 text-center">
@@ -1082,6 +1335,7 @@
         let deviceFingerprint = '';
         let sessionValid = true;
         let currentYear = 2024;
+        let currentFilter = null;
         
         // Initialize fingerprint
         async function initFingerprint() {
@@ -1097,7 +1351,7 @@
             const storedFingerprint = localStorage.getItem('deviceFingerprint');
             if (storedFingerprint && storedFingerprint !== deviceFingerprint) {
                 // Device changed
-                showDeviceWarning();
+                showNotification('Perangkat berubah. Sesi Anda akan diakhiri.', 'error');
                 setTimeout(() => {
                     logout();
                 }, 3000);
@@ -1106,19 +1360,42 @@
             }
         }
         
-        // Show device warning
-        function showDeviceWarning() {
-            const warning = document.getElementById('deviceWarning');
-            warning.classList.add('active');
-            setTimeout(() => {
-                warning.classList.remove('active');
-            }, 5000);
-        }
-        
         // Logout function
         function logout() {
             sessionValid = false;
             localStorage.removeItem('sessionValid');
+            showNotification('Anda telah keluar dari sesi', 'info');
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            const notificationIcon = notification.querySelector('.notification-icon');
+            
+            // Set message
+            notificationText.textContent = message;
+            
+            // Set type
+            notification.className = 'notification show';
+            notification.classList.remove('notification-success', 'notification-error', 'notification-warning', 'notification-info');
+            notification.classList.add(`notification-${type}`);
+            
+            // Set icon
+            if (type === 'success') {
+                notificationIcon.className = 'notification-icon fas fa-check-circle';
+            } else if (type === 'error') {
+                notificationIcon.className = 'notification-icon fas fa-exclamation-circle';
+            } else if (type === 'warning') {
+                notificationIcon.className = 'notification-icon fas fa-exclamation-triangle';
+            } else if (type === 'info') {
+                notificationIcon.className = 'notification-icon fas fa-info-circle';
+            }
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
         }
         
         // Check for screenshot attempts
@@ -1471,6 +1748,327 @@
             modal.classList.remove('active');
         }
 
+        // Show filter modal
+        function showFilterModal(category) {
+            const modal = document.getElementById('filterModal');
+            const modalTitle = document.getElementById('filterModalTitle');
+            const filterContent = document.getElementById('filterContent');
+            
+            modalTitle.textContent = `Filter - ${category}`;
+            
+            // Generate filter options based on category
+            let filterOptions = '';
+            switch(category) {
+                case 'apar':
+                    filterOptions = `
+                        <div class="form-group">
+                            <label class="form-label">Status APAR</label>
+                            <select class="form-input" id="filterStatus">
+                                <option value="all">Semua</option>
+                                <option value="available">Tersedia</option>
+                                <option value="need-refill">Perlu Isi Ulang</option>
+                                <option value="not-available">Tidak Tersedia</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+                case 'kebakaran':
+                    filterOptions = `
+                        <div class="form-group">
+                            <label class="form-label">Status Kebakaran</label>
+                            <select class="form-input" id="filterFireStatus">
+                                <option value="all">Semua</option>
+                                <option value="no-equipment">Tidak Ada Peralatan</option>
+                                <option value="complete">Lengkap</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+                case 'bencana':
+                    filterOptions = `
+                        <div class="form-group">
+                            <label class="form-label">Tingkat Kesiapan</label>
+                            <select class="form-input" id="filterReadiness">
+                                <option value="all">Semua</option>
+                                <option value="high">Tinggi (>80%)</option>
+                                <option value="medium">Sedang (60-80%)</option>
+                                <option value="low">Rendah (<60%)</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+                case 'keamanan':
+                    filterOptions = `
+                        <div class="form-group">
+                            <label class="form-label">Sistem Keamanan</label>
+                            <select class="form-input" id="filterSecurity">
+                                <option value="all">Semua</option>
+                                <option value="normal">Normal</option>
+                                <option value="warning">Perhatian</option>
+                                <option value="critical">Kritis</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+                case 'b3':
+                    filterOptions = `
+                        <div class="form-group">
+                            <label class="form-label">Tingkat Kepatuhan</label>
+                            <select class="form-input" id="filterCompliance">
+                                <option value="all">Semua</option>
+                                <option value="high">Tinggi (>80%)</option>
+                                <option value="medium">Sedang (60-80%)</option>
+                                <option value="low">Rendah (<60%)</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+                case 'fasilitas':
+                    filterOptions = `
+                        <div class="form-group">
+                            <label class="form-label">Kondisi Fasilitas</label>
+                            <select class="form-input" id="filterFacility">
+                                <option value="all">Semua</option>
+                                <option value="good">Baik</option>
+                                <option value="needs-maintenance">Perlu Perawatan</option>
+                                <option value="damaged">Rusak</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            filterContent.innerHTML = filterOptions;
+            currentFilter = category;
+            modal.classList.add('active');
+        }
+
+        // Close filter modal
+        function closeFilterModal() {
+            const modal = document.getElementById('filterModal');
+            modal.classList.remove('active');
+            currentFilter = null;
+        }
+
+        // Apply filter
+        function applyFilter() {
+            if (!currentFilter) return;
+            
+            // Get filter value based on category
+            let filterValue = 'all';
+            switch(currentFilter) {
+                case 'apar':
+                    filterValue = document.getElementById('filterStatus').value;
+                    break;
+                case 'kebakaran':
+                    filterValue = document.getElementById('filterFireStatus').value;
+                    break;
+                case 'bencana':
+                    filterValue = document.getElementById('filterReadiness').value;
+                    break;
+                case 'keamanan':
+                    filterValue = document.getElementById('filterSecurity').value;
+                    break;
+                case 'b3':
+                    filterValue = document.getElementById('filterCompliance').value;
+                    break;
+                case 'fasilitas':
+                    filterValue = document.getElementById('filterFacility').value;
+                    break;
+            }
+            
+            // Apply filter to the current view
+            switch(currentFilter) {
+                case 'apar':
+                    applyAparFilter(filterValue);
+                    break;
+                case 'kebakaran':
+                    applyKebakaranFilter(filterValue);
+                    break;
+                case 'bencana':
+                    applyBencanaFilter(filterValue);
+                    break;
+                case 'keamanan':
+                    applyKeamananFilter(filterValue);
+                    break;
+                case 'b3':
+                    applyB3Filter(filterValue);
+                    break;
+                case 'fasilitas':
+                    applyFasilitasFilter(filterValue);
+                    break;
+            }
+            
+            closeFilterModal();
+            showNotification('Filter berhasil diterapkan', 'success');
+        }
+
+        // Apply APAR filter
+        function applyAparFilter(filterValue) {
+            const grid = document.getElementById('aparGrid');
+            const items = grid.querySelectorAll('.room-card');
+            
+            items.forEach(item => {
+                const roomName = item.querySelector('h4').textContent;
+                const statusElement = item.querySelector('.status-badge');
+                
+                let shouldShow = true;
+                if (filterValue === 'available') {
+                    shouldShow = roomsWithApar.includes(roomName) && !roomsNeedRefill.includes(roomName);
+                } else if (filterValue === 'need-refill') {
+                    shouldShow = roomsNeedRefill.includes(roomName);
+                } else if (filterValue === 'not-available') {
+                    shouldShow = !roomsWithApar.includes(roomName);
+                }
+                
+                item.style.display = shouldShow ? 'block' : 'none';
+            });
+        }
+
+        // Apply Kebakaran filter
+        function applyKebakaranFilter(filterValue) {
+            const grid = document.getElementById('kebakaranGrid');
+            const items = grid.querySelectorAll('.room-card');
+            
+            items.forEach(item => {
+                if (filterValue === 'no-equipment') {
+                    item.style.display = 'block';
+                } else if (filterValue === 'complete') {
+                    item.style.display = 'none';
+                } else {
+                    item.style.display = 'block';
+                }
+            });
+        }
+
+        // Apply Bencana filter
+        function applyBencanaFilter(filterValue) {
+            const grid = document.getElementById('bencanaGrid');
+            const items = grid.querySelectorAll('.room-card');
+            
+            items.forEach(item => {
+                const readinessText = item.querySelector('.status-badge').textContent;
+                let readinessValue = parseInt(readinessText);
+                
+                let shouldShow = true;
+                if (filterValue === 'high') {
+                    shouldShow = readinessValue > 80;
+                } else if (filterValue === 'medium') {
+                    shouldShow = readinessValue >= 60 && readinessValue <= 80;
+                } else if (filterValue === 'low') {
+                    shouldShow = readinessValue < 60;
+                }
+                
+                item.style.display = shouldShow ? 'block' : 'none';
+            });
+        }
+
+        // Apply Keamanan filter
+        function applyKeamananFilter(filterValue) {
+            const grid = document.getElementById('keamananGrid');
+            const items = grid.querySelectorAll('.room-card');
+            
+            items.forEach(item => {
+                const statusElement = item.querySelector('.status-badge');
+                const statusText = statusElement.textContent;
+                
+                let shouldShow = true;
+                if (filterValue === 'normal') {
+                    shouldShow = statusText === 'Normal';
+                } else if (filterValue === 'warning') {
+                    shouldShow = statusText === 'Perhatian';
+                } else if (filterValue === 'critical') {
+                    shouldShow = statusText === 'Kritis';
+                }
+                
+                item.style.display = shouldShow ? 'block' : 'none';
+            });
+        }
+
+        // Apply B3 filter
+        function applyB3Filter(filterValue) {
+            const grid = document.getElementById('b3Grid');
+            const items = grid.querySelectorAll('.room-card');
+            
+            items.forEach(item => {
+                const complianceText = item.querySelector('.status-badge').textContent;
+                let complianceValue = parseInt(complianceText);
+                
+                let shouldShow = true;
+                if (filterValue === 'high') {
+                    shouldShow = complianceValue > 80;
+                } else if (filterValue === 'medium') {
+                    shouldShow = complianceValue >= 60 && complianceValue <= 80;
+                } else if (filterValue === 'low') {
+                    shouldShow = complianceValue < 60;
+                }
+                
+                item.style.display = shouldShow ? 'block' : 'none';
+            });
+        }
+
+        // Apply Fasilitas filter
+        function applyFasilitasFilter(filterValue) {
+            const grid = document.getElementById('fasilitasGrid');
+            const items = grid.querySelectorAll('.room-card');
+            
+            items.forEach(item => {
+                const statusElement = item.querySelector('.status-badge');
+                const statusText = statusElement.textContent;
+                
+                let shouldShow = true;
+                if (filterValue === 'good') {
+                    shouldShow = statusText === 'Baik';
+                } else if (filterValue === 'needs-maintenance') {
+                    shouldShow = statusText === 'Perlu Perawatan';
+                } else if (filterValue === 'damaged') {
+                    shouldShow = statusText === 'Rusak';
+                }
+                
+                item.style.display = shouldShow ? 'block' : 'none';
+            });
+        }
+
+        // Search rooms function
+        function searchRooms(category) {
+            const searchInput = document.getElementById(`${category}Search`);
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            let gridId = '';
+            switch(category) {
+                case 'apar':
+                    gridId = 'aparGrid';
+                    break;
+                case 'kebakaran':
+                    gridId = 'kebakaranGrid';
+                    break;
+                case 'bencana':
+                    gridId = 'bencanaGrid';
+                    break;
+                case 'keamanan':
+                    gridId = 'keamananGrid';
+                    break;
+                case 'b3':
+                    gridId = 'b3Grid';
+                    break;
+                case 'fasilitas':
+                    gridId = 'fasilitasGrid';
+                    break;
+            }
+            
+            const grid = document.getElementById(gridId);
+            const items = grid.querySelectorAll('.room-card');
+            
+            items.forEach(item => {
+                const roomName = item.querySelector('h4').textContent.toLowerCase();
+                if (roomName.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
         // Get month name
         function getMonthName(month) {
             const months = {
@@ -1566,22 +2164,22 @@
             let statusIcon = '';
             
             if (hasApar && !needRefill) {
-                statusClass = 'bg-green-100 text-green-800';
+                statusClass = 'status-success';
                 statusText = 'Tersedia';
                 statusIcon = 'fas fa-check-circle';
             } else if (hasApar && needRefill) {
-                statusClass = 'bg-yellow-100 text-yellow-800';
+                statusClass = 'status-warning';
                 statusText = 'Perlu Isi Ulang';
                 statusIcon = 'fas fa-exclamation-triangle';
             } else {
-                statusClass = 'bg-red-100 text-red-800';
+                statusClass = 'status-danger';
                 statusText = 'Tidak Tersedia';
                 statusIcon = 'fas fa-times-circle';
             }
             
             return `
                 <div class="space-y-4">
-                    <div class="${statusClass.includes('red') ? 'bg-red-50 p-3 rounded-lg warning-pulse' : statusClass.includes('yellow') ? 'bg-yellow-50 p-3 rounded-lg warning-shake' : 'bg-green-50 p-3 rounded-lg'}">
+                    <div class="${statusClass.includes('danger') ? 'bg-red-50 p-3 rounded-lg warning-pulse' : statusClass.includes('warning') ? 'bg-yellow-50 p-3 rounded-lg warning-shake' : 'bg-green-50 p-3 rounded-lg'}">
                         <div class="flex items-center">
                             <i class="${statusIcon} mr-2"></i>
                             <h4 class="font-semibold mb-1 text-sm">Status APAR 2kg</h4>
@@ -1832,25 +2430,25 @@
                 let statusIcon = '';
                 
                 if (hasApar && !needRefill) {
-                    statusClass = 'bg-green-100 text-green-800';
+                    statusClass = 'status-success';
                     statusText = 'Tersedia';
                     statusIcon = 'fas fa-check-circle';
                 } else if (hasApar && needRefill) {
-                    statusClass = 'bg-yellow-100 text-yellow-800 warning-shake';
+                    statusClass = 'status-warning';
                     statusText = 'Perlu Isi Ulang';
                     statusIcon = 'fas fa-exclamation-triangle';
                 } else {
-                    statusClass = 'bg-red-100 text-red-800 warning-pulse';
+                    statusClass = 'status-danger';
                     statusText = 'Tidak Tersedia';
                     statusIcon = 'fas fa-times-circle';
                 }
                 
                 return `
-                    <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg ${statusClass.includes('red') || statusClass.includes('yellow') ? '' : ''}" onclick="showDetail('${room}', '${month}', 'APAR')">
+                    <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg ${statusClass.includes('danger') ? '' : ''}" onclick="showDetail('${room}', '${month}', 'APAR')">
                         <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
                         <div class="flex items-center justify-between">
                             <span class="text-xs text-gray-600">APAR 2kg</span>
-                            <span class="text-xs ${statusClass}">
+                            <span class="status-badge ${statusClass}">
                                 <i class="${statusIcon} mr-1"></i>${statusText}
                             </span>
                         </div>
@@ -1868,7 +2466,7 @@
                     <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
                     <div class="flex items-center justify-between">
                         <span class="text-xs text-gray-600">Tidak ada AP</span>
-                        <span class="text-xs bg-red-100 text-red-800">Perbaatan</span>
+                        <span class="status-badge status-danger">Perbaatan</span>
                     </div>
                 </div>
             `).join('');
@@ -1877,61 +2475,119 @@
         function showMonthlyBencana(month) {
             updateMonthTabs('bencana', month);
             const grid = document.getElementById('bencanaGrid');
-            grid.innerHTML = rooms.map(room => `
-                <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Bencana')">
-                    <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-gray-600">${generateRandomData(60, 95)}%</span>
-                        <span class="text-xs bg-purple-100 text-purple-800">Siap</span>
+            grid.innerHTML = rooms.map(room => {
+                const readiness = generateRandomData(60, 95);
+                let statusClass = '';
+                if (readiness > 80) {
+                    statusClass = 'status-success';
+                } else if (readiness >= 60) {
+                    statusClass = 'status-warning';
+                } else {
+                    statusClass = 'status-danger';
+                }
+                
+                return `
+                    <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Bencana')">
+                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-600">${readiness}%</span>
+                            <span class="status-badge ${statusClass}">${readiness > 80 ? 'Tinggi' : readiness >= 60 ? 'Sedang' : 'Rendah'}</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function showMonthlyKeamanan(month) {
             updateMonthTabs('keamanan', month);
             const grid = document.getElementById('keamananGrid');
-            grid.innerHTML = rooms.map(room => `
-                <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Keamanan')">
-                    <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-gray-600">${generateRandomData(80, 100)}%</span>
-                        <span class="text-xs bg-green-100 text-green-800">Normal</span>
+            grid.innerHTML = rooms.map(room => {
+                const security = generateRandomData(80, 100);
+                let statusClass = '';
+                let statusText = '';
+                
+                if (security > 90) {
+                    statusClass = 'status-success';
+                    statusText = 'Normal';
+                } else if (security >= 80) {
+                    statusClass = 'status-warning';
+                    statusText = 'Perhatian';
+                } else {
+                    statusClass = 'status-danger';
+                    statusText = 'Kritis';
+                }
+                
+                return `
+                    <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Keamanan')">
+                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-600">${security}%</span>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function showMonthlyB3(month) {
             updateMonthTabs('b3', month);
             const grid = document.getElementById('b3Grid');
-            grid.innerHTML = rooms.map(room => `
-                <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'B3')">
-                    <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-gray-600">${generateRandomData(70, 100)}%</span>
-                        <span class="text-xs bg-yellow-100 text-yellow-800">B3</span>
+            grid.innerHTML = rooms.map(room => {
+                const compliance = generateRandomData(70, 100);
+                let statusClass = '';
+                if (compliance > 80) {
+                    statusClass = 'status-success';
+                } else if (compliance >= 60) {
+                    statusClass = 'status-warning';
+                } else {
+                    statusClass = 'status-danger';
+                }
+                
+                return `
+                    <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'B3')">
+                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-600">${compliance}%</span>
+                            <span class="status-badge ${statusClass}">${compliance > 80 ? 'Tinggi' : compliance >= 60 ? 'Sedang' : 'Rendah'}</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function showMonthlyFasilitas(month) {
             updateMonthTabs('fasilitas', month);
             const grid = document.getElementById('fasilitasGrid');
-            grid.innerHTML = rooms.map(room => `
-                <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Fasilitas')">
-                    <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-gray-600">Normal</span>
-                        <span class="text-xs bg-green-100 text-green-800">Baik</span>
+            grid.innerHTML = rooms.map(room => {
+                const facility = generateRandomData(70, 100);
+                let statusClass = '';
+                let statusText = '';
+                
+                if (facility > 85) {
+                    statusClass = 'status-success';
+                    statusText = 'Baik';
+                } else if (facility >= 70) {
+                    statusClass = 'status-warning';
+                    statusText = 'Perlu Perawatan';
+                } else {
+                    statusClass = 'status-danger';
+                    statusText = 'Rusak';
+                }
+                
+                return `
+                    <div class="room-card bg-white border rounded-lg p-3 cursor-pointer hover:shadow-lg" onclick="showDetail('${room}', '${month}', 'Fasilitas')">
+                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">${room}</h4>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-600">${facility}%</span>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function updateMonthTabs(category, activeMonth) {
-            const tabs = document.querySelectorAll(`#${category} .month-tab`);
+            const tabs = document.querySelectorAll(`#${category} .tab-button`);
             tabs.forEach(tab => {
                 tab.classList.remove('bg-blue-600', 'text-white');
                 tab.classList.add('bg-gray-200', 'text-gray-700');
@@ -1942,20 +2598,6 @@
                 activeTab.classList.remove('bg-gray-200', 'text-gray-700');
                 activeTab.classList.add('bg-blue-600', 'text-white');
             }
-        }
-
-        function getRiskColor(level) {
-            switch(level) {
-                case 'Tinggi': return 'bg-red-100 text-red-800';
-                case 'Sedang': return 'bg-yellow-100 text-yellow-800';
-                case 'Rendah': return 'bg-green-100 text-green-800';
-                default: return 'bg-gray-100 text-gray-800';
-            }
-        }
-
-        function getRandomRiskLevel() {
-            const levels = ['Tinggi', 'Sedang', 'Rendah'];
-            return levels[Math.floor(Math.random() * levels.length)];
         }
 
         // Update clock
