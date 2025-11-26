@@ -209,6 +209,29 @@
             font-size: 18px;
         }
         
+        /* Logout button for guest mode */
+        .logout-guest {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .logout-guest:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .logout-guest i {
+            color: white;
+            font-size: 18px;
+        }
+        
         /* Main content */
         .main-content {
             margin-top: 64px;
@@ -683,7 +706,7 @@
         
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, 1px);
             gap: 12px;
         }
         
@@ -1005,8 +1028,8 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 600;
-            transition: top 0.3s ease;
+            font-size: 14px;
+            transition: top 0.3s;
             z-index: 1001;
         }
         
@@ -1020,35 +1043,18 @@
         }
         
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Guest logout button */
-        .guest-logout {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: white;
-        }
-        
-        .guest-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .guest-logout i {
-            font-size: 18px;
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
+    <!-- Pull to refresh indicator -->
+    <div id="pullToRefresh" class="pull-to-refresh">
+        <i class="fas fa-sync-alt"></i>
+        <span>Menyegarkan...</span>
+    </div>
+
     <!-- Security overlay -->
     <div id="securityOverlay" style="display: none;">
         <div class="text-center">
@@ -1056,12 +1062,6 @@
             <h2 class="text-2xl font-bold text-gray-700 mb-2">Akses Diblokir</h2>
             <p class="text-gray-600">Anda tidak dapat mencetak atau mengambil tangkapan layar dari halaman ini.</p>
         </div>
-    </div>
-
-    <!-- Pull to refresh indicator -->
-    <div id="pullToRefresh" class="pull-to-refresh">
-        <i class="fas fa-sync-alt"></i>
-        <span>Refresh...</span>
     </div>
 
     <!-- Login Page -->
@@ -1104,11 +1104,11 @@
                         <button class="year-btn active" onclick="setYear(2024)">2024</button>
                         <button class="year-btn" onclick="setYear(2025)">2025</button>
                     </div>
+                    <button class="logout-guest" id="logoutGuest" style="display: none;" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
                     <button class="menu-toggle" onclick="toggleMenu()">
                         <i class="fas fa-bars"></i>
-                    </button>
-                    <button class="guest-logout" id="guestLogout" style="display: none;" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </div>
             </div>
@@ -1388,7 +1388,7 @@
                     <button class="tab" onclick="showMonthlyB3('agu')">Agu</button>
                     <button class="tab" onclick="showMonthlyB3('sep')">Sep</button>
                     <button class="tab" onclick="showMonthlyB3('okt')">Okt</button>
-                    <button class="tab" onclick="showMonthlyB3('nov')">Nov</button>
+                    <button class="tab" onclick="showMonthlyB3('nov">Nov</button>
                     <button class="tab" onclick="showMonthlyB3('des')">Des</button>
                 </div>
 
@@ -1429,11 +1429,6 @@
                 </div>
             </div>
         </main>
-
-        <!-- Footer -->
-        <footer class="bg-gray-800 text-white text-center py-3 text-xs">
-            <p>&copy; 2024-2025 K3RS/MFK RSUD Talaud. Tim Pengembang: Divisi K3RS/MFK RSUD Talaud</p>
-        </footer>
 
         <!-- Navigation -->
         <nav class="nav">
@@ -1594,12 +1589,6 @@
         let currentYear = 2024;
         let currentFilter = null;
         let currentUser = null;
-        
-        // Pull to refresh variables
-        let pullStartY = 0;
-        let pullDistance = 0;
-        let isPulling = false;
-        let isRefreshing = false;
         
         // Initialize fingerprint
         async function initFingerprint() {
@@ -2561,8 +2550,11 @@
             if (currentUser && currentUser.role === 'admin') {
                 document.getElementById('userInfo').style.display = 'flex';
                 document.getElementById('userName').textContent = currentUser.name;
+                document.getElementById('logoutGuest').style.display = 'none';
                 updateNavigationForAdmin();
             } else {
+                document.getElementById('userInfo').style.display = 'none';
+                document.getElementById('logoutGuest').style.display = 'flex';
                 updateNavigationForGuest();
             }
             
@@ -2576,9 +2568,6 @@
             navItems.forEach(item => {
                 item.classList.remove('locked-nav-item');
             });
-            
-            // Hide guest logout button
-            document.getElementById('guestLogout').style.display = 'none';
         }
 
         function updateNavigationForGuest() {
@@ -2590,102 +2579,54 @@
                     item.classList.add('locked-nav-item');
                 }
             });
-            
-            // Show guest logout button
-            document.getElementById('guestLogout').style.display = 'flex';
         }
 
         // Pull to refresh functionality
+        let pullStartY = 0;
+        let pullDistance = 0;
+        let isPulling = false;
+        let refreshTimeout;
+
         function initPullToRefresh() {
-            const scrollContainer = document.querySelector('.scroll-container');
+            const container = document.querySelector('.scroll-container');
             const pullToRefresh = document.getElementById('pullToRefresh');
             
-            // Touch events for mobile
-            scrollContainer.addEventListener('touchstart', (e) => {
-                if (scrollContainer.scrollTop === 0) {
+            container.addEventListener('touchstart', (e) => {
+                if (container.scrollTop === 0) {
                     pullStartY = e.touches[0].clientY;
                     isPulling = true;
                 }
             });
             
-            scrollContainer.addEventListener('touchmove', (e) => {
+            container.addEventListener('touchmove', (e) => {
                 if (!isPulling) return;
                 
                 const currentY = e.touches[0].clientY;
                 pullDistance = currentY - pullStartY;
                 
-                if (pullDistance > 0 && pullDistance < 100) {
+                if (pullDistance > 0 && pullDistance < 150) {
+                    pullToRefresh.style.top = Math.min(pullDistance / 2, 60) + 'px';
                     pullToRefresh.classList.add('active');
-                    pullToRefresh.style.transform = `translateY(${pullDistance * 0.5}px)`;
                 }
             });
             
-            scrollContainer.addEventListener('touchend', () => {
+            container.addEventListener('touchend', () => {
                 if (!isPulling) return;
                 
                 isPulling = false;
                 
-                if (pullDistance > 80) {
+                if (pullDistance > 100) {
                     // Trigger refresh
-                    isRefreshing = true;
-                    pullToRefresh.querySelector('i').style.animation = 'spin 1s linear infinite';
-                    
-                    // Simulate refresh delay
-                    setTimeout(() => {
-                        // Clear session and redirect to login
-                        logout();
-                        isRefreshing = false;
-                        pullToRefresh.querySelector('i').style.animation = '';
-                    }, 1500);
-                }
-                
-                pullDistance = 0;
-                pullToRefresh.classList.remove('active');
-                pullToRefresh.style.transform = '';
-            });
-            
-            // Mouse events for desktop
-            scrollContainer.addEventListener('mousedown', (e) => {
-                if (scrollContainer.scrollTop === 0) {
-                    pullStartY = e.clientY;
-                    isPulling = true;
-                }
-            });
-            
-            scrollContainer.addEventListener('mousemove', (e) => {
-                if (!isPulling) return;
-                
-                const currentY = e.clientY;
-                pullDistance = currentY - pullStartY;
-                
-                if (pullDistance > 0 && pullDistance < 100) {
                     pullToRefresh.classList.add('active');
-                    pullToRefresh.style.transform = `translateY(${pullDistance * 0.5}px)`;
-                }
-            });
-            
-            scrollContainer.addEventListener('mouseup', () => {
-                if (!isPulling) return;
-                
-                isPulling = false;
-                
-                if (pullDistance > 80) {
-                    // Trigger refresh
-                    isRefreshing = true;
-                    pullToRefresh.querySelector('i').style.animation = 'spin 1s linear infinite';
-                    
-                    // Simulate refresh delay
-                    setTimeout(() => {
-                        // Clear session and redirect to login
+                    refreshTimeout = setTimeout(() => {
                         logout();
-                        isRefreshing = false;
-                        pullToRefresh.querySelector('i').style.animation = '';
-                    }, 1500);
+                        pullToRefresh.classList.remove('active');
+                    }, 1000);
+                } else {
+                    pullToRefresh.classList.remove('active');
                 }
                 
                 pullDistance = 0;
-                pullToRefresh.classList.remove('active');
-                pullToRefresh.style.transform = '';
             });
         }
 
@@ -2696,6 +2637,10 @@
             
             // Initialize pull to refresh
             initPullToRefresh();
+            
+            // Start clock
+            updateClock();
+            setInterval(updateClock, 1000);
             
             // Check if user is already logged in
             const savedUser = localStorage.getItem('currentUser');
