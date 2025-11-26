@@ -95,15 +95,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .slide-in {
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-        
         /* Card styles */
         .card {
             background: white;
@@ -236,10 +227,11 @@
         .summary-card {
             background: white;
             border-radius: 12px;
-            padding: 16px;
+            padding: 12px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
+            text-align: center;
         }
         
         .summary-card-icon {
@@ -249,7 +241,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 12px;
+            margin: 0 auto 8px;
         }
         
         .summary-card-icon i {
@@ -257,20 +249,20 @@
         }
         
         .summary-card-title {
-            font-size: 11px;
+            font-size: 10px;
             color: #6b7280;
             margin-bottom: 4px;
         }
         
         .summary-card-value {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         
         .summary-card-desc {
-            font-size: 11px;
+            font-size: 10px;
             color: #6b7280;
         }
         
@@ -607,40 +599,16 @@
             overflow: hidden;
             border-radius: 12px;
             aspect-ratio: 1;
-            cursor: pointer;
+            cursor: default;
+            pointer-events: none;
         }
         
         .gallery-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-        
-        .gallery-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            padding: 12px;
-            transform: translateY(100%);
-            transition: transform 0.3s;
-        }
-        
-        .gallery-item:hover .gallery-info {
-            transform: translateY(0);
-        }
-        
-        .gallery-title {
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .gallery-date {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 12px;
+            pointer-events: none;
+            user-select: none;
         }
         
         /* Summary text */
@@ -665,43 +633,17 @@
             color: #4b5563;
         }
         
-        /* Loading animation */
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100px;
-        }
-        
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f3f4f6;
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Risk matrix */
-        .risk-matrix {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-bottom: 16px;
-        }
-        
+        /* Risk matrix table */
         .risk-table {
-            min-width: 320px;
+            width: 100%;
             border-collapse: collapse;
             font-size: 12px;
+            margin-bottom: 16px;
         }
         
         .risk-table th,
         .risk-table td {
-            padding: 6px;
+            padding: 8px;
             text-align: center;
             border: 1px solid #e5e7eb;
         }
@@ -709,6 +651,7 @@
         .risk-table th {
             background: #f9fafb;
             font-weight: 600;
+            color: #374151;
         }
         
         .risk-low {
@@ -722,6 +665,42 @@
         }
         
         .risk-high {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        /* Compliance table */
+        .compliance-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .compliance-table th,
+        .compliance-table td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .compliance-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .compliance-good {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .compliance-medium {
+            background-color: #fed7aa;
+            color: #92400e;
+        }
+        
+        .compliance-poor {
             background-color: #fee2e2;
             color: #991b1b;
         }
@@ -1199,18 +1178,6 @@
         </div>
     </div>
 
-    <!-- Image Modal -->
-    <div id="imageModal" class="image-modal">
-        <div class="image-modal-content">
-            <span class="image-modal-close" onclick="closeImageModal()">&times;</span>
-            <img id="modalImage" src="" alt="">
-            <div class="text-white text-center mt-4">
-                <p id="modalImageTitle" class="text-lg font-semibold"></p>
-                <p id="modalImageDescription" class="text-sm opacity-80 mt-2"></p>
-            </div>
-        </div>
-    </div>
-
     <script>
         // Device fingerprinting
         let deviceFingerprint = '';
@@ -1353,12 +1320,8 @@
         function initGallery() {
             const galleryGrid = document.getElementById('galleryGrid');
             galleryGrid.innerHTML = galleryData.map(item => `
-                <div class="gallery-item" data-category="${item.category}" onclick="openImageModal(${item.id})">
+                <div class="gallery-item" data-category="${item.category}">
                     <img src="${item.image}" alt="${item.title}" loading="lazy">
-                    <div class="gallery-info">
-                        <h4 class="gallery-title">${item.title}</h4>
-                        <p class="gallery-date">${item.date}</p>
-                    </div>
                 </div>
             `).join('');
         }
@@ -1385,22 +1348,6 @@
                     item.style.display = 'none';
                 }
             });
-        }
-
-        // Open image modal
-        function openImageModal(id) {
-            const item = galleryData.find(g => g.id === id);
-            if (item) {
-                document.getElementById('modalImage').src = item.image;
-                document.getElementById('modalImageTitle').textContent = item.title;
-                document.getElementById('modalImageDescription').textContent = `${item.description} - ${item.date}`;
-                document.getElementById('imageModal').classList.add('active');
-            }
-        }
-
-        // Close image modal
-        function closeImageModal() {
-            document.getElementById('imageModal').classList.remove('active');
         }
 
         // Data untuk ruangan-ruangan
@@ -1552,7 +1499,7 @@
             });
         }
 
-        // Show detail modal
+        // Show detail modal with risk assessment
         function showDetail(room, month, type) {
             const modal = document.getElementById('detailModal');
             const modalTitle = document.getElementById('modalTitle');
@@ -1591,6 +1538,100 @@
         function closeModal() {
             const modal = document.getElementById('detailModal');
             modal.classList.remove('active');
+        }
+
+        // Generate risk assessment table
+        function generateRiskAssessment(room) {
+            const risks = [
+                { name: 'Kerusakan Alat Medis', likelihood: 4, impact: 5, risk: 20, mitigation: 'Perawatan rutin, kalibrasi berkala' },
+                { name: 'Infeksi Nosokomial', likelihood: 3, impact: 4, risk: 12, mitigation: 'Protokol sterilisasi, monitoring rutin' },
+                { name: 'Kecelakaan Kerja', likelihood: 2, impact: 3, risk: 6, mitigation: 'Pelatihan K3, SOP jelas' },
+                { name: 'Kerusakan Infrastruktur', likelihood: 3, impact: 4, risk: 12, mitigation: 'Inspeksi berkala, perbaikan cepat' },
+                { name: 'Kehilangan Data', likelihood: 2, impact: 5, risk: 10, mitigation: 'Backup otomatis, enkripsi data' }
+            ];
+
+            let tableHtml = `
+                <table class="risk-table">
+                    <thead>
+                        <tr>
+                            <th>Risiko</th>
+                            <th>Kemungkinan</th>
+                            <th>Dampak</th>
+                            <th>Skor Risiko</th>
+                            <th>Mitigasi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            risks.forEach(risk => {
+                const riskClass = risk.risk >= 15 ? 'risk-high' : risk.risk >= 10 ? 'risk-medium' : 'risk-low';
+                tableHtml += `
+                    <tr>
+                        <td>${risk.name}</td>
+                        <td>${risk.likelihood}</td>
+                        <td>${risk.impact}</td>
+                        <td class="${riskClass}">${risk.risk}</td>
+                        <td>${risk.mitigation}</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                    </tbody>
+                </table>
+            `;
+
+            return tableHtml;
+        }
+
+        // Generate compliance assessment table
+        function generateComplianceAssessment(room, type) {
+            const items = [
+                { name: 'Ketersediaan APAR', status: type === 'APAR' ? 'Tersedia' : 'Tidak Tersedia', score: type === 'APAR' ? 80 : 20 },
+                { name: 'Pemeliharaan Rutin', status: 'Baik', score: 85 },
+                { name: 'Pelatihan Staf', status: 'Sedang', score: 60 },
+                { name: 'Dokumentasi', status: 'Baik', score: 75 },
+                { name: 'Inspeksi Bulanan', status: 'Baik', score: 80 }
+            ];
+
+            let tableHtml = `
+                <table class="compliance-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Status</th>
+                            <th>Skor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            items.forEach(item => {
+                let statusClass = '';
+                if (item.score >= 80) {
+                    statusClass = 'compliance-good';
+                } else if (item.score >= 60) {
+                    statusClass = 'compliance-medium';
+                } else {
+                    statusClass = 'compliance-poor';
+                }
+
+                tableHtml += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.status}</td>
+                        <td class="${statusClass}">${item.score}%</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                    </tbody>
+                </table>
+            `;
+
+            return tableHtml;
         }
 
         // Show monthly reports for each category
@@ -1775,42 +1816,7 @@
             }
         }
 
-        // Update clock
-        function updateClock() {
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
-            
-            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
-        }
-
-        // Toggle menu function
-        function toggleMenu() {
-            // Placeholder for menu toggle functionality
-            alert('Menu toggle functionality');
-        }
-
-        // Get month name
-        function getMonthName(month) {
-            const months = {
-                'jan': 'Januari',
-                'feb': 'Februari',
-                'mar': 'Maret',
-                'apr': 'April',
-                'mei': 'Mei',
-                'jun': 'Juni',
-                'jul': 'Juli',
-                'agu': 'Agustus',
-                'sep': 'September',
-                'okt': 'Oktober',
-                'nov': 'November',
-                'des': 'Desember'
-            };
-            return months[month] || month;
-        }
-
-        // Generate detailed reports
+        // Generate detailed reports with risk assessment
         function generateAparDetail(room, month) {
             const hasApar = roomsWithApar.includes(room);
             const needRefill = roomsNeedRefill.includes(room);
@@ -1843,9 +1849,15 @@
                         <p class="text-xs">${room}: ${statusText}</p>
                     </div>
                     
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="text-xs text-gray-600 space-y-1">
+                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Penilaian Risiko</h4>
+                    ${generateRiskAssessment(room)}
+                    
+                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Penilaian Kepatuhan</h4>
+                    ${generateComplianceAssessment(room, 'APAR')}
+                    
+                    <div class="recommendations">
+                        <h4 class="recommendations-title">Rekomendasi</h4>
+                        <ul class="recommendations-list">
                             ${!hasApar ? '<li>• Segera pasang minimal 1 unit APAR 2kg di ruangan ini</li>' : ''}
                             ${needRefill ? '<li>• Isi ulang APAR 2kg di ruangan ini</li>' : ''}
                             <li>• Lakukan inspeksi rutin setiap bulan</li>
@@ -1864,9 +1876,15 @@
                         <p class="text-xs text-red-800">Pada bulan ${getMonthName(month)}, ruangan ${room} tidak memiliki AP 2kg, AP 9kg, AP kering, atau alarm kebakaran. Hanya jalur evakuasi yang tersedia.</p>
                     </div>
                     
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="text-xs text-gray-600 space-y-1">
+                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Penilaian Risiko</h4>
+                    ${generateRiskAssessment(room)}
+                    
+                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Penilaian Kepatuhan</h4>
+                    ${generateComplianceAssessment(room, 'Kebakaran')}
+                    
+                    <div class="recommendations">
+                        <h4 class="recommendations-title">Rekomendasi</h4>
+                        <ul class="recommendations-list">
                             <li>• Segera pasang minimal 1 unit AP 2kg</li>
                             <li>• Pertimbangkan untuk menambahkan AP 9kg</li>
                             <li>• Pasang alarm kebakaran untuk keamanan maksimal</li>
@@ -1895,9 +1913,15 @@
                         <p class="text-xs text-purple-800">Ruangan ${room} siap menghadapi bencana alam dengan tingkat kesiapan ${readiness}%</p>
                     </div>
                     
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="text-xs text-gray-600 space-y-1">
+                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Penilaian Risiko</h4>
+                    ${generateRiskAssessment(room)}
+                    
+                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Penilaian Kepatuhan</h4>
+                    ${generateComplianceAssessment(room, 'Bencana')}
+                    
+                    <div class="recommendations">
+                        <h4 class="recommendations-title">Rekomendasi</h4>
+                        <ul class="recommendations-list">
                             <li>• Sediakan P3K minimal di setiap ruangan</li>
                             <li>• Lakukan simulasi evakuasi minimal 1 kali setiap 6 bulan</li>
                             <li>• Pastikan semua staf mengetahui prosedur evakuasi</li>
@@ -1931,9 +1955,15 @@
                         <p class="text-xs text-green-800">Keamanan ruangan ${room} dalam kondisi ${security}% ${statusText}</p>
                     </div>
                     
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="text-xs text-gray-600 space-y-1">
+                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Penilaian Risiko</h4>
+                    ${generateRiskAssessment(room)}
+                    
+                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Penilaian Kepatuhan</h4>
+                    ${generateComplianceAssessment(room, 'Keamanan')}
+                    
+                    <div class="recommendations">
+                        <h4 class="recommendations-title">Rekomendasi</h4>
+                        <ul class="recommendations-list">
                             <li>• Pasang CCTV di area kritis</li>
                             <li>• Pasang alarm keamanan di setiap lantai</li>
                             <li>• Lakukan patroli rutin setiap 2 jam</li>
@@ -1962,9 +1992,15 @@
                         <p class="text-xs text-yellow-800">Pengelolaan B3 di ruangan ${room} sesuai standar ${compliance}%</p>
                     </div>
                     
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="text-xs text-gray-600 space-y-1">
+                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Penilaian Risiko</h4>
+                    ${generateRiskAssessment(room)}
+                    
+                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Penilaian Kepatuhan</h4>
+                    ${generateComplianceAssessment(room, 'B3')}
+                    
+                    <div class="recommendations">
+                        <h4 class="recommendations-title">Rekomendasi</h4>
+                        <ul class="recommendations-list">
                             <li>• Pisahkan limbah medis dan non medis dengan jelas</li>
                             <li>• Sediakan tempat penimbunan limbah B3 khusus</li>
                             <li>• Lakukan pelatihan pengelolaan limbah B3 minimal 1 kali setahun</li>
@@ -1998,9 +2034,15 @@
                         <p class="text-xs text-indigo-800">Kondisi fasilitas di ${room} normal dan berfungsi dengan ${statusText}</p>
                     </div>
                     
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="text-xs text-gray-600 space-y-1">
+                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Penilaian Risiko</h4>
+                    ${generateRiskAssessment(room)}
+                    
+                    <h4 class="font-semibold text-gray-800 mb-2 text-sm">Penilaian Kepatuhan</h4>
+                    ${generateComplianceAssessment(room, 'Fasilitas')}
+                    
+                    <div class="recommendations">
+                        <h4 class="recommendations-title">Rekomendasi</h4>
+                        <ul class="recommendations-list">
                             <li>• Lakukan pemeliharaan AC minimal 2 kali setahun</li>
                             <li>• Periksa instalasi listrik setiap 3 bulan</li>
                             <li>• Ganti filter air setiap 6 bulan</li>
@@ -2009,6 +2051,41 @@
                     </div>
                 </div>
             `;
+        }
+
+        // Update clock
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            
+            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Toggle menu function
+        function toggleMenu() {
+            // Placeholder for menu toggle functionality
+            alert('Menu toggle functionality');
+        }
+
+        // Get month name
+        function getMonthName(month) {
+            const months = {
+                'jan': 'Januari',
+                'feb': 'Februari',
+                'mar': 'Maret',
+                'apr': 'April',
+                'mei': 'Mei',
+                'jun': 'Juni',
+                'jul': 'Juli',
+                'agu': 'Agustus',
+                'sep': 'September',
+                'okt': 'Oktober',
+                'nov': 'November',
+                'des': 'Desember'
+            };
+            return months[month] || month;
         }
 
         // Initialize clock and update every second
