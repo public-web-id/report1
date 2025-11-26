@@ -209,6 +209,30 @@
             font-size: 18px;
         }
         
+        /* Logout button styles */
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 1);
+            transform: scale(1.05);
+        }
+        
+        .logout-btn i {
+            color: white;
+            font-size: 18px;
+        }
+        
         /* Main content */
         .main-content {
             margin-top: 64px;
@@ -992,6 +1016,21 @@
             font-size: 10px;
             color: #ef4444;
         }
+        
+        /* Login page background */
+        #loginPage {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -1005,7 +1044,7 @@
     </div>
 
     <!-- Login Page -->
-    <div id="loginPage" class="scroll-container" style="display: none;">
+    <div id="loginPage" class="scroll-container">
         <div class="login-container">
             <h2 class="login-title">Login K3RS/MFK</h2>
             <form class="login-form" onsubmit="handleLogin(event)">
@@ -1046,6 +1085,9 @@
                     </div>
                     <button class="menu-toggle" onclick="toggleMenu()">
                         <i class="fas fa-bars"></i>
+                    </button>
+                    <button class="logout-btn" id="logoutBtn" onclick="logout()" style="display: none;">
+                        <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </div>
             </div>
@@ -1294,7 +1336,7 @@
                     <button class="tab" onclick="showMonthlyKeamanan('agu')">Agu</button>
                     <button class="tab" onclick="showMonthlyKeamanan('sep')">Sep</button>
                     <button class="tab" onclick="showMonthlyKeamanan('okt')">Okt</button>
-                    <button class="tab" onclick="showMonthlyKeamanan('nov')">Nov</button>
+                    <button class="tab" onclick="showMonthlyKeamanan('nov">Nov</button>
                     <button class="tab" onclick="showMonthlyKeamanan('des')">Des</button>
                 </div>
 
