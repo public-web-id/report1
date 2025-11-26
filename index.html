@@ -682,50 +682,6 @@
             to { transform: rotate(360deg); }
         }
         
-        /* Image modal */
-        .image-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 4000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-        }
-        
-        .image-modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .image-modal-content {
-            max-width: 90%;
-            max-height: 90vh;
-            position: relative;
-        }
-        
-        .image-modal img {
-            max-width: 100%;
-            max-height: 90vh;
-            object-fit: contain;
-            border-radius: 12px;
-        }
-        
-        .image-modal-close {
-            position: absolute;
-            top: -40px;
-            right: 0;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        
         /* Risk matrix */
         .risk-matrix {
             overflow-x: auto;
@@ -1193,35 +1149,35 @@
     <!-- Navigation -->
     <nav class="nav">
         <a href="#" class="nav-item active" onclick="showSection('dashboard')">
-            <i class="fas fa-home"></i>
+            <i class="fas fa-home text-blue-600"></i>
             <span>Beranda</span>
         </a>
         <a href="#" class="nav-item" onclick="showSection('apar')">
-            <i class="fas fa-fire-extinguisher"></i>
+            <i class="fas fa-fire-extinguisher text-red-600"></i>
             <span>APAR</span>
         </a>
         <a href="#" class="nav-item" onclick="showSection('kebakaran')">
-            <i class="fas fa-fire"></i>
+            <i class="fas fa-fire text-orange-600"></i>
             <span>Kebakaran</span>
         </a>
         <a href="#" class="nav-item" onclick="showSection('bencana')">
-            <i class="fas fa-cloud-showers-heavy"></i>
+            <i class="fas fa-cloud-showers-heavy text-blue-500"></i>
             <span>Bencana</span>
         </a>
         <a href="#" class="nav-item" onclick="showSection('keamanan')">
-            <i class="fas fa-shield-alt"></i>
+            <i class="fas fa-shield-alt text-purple-600"></i>
             <span>Keamanan</span>
         </a>
         <a href="#" class="nav-item" onclick="showSection('b3')">
-            <i class="fas fa-flask"></i>
+            <i class="fas fa-flask text-green-600"></i>
             <span>B3</span>
         </a>
         <a href="#" class="nav-item" onclick="showSection('fasilitas')">
-            <i class="fas fa-building"></i>
+            <i class="fas fa-building text-indigo-600"></i>
             <span>Fasilitas</span>
         </a>
         <a href="#" class="nav-item" onclick="showSection('galeri')">
-            <i class="fas fa-images"></i>
+            <i class="fas fa-images text-pink-600"></i>
             <span>Galeri</span>
         </a>
     </nav>
@@ -1272,7 +1228,7 @@
             const storedFingerprint = localStorage.getItem('deviceFingerprint');
             if (storedFingerprint && storedFingerprint !== deviceFingerprint) {
                 // Device changed
-                console.log('Perangkat berubah. Sesi Anda akan diakhiri.');
+                alert('Perangkat berubah. Sesi Anda akan diakhiri.');
                 setTimeout(() => {
                     logout();
                 }, 3000);
@@ -1285,7 +1241,7 @@
         function logout() {
             sessionValid = false;
             localStorage.removeItem('sessionValid');
-            console.log('Anda telah keluar dari sesi');
+            alert('Anda telah keluar dari sesi');
         }
         
         // Prevent screenshot and print
@@ -1804,449 +1760,6 @@
             if (activeTab) {
                 activeTab.classList.add('active');
             }
-        }
-
-        // Get month name
-        function getMonthName(month) {
-            const months = {
-                'jan': 'Januari',
-                'feb': 'Februari',
-                'mar': 'Maret',
-                'apr': 'April',
-                'mei': 'Mei',
-                'jun': 'Juni',
-                'jul': 'Juli',
-                'agu': 'Agustus',
-                'sep': 'September',
-                'okt': 'Oktober',
-                'nov': 'November',
-                'des': 'Desember'
-            };
-            return months[month] || month;
-        }
-
-        // Generate detailed reports with recommendations
-        function generateAparDetail(room, month) {
-            const hasApar = roomsWithApar.includes(room);
-            const needRefill = roomsNeedRefill.includes(room);
-            
-            let statusClass = '';
-            let statusText = '';
-            let statusIcon = '';
-            
-            if (hasApar && !needRefill) {
-                statusClass = 'status-success';
-                statusText = 'Tersedia';
-                statusIcon = 'fas fa-check-circle';
-            } else if (hasApar && needRefill) {
-                statusClass = 'status-warning';
-                statusText = 'Perlu Isi Ulang';
-                statusIcon = 'fas fa-exclamation-triangle';
-            } else {
-                statusClass = 'status-danger';
-                statusText = 'Tidak Tersedia';
-                statusIcon = 'fas fa-times-circle';
-            }
-            
-            return `
-                <div class="space-y-4">
-                    <div class="${statusClass.includes('danger') ? 'bg-red-50 p-3 rounded-lg warning-pulse' : statusClass.includes('warning') ? 'bg-yellow-50 p-3 rounded-lg warning-shake' : 'bg-green-50 p-3 rounded-lg'}">
-                        <div class="flex items-center">
-                            <i class="${statusIcon} mr-2"></i>
-                            <h4 class="font-semibold mb-1 text-sm">Status APAR 2kg</h4>
-                        </div>
-                        <p class="text-xs">${room}: ${statusText}</p>
-                    </div>
-                    
-                    <div class="risk-matrix">
-                        <table class="risk-table">
-                            <thead>
-                                <tr>
-                                    <th>Risiko</th>
-                                    <th>Kemungkinan</th>
-                                    <th>Dampak</th>
-                                    <th>Skor Risiko</th>
-                                    <th>Mitigasi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-xs">Kerusakan Alat Medis</td>
-                                    <td class="text-center">4</td>
-                                    <td class="text-center">5</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-high text-xs">20</span></td>
-                                    <td class="text-xs">Perawatan rutin</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-xs">Infeksi Nosokomial</td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center">4</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-medium text-xs">12</span></td>
-                                    <td class="text-xs">Protokol sterilisasi</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-xs">Kecelakaan Kerja</td>
-                                    <td class="text-center">2</td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-low text-xs">6</span></td>
-                                    <td class="text-xs">Pelatihan K3</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="recommendations">
-                        <h4 class="recommendations-title">Rekomendasi</h4>
-                        <ul class="recommendations-list">
-                            ${!hasApar ? '<li>• Segera pasang minimal 1 unit APAR 2kg di ruangan ini</li>' : ''}
-                            ${needRefill ? '<li>• Isi ulang APAR 2kg di ruangan ini</li>' : ''}
-                            <li>• Lakukan inspeksi rutin setiap bulan</li>
-                            <li>• Pastikan staf mengetahui penggunaan APAR</li>
-                        </ul>
-                    </div>
-                </div>
-            `;
-        }
-
-        function generateKebakaranDetail(room, month) {
-            return `
-                <div class="space-y-4">
-                    <div class="bg-red-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-red-900 mb-1 text-sm">Status Kebakaran</h4>
-                        <p class="text-xs text-red-800">Pada bulan ${getMonthName(month)}, ruangan ${room} tidak memiliki AP 2kg, AP 9kg, AP kering, atau alarm kebakaran. Hanya jalur evakuasi yang tersedia.</p>
-                    </div>
-                    
-                    <div class="risk-matrix">
-                        <table class="risk-table">
-                            <thead>
-                                <tr>
-                                    <th>Risiko</th>
-                                    <th>Kemungkinan</th>
-                                    <th>Dampak</th>
-                                    <th>Skor Risiko</th>
-                                    <th>Mitigasi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-xs">Kerusakan Alat Medis</td>
-                                    <td class="text-center">4</td>
-                                    <td class="text-center">5</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-high text-xs">20</span></td>
-                                    <td class="text-xs">Perawatan rutin</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-xs">Infeksi Nosokomial</td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center">4</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-medium text-xs">12</span></td>
-                                    <td class="text-xs">Protokol sterilisasi</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-xs">Kecelakaan Kerja</td>
-                                    <td class="text-center">2</td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-low text-xs">6</span></td>
-                                    <td class="text-xs">Pelatihan K3</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="recommendations-list">
-                            <li>• Segera pasang minimal 1 unit AP 2kg</li>
-                            <li>• Pertimbangkan untuk menambahkan AP 9kg</li>
-                            <li>• Pasang alarm kebakaran untuk keamanan maksimal</li>
-                            <li>• Pertahankan jalur evakuasi selalu bebas dari hambatan</li>
-                            <li>• Lakukan simulasi kebakaran minimal 1 kali setiap 6 bulan</li>
-                        </ul>
-                    </div>
-                </div>
-            `;
-        }
-
-        function generateBencanaDetail(room, month) {
-            const readiness = generateRandomData(60, 95);
-            let statusClass = '';
-            if (readiness > 80) {
-                statusClass = 'status-success';
-            } else if (readiness >= 60) {
-                statusClass = 'status-warning';
-            } else {
-                statusClass = 'status-danger';
-            }
-            
-            return `
-                <div class="space-y-4">
-                    <div class="bg-purple-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-purple-900 mb-1 text-sm">Kesiapan Bencana</h4>
-                        <p class="text-xs text-purple-800">Ruangan ${room} siap menghadapi bencana alam dengan tingkat kesiapan ${readiness}%</p>
-                    </div>
-                    
-                    <div class="risk-matrix">
-                        <table class="risk-table">
-                            <thead>
-                                <tr>
-                                    <th>Risiko</th>
-                                    <th>Kemungkinan</th>
-                                    <th>Dampak</th>
-                                    <th>Skor Risiko</th>
-                                    <th>Mitigasi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-xs">Kerusakan Alat Medis</td>
-                                    <td class="text-center">4</td>
-                                    <td class="text-center">5</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-high text-xs">20</span></td>
-                                    <td class="text-xs">Perawatan rutin</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-xs">Infeksi Nosokomial</td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center">4</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-medium text-xs">12</span></td>
-                                    <td class="text-xs">Protokol sterilisasi</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-xs">Kecelakaan Kerja</td>
-                                    <td class="text-center">2</td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-low text-xs">6</span></td>
-                                    <td class="text-xs">Pelatihan K3</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="recommendations-list">
-                            <li>• Sediakan P3K minimal di setiap ruangan</li>
-                            <li>• Lakukan simulasi evakuasi minimal 1 kali setiap 6 bulan</li>
-                            <li>• Pastikan semua staf mengetahui prosedur evakuasi</li>
-                            <li>• Sediakan jalur evakuasi alternatif</li>
-                        </ul>
-                    </div>
-                </div>
-            `;
-        }
-
-        function generateKeamananDetail(room, month) {
-            const security = generateRandomData(80, 100);
-            let statusClass = '';
-            let statusText = '';
-            
-            if (security > 90) {
-                statusClass = 'status-success';
-                statusText = 'Normal';
-            } else if (security >= 80) {
-                statusClass = 'status-warning';
-                statusText = 'Perhatian';
-            } else {
-                statusClass = 'status-danger';
-                statusText = 'Kritis';
-            }
-            
-            return `
-                <div class="space-y-4">
-                    <div class="bg-green-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-green-900 mb-1 text-sm">Status Keamanan</h4>
-                        <p class="text-xs text-green-800">Keamanan ruangan ${room} dalam kondisi ${security}% baik</p>
-                    </div>
-                    
-                    <div class="risk-matrix">
-                        <table class="risk-table">
-                            <thead>
-                                <tr>
-                                    <th>Risiko</th>
-                                    <th>Kemungkinan</th>
-                                    <th>Dampak</th>
-                                    <th>Skor Risiko</th>
-                                    <th>Mitigasi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-xs">Kerusakan Alat Medis</td>
-                                    <td class="text-center">4</td>
-                                    <td class="text-center">5</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-high text-xs">20</span></td>
-                                    <td class="text-xs">Perawatan rutin</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-xs">Infeksi Nosokomial</td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center">4</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-medium text-xs">12</span></td>
-                                    <td class="text-xs">Protokol sterilisasi</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-xs">Kecelakaan Kerja</td>
-                                    <td class="text-center">2</td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-low text-xs">6</span></td>
-                                    <td class="text-xs">Pelatihan K3</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="recommendations-list">
-                            <li>• Pasang CCTV di area kritis</li>
-                            <li>• Pasang alarm keamanan di setiap lantai</li>
-                            <li>• Lakukan patroli rutin setiap 2 jam</li>
-                            <li>• Sediakan sistem interkom darurat</li>
-                        </ul>
-                    </div>
-                </div>
-            `;
-        }
-
-        function generateB3Detail(room, month) {
-            const compliance = generateRandomData(70, 100);
-            let statusClass = '';
-            if (compliance > 80) {
-                statusClass = 'status-success';
-            } else if (compliance >= 60) {
-                statusClass = 'status-warning';
-            } else {
-                statusClass = 'status-danger';
-            }
-            
-            return `
-                <div class="space-y-4">
-                    <div class="bg-yellow-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-yellow-900 mb-1 text-sm">Status B3</h4>
-                        <p class="text-xs text-yellow-800">Pengelolaan B3 di ruangan ${room} sesuai standar ${compliance}%</p>
-                    </div>
-                    
-                    <div class="risk-matrix">
-                        <table class="risk-table">
-                            <thead>
-                                <tr>
-                                    <th>Risiko</th>
-                                    <th>Kemungkinan</th>
-                                    <th>Dampak</th>
-                                    <th>Skor Risiko</th>
-                                    <th>Mitigasi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-xs">Kerusakan Alat Medis</td>
-                                    <td class="text-center">4</td>
-                                    <td class="text-center">5</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-high text-xs">20</span></td>
-                                    <td class="text-xs">Perawatan rutin</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-xs">Infeksi Nosokomial</td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center">4</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-medium text-xs">12</span></td>
-                                    <td class="text-xs">Protokol sterilisasi</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-xs">Kecelakaan Kerja</td>
-                                    <td class="text-center">2</td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-low text-xs">6</span></td>
-                                    <td class="text-xs">Pelatihan K3</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="recommendations-list">
-                            <li>• Pisahkan limbah medis dan non medis dengan jelas</li>
-                            <li>• Sediakan tempat penimbunan limbah B3 khusus</li>
-                            <li>• Lakukan pelatihan pengelolaan limbah B3 minimal 1 kali setahun</li>
-                            <li>• Dokumentasikan semua aktivitas pengelolaan limbah B3</li>
-                        </ul>
-                    </div>
-                </div>
-            `;
-        }
-
-        function generateFasilitasDetail(room, month) {
-            const facility = generateRandomData(70, 100);
-            let statusClass = '';
-            let statusText = '';
-            
-            if (facility > 85) {
-                statusClass = 'status-success';
-                statusText = 'Baik';
-            } else if (facility >= 70) {
-                statusClass = 'status-warning';
-                statusText = 'Perlu Perawatan';
-            } else {
-                statusClass = 'status-danger';
-                statusText = 'Rusak';
-            }
-            
-            return `
-                <div class="space-y-4">
-                    <div class="bg-indigo-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-indigo-900 mb-1 text-sm">Status Fasilitas</h4>
-                        <p class="text-xs text-indigo-800">Kondisi fasilitas di ${room} normal dan berfungsi dengan baik</p>
-                    </div>
-                    
-                    <div class="risk-matrix">
-                        <table class="risk-table">
-                            <thead>
-                                <tr>
-                                    <th>Risiko</th>
-                                    <th>Kemungkinan</th>
-                                    <th>Dampak</th>
-                                    <th>Skor Risiko</th>
-                                    <th>Mitigasi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-xs">Kerusakan Alat Medis</td>
-                                    <td class="text-center">4</td>
-                                    <td class="text-center">5</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-high text-xs">20</span></td>
-                                    <td class="text-xs">Perawatan rutin</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-xs">Infeksi Nosokomial</td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center">4</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-medium text-xs">12</span></td>
-                                    <td class="text-xs">Protokol sterilisasi</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-xs">Kecelakaan Kerja</td>
-                                    <td class="text-center">2</td>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center"><span class="px-1 py-0.5 rounded risk-low text-xs">6</span></td>
-                                    <td class="text-xs">Pelatihan K3</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="bg-gray-50 p-3 rounded-lg">
-                        <h4 class="font-semibold text-gray-800 mb-1 text-sm">Rekomendasi</h4>
-                        <ul class="recommendations-list">
-                            <li>• Lakukan pemeliharaan AC minimal 2 kali setahun</li>
-                            <li>• Periksa instalasi listrik setiap 3 bulan</li>
-                            <li>• Ganti filter air setiap 6 bulan</li>
-                            <li>• Dokumentasikan semua aktivitas pemeliharaan</li>
-                        </ul>
-                    </div>
-                </div>
-            `;
         }
 
         // Update clock
